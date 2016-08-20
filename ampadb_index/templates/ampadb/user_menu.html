@@ -1,0 +1,15 @@
+{% load urllink %}
+{% load userdata %}
+
+{% get_alumne user as alumne %}
+<p>{{ alumne }} (<span class="username">{{ user }}</span>)</p>
+<p>{% urllink 'Sortir' 'logout' %}</p>
+<p>{% urllink 'Canviar contrasenya' 'password_change' %}</p>
+<p>{% urllink alumne.nom 'index' %}</p>
+<nav>
+  <h3>Dades de contacte</h3>
+  <p>
+    {% urllink 'Veure classe' 'contactboard:list' alumne.classe.id_interna %}
+  </p>
+  <p>{% urllink 'Les meves dades' 'contactboard:edit-alumne' alumne.pk %}</p>
+</nav>

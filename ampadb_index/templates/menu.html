@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% load pyprint %}
+
+{% block title %}AMPA IES Forat Del Vent{% endblock %}
+
+{% block body %}
+<div style="height: 100%; width: 20%; float: left">
+  {% block menu %}
+  {% if admin %}
+  {% include "ampadb/admin_menu.html" %}
+  {% else %}
+  {% include "ampadb/user_menu.html" %}
+  {% endif %}
+  {% endblock menu %}
+</div>
+<div style="height: 100%; width: 80%; float: right">
+  {% block content %}
+  {% endblock %}
+</div>
+{% endblock body %}

@@ -1,0 +1,14 @@
+# Django
+https://bernardopires.com/2014/03/rails-vs-django-an-in-depth-technical-comparison/
+https://docs.djangoproject.com/es/1.9/
+
+# Hosting
+http://codecondo.com/5-platforms-provide-free-django-app-hosting/
+https://www.pythonanywhere.com/
+http://aws.amazon.com/free/
+https://www.openshift.com/
+https://dashboard.heroku.com/apps
+https://www.000webhost.com/
+http://www.hostinger.es/
+http://www.nixiweb.com/
+http://nazuka.net/

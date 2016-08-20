@@ -1,0 +1,70 @@
+{% extends "menu.html" %}
+{% load userdata %}
+{% load pytr %}
+{% load urllink %}
+
+{% block content %}
+<h1>Llista de contactes de {{ classe }}</h1>
+{% if admin %}
+<table table style="float: right"><tr>
+  <td>{% urllink 'Nou alumne' 'contactboard:add-alumne' classe.id_interna %}</td>
+  <td>{% urllink 'Exportar' 'importexport:export' classe.id_interna %}</td>
+  <td>{% urllink 'Enviar correu massiu' 'contactboard:mailto' classe.id_interna %}
+</tr></table>
+<p style="color: grey">En gris si no han compartit les dades</p>
+{% else %}
+<p style="color: grey">
+  Només es mostren les dades d'aquells que han decidit compartir-les
+</p>
+{% endif %}
+<table style="width: 100%">
+  <tr>
+    <th>Nom</th>
+    <th>E-mail pare</th>
+    <th>E-mail mare</th>
+    <th>Telf. pare</th>
+    <th>Telf. mare</th>
+    {% if admin %}
+    <th>Usuari</th>
+    <th>Eliminar</th>
+    {% endif %}
+  </tr>
+  {% get_alumne user as me %}
+  {% for a in alumnes %}
+  {% if a.compartir or admin %}
+  {% if not a.compartir %}
+  <tr class="secret">
+  {% elif a == me %}
+  <tr class="self_record">
+  {% else %}
+  <tr>
+  {% endif %}
+    <td style="text-align: center">
+      {% if admin %}
+      {% urllink a 'contactboard:edit-alumne' a.pk %}
+      {% else %}
+      {{ a }}
+      {% endif %}
+    </td>
+    <td style="text-align: center">{{ a.correu_pare|urlize }}</td>
+    <td style="text-align: center">{{ a.correu_mare|urlize }}</td>
+    <td style="text-align: center">{{ a.telefon_pare }}</td>
+    <td style="text-align: center">{{ a.telefon_mare }}</td>
+    {% if admin %}
+    {% get_user a.pk as user %}
+    <td style="text-align:center">
+      {% if user %}
+      {{ user }}
+      {% else %}
+      {% urllink 'Crear' 'usermanager:new-user' a.pk %}
+      {% endif %}
+    </td>
+    <td style="text-align: center">
+      {% urllink 'Eliminar' 'contactboard:delete-alumne' a.pk %}
+    </td>
+    {% endif %}
+  </tr>
+  {% endif %}
+  {% endfor %}
+</table>
+{% endblock content %}

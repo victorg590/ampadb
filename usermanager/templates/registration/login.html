@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{% load urllink %}
+{% block title %}Entrar :: AMPA IES Forat Del Vent{% endblock %}
+
+{% block body %}
+{% if form.errors %}
+<p>Usuari o contrasenya incorrectes.</p>
+{% endif %}
+
+{% if next %}
+{% if user.is_authenticated %}
+<p>No pots entrar en aquesta pàgina!</p>
+{% else %}
+<p>No has entrat al lloc.</p>
+{% endif %}
+{% endif %}
+
+<form method="post" action="{% url 'login' %}">
+  {% csrf_token %}
+  <table>
+    <tr>
+      <td>Nom d'usuari</td>
+      <td>{{ form.username }}</td>
+    </tr>
+    <tr>
+      <td>Contrasenya</td>
+      <td>{{ form.password }}</td>
+    </tr>
+  </table>
+  <input type="submit" value="Entrar"/>
+  <input type="hidden" name="next" value="{{ next }}"/>
+</form>
+<table><tr>
+  <td>Tens un codi? {% urllink "Registra't" 'register' %}</td>
+</tr></table>
+{% endblock body %}

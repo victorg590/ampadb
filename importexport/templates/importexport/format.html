@@ -1,0 +1,108 @@
+{% extends "menu.html" %}
+{% load urllink %}
+
+{% block content %}
+<h1>Format CSV (DB)</h1>
+<p>L'arxiu permet pujar multiples usuaris al mateix temps. Per aixó ha de ser un
+arxiu de valors separats per comes (CSV) amb aquestes columnes:</p>
+<table>
+  <tr>
+    <th>Columna</th>
+    <th>Descripció</th>
+  </tr>
+  <tr>
+    <td><code>pk</code> <b>(*)</b></td>
+    <td>(En minúscules) Clau primària (<i>Primary Key</i>) de l'alumne, única
+      per a la base de dades. Ha de ser un número positiu. Si ja existeix, les
+      dades modificaràn l'alumne. Es recomana deixar-lo en blanc tret que es
+      vulgui editar una entrada existent. Si es vol eliminar, aquest camp
+      és obligatori.</td>
+  <tr>
+    <td><b><code>Nom</code></b></td>
+  </tr>
+  <tr>
+    <td><b><code>Cognoms</code></b></td>
+  </tr>
+  <tr>
+    <td><b><code>Data de naixement</code></b></td>
+    <td>La data de naixement en format ISO (YYYY-MM-DD, ex. 2000-01-01 = 1 de
+      gener del 2000)</td>
+  </tr>
+  <tr>
+    <td><code>Correu alumne</code></td>
+  </tr>
+  <tr>
+    <td><code>Correu pare</code></td>
+  </tr>
+  <tr>
+    <td><code>Correu mare</code></td>
+  </tr>
+  <tr>
+    <td><code>Teléfon pare</code></td>
+  </tr>
+  <tr>
+    <td><code>Teléfon mare</code></td>
+  </tr>
+  <tr>
+    <td><code>Compartir</code></td>
+  </tr>
+  <tr>
+    <td><b><code>Classe</code></b></td>
+    <td>La ID interna de la classe de l'alumne. Si no existeix,
+      <code>Curs</code> és obligatori per crear-la.</td>
+  </tr>
+  <tr>
+    <td><code>Curs</code> <b>(*)</b></td>
+    <td>ID interna del curs de l'alumne. Si <code>Classe</code> no existeix, és
+      obligatori i s'utilitzarà per crear la classe. Si és necessari, també es
+      crearà.</td>
+  </tr>
+  <tr>
+    <td><code>Usuari</code></td>
+    <td>L'usuari a crear. Si ja existeix però no té cap alumne associat,
+      s'associarà. Si ja en té un o es deixa en blanc, es generarà un
+      automàticament (de la forma de
+      <code>&lt;inicial del nom&gt;.&lt;cognoms&gt;</code>, truncat a 30
+      caracters). Per a no crear cap usuari, utilitza el valor especial
+      "<code>-</code>"</td>
+  </tr>
+  <tr>
+    <td><code>Eliminar</code></td>
+    <td>
+      <p>Aquest camp pot tenir tres valors:</p>
+      <ul>
+        <li><code>0</code> [per defecte]: No eliminar.</li>
+        <li><code>1</code>: Eliminar l'alumne de la base de dades.</li>
+        <li><code>2</code>: Eliminar l'alumne i el seu usuari (si existeix).</li>
+      </ul>
+      <p>Si es defineix a <code>1</code> o <code>2</code>, <code>pk</code> és
+        obligatori. La resta de camps s'ignoraràn. Si l'alumne no existeix,
+        no es crearà.</p>
+</table>
+<p>L'ordre no importa, tot i que ajuda per claredat. El nom de la columna ha de
+  ser idèntic i la capçalera a la primera fila és obligatória. Les columnes
+  opcional (no en negreta) poden estar buides. Si cap de les entrades utilitza
+  una columna, es pot omitir de l'arxiu.</p>
+<div>
+  {% urllink 'Plantilla CSV' 'importexport:format-template' %}
+</div>
+<p>Pots convertir la plantilla CSV amb Excel (amb
+  l'<a href="https://support.office.com/es-es/article/Asistente-para-importar-texto-c5b02af6-fda1-4440-899f-f78bafe41857"
+    rel="nofollow">Asistent
+    per a importar text</a>) o Calc amb la següent configuració:</p>
+<ul>
+  <li>Delimitat (no amplada fixa)</li>
+  <li>Conjunt de caracters: Unicode (UTF-8)</li>
+  <li>Separador: Coma (,)</li>
+  <li>Delimitador: Cometes (")</li>
+  <li>Format de <code>Data de naixement</code>: Data (AMD)</li>
+</ul>
+<p>Per tornar a convertir-la a CSV, utilitza els mateixos valors. Si un valor
+  conté una coma, ha d'anar entre cometes:
+  <pre>Valor 1,Valor 2,"Valor, amb, comes"</pre></p>
+<!-- <p><strong>Excel, tot i que permet (amb dificultats) importar CSV, l'exporta en
+  un format i amb un conjunt de caracters molt diferent. Utilitza
+  <a href="https://www.libreoffice.org/">LibreOffice Calc</a> o
+  <a href="https://www.google.com/sheets/about/">Google Spreadsheets</a>. -->
+</strong></p>
+{% endblock content %}

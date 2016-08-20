@@ -1,0 +1,11 @@
+{% load urllink %}
+<p><span class="username">{{ user }}</span> <strong> [admin]</strong></p>
+<p>{% urllink 'Sortir' 'logout' %}</p>
+<p>{% urllink 'Canviar contrasenya' 'password_change' %}</p>
+<nav>
+  <h3>Dades de contacte</h3>
+  <p>
+    {% urllink 'Cursos i classes' 'contactboard:adminlist' %}
+  </p>
+  <h3>{% urllink 'Usuaris' 'usermanager:list' %}
+</nav>

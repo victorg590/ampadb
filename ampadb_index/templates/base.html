@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+<head>
+  {% block basestyle %}
+  <style>
+  head, body {
+    height: 95vh;
+    width: 95vw;
+  }
+
+  .username {
+    font-family: monospace;
+  }
+
+  .secret, .self_record {
+    background-color: lightgrey;
+  }
+  </style>
+  {% endblock basestyle %}
+  {% block head %}
+  {% endblock %}
+  <title>{% block title %}{% endblock %}</title>
+</head>
+<body>
+  {% block body %}
+  {% endblock %}
+</body>
+</head>

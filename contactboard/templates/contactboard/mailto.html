@@ -1,0 +1,17 @@
+{% extends "menu.html" %}
+
+{% block content %}
+<h1>Enviar correus</h1>
+<form method="post">
+  {% csrf_token %}
+  <table>
+    {{ form }}
+
+    {% if classe %}
+    <tr><td>Enviant a classe: {{ classe }}</td></tr>
+    {% endif %}
+
+    <tr><td><input type="submit" value="Redactar"/></td></tr>
+  </table>
+</form>
+{% endblock content %}

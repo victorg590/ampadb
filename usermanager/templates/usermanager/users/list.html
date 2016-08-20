@@ -1,0 +1,59 @@
+{% extends "menu.html" %}
+{% load userdata %}
+{% load pytr %}
+{% load urllink %}
+
+{% block content %}
+{% if unregistered %}
+<h1>No registrats</h1>
+<p>Els usuaris no registrats sempre apareixen com a "&lt;usuari&gt; (*)".</p>
+<table style="width: 100%">
+  <tr>
+    <th>Nom d'usuari</th>
+    <th>Codi</th>
+    <th>Canviar codi</th>
+    <th>Cancel·lar</th>
+  </tr>
+  {% for u in unregistered %}
+  <tr>
+    <td style="text-align: center">{{ u }}</td>
+    <td style="text-align: center">{{ u.codi }}</td>
+    <td style="text-align: center">
+      {% urllink 'Generar' 'usermanager:change-code-auto' u.username %}
+      |
+      {% urllink 'Canviar' 'usermanager:change-code' u.username %}
+    </td>
+    <td style="text-align: center">
+      {% urllink 'Cancel·lar' 'usermanager:cancel' u.username %}
+    </td>
+  </tr>
+  {% endfor %}
+</table>
+{% endif %}
+<h1>Registrats</h1>
+<div style="text-align: right">
+  {% urllink 'Nou <strong>administrador</strong>' 'usermanager:new-admin' safe=True %}
+</div>
+<table style="width: 100%">
+  <tr>
+    <th>Nom d'usuari</th>
+    <th>Administrador</th>
+    <th>Canviar contrasenya</th>
+    <th>Eliminar</th>
+  </tr>
+  {% for u in registered %}
+  <tr>
+    {% is_admin u as adm %}
+    <td style="text-align: center">{{ u }}</td>
+    <td style="text-align: center">{{ adm|pytr }}</td>
+    <td style="text-align: center">
+      {% urllink 'Canviar contrasenya' 'usermanager:admin-changepassword' u.username %}
+    </td>
+    <td style="text-align: center">
+      {% urllink 'Eliminar' 'usermanager:delete' u.username %}
+    </td>
+  </tr>
+  {% endfor %}
+  {# Sempre ha d'haver com a mínim un usuari (administrador) #}
+</table>
+{% endblock content %}
