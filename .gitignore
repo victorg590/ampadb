@@ -1,5 +1,7 @@
 # Altres
 biblio.txt
+# Entorn virtual (virtualenv)
+ve/
 
 # Created by https://www.gitignore.io/api/django,python
 

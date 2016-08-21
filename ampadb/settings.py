@@ -30,7 +30,7 @@ if not SECRET_KEY:
     os.environ['AMPADB_SECRET_KEY'] = SECRET_KEY
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = bool(os.environ.get('AMPADB_DEBUG', False))
+DEBUG = bool(int(os.environ.get('AMPADB_DEBUG', '0')))
 
 ALLOWED_HOSTS = ['*']
 
@@ -49,8 +49,6 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'whitenoise.runserver_nostatic',
     'django.contrib.staticfiles',
-    #'compressor',
-    'pipeline',
 ]
 
 MIDDLEWARE_CLASSES = [
@@ -63,7 +61,8 @@ MIDDLEWARE_CLASSES = [
     'django.contrib.auth.middleware.SessionAuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'pipeline.middleware.MinifyHTMLMiddleware',
+    'htmlmin.middleware.HtmlMinifyMiddleware',
+    'htmlmin.middleware.MarkRequestMiddleware',
 ]
 
 ROOT_URLCONF = 'ampadb.urls'
@@ -167,8 +166,4 @@ USE_TZ = True
 STATIC_ROOT = os.path.join(PROJECT_DIR, 'static')
 STATIC_URL = '/static/'
 STATICFILES_DIRS = []
-STATICFILES_STORAGE = 'whitenoise.django.GzipManifestStaticFilesStorage'
-
-PIPELINE = {
-    'PIPELINE_ENABLED': not DEBUG
-}
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'

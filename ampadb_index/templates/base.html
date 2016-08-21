@@ -1,6 +1,9 @@
+{% load static %}
+
 <!DOCTYPE html>
 <html>
 <head>
+  {% comment %}
   {% block basestyle %}
   <style>
   head, body {
@@ -17,7 +20,9 @@
   }
   </style>
   {% endblock basestyle %}
+  {% endcomment %}
   {% block head %}
+  <link rel="stylesheet" href="{% static 'css/base.css' %}"/>
   {% endblock %}
   <title>{% block title %}{% endblock %}</title>
 </head>
