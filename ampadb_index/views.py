@@ -11,6 +11,3 @@ def index(request):
     else:
         p = Profile.objects.get(user=request.user)
         return redirect('contactboard:list', p.alumne.classe.id_interna)
-
-def raiser(request):
-    raise RuntimeException
