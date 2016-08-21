@@ -1,11 +1,19 @@
 {% load urllink %}
-<p><span class="username">{{ user }}</span> <strong> [admin]</strong></p>
-<p>{% urllink 'Sortir' 'logout' %}</p>
-<p>{% urllink 'Canviar contrasenya' 'password_change' %}</p>
-<nav>
-  <h3>Dades de contacte</h3>
-  <p>
-    {% urllink 'Cursos i classes' 'contactboard:adminlist' %}
-  </p>
-  <h3>{% urllink 'Usuaris' 'usermanager:list' %}
-</nav>
+
+<ul class="nav navbar-nav navbar-left">
+  <li>{% urllink 'Cursos i classes' 'contactboard:adminlist' %}</li>
+  <li>{% urllink 'Usuaris' 'usermanager:list' %}</li>
+</ul>
+<ul class="nav navbar-nav navbar-right">
+  <li class="dropdown">
+    <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button">
+        <span class="username">{{ user }}</span> <strong> [admin]</strong>
+        <span class="caret"/>
+    </a>
+    <ul class="dropdown-menu">
+      <li>{% urllink 'Canviar contrasenya' 'password_change' %}</li>
+      <li role="separator" class="divider"/>
+      <li>{% urllink 'Sortir' 'logout' %}</li>
+    </ul>
+  </li>
+</ul>

@@ -2,14 +2,22 @@
 {% load userdata %}
 
 {% get_alumne user as alumne %}
-<p>{{ alumne }} (<span class="username">{{ user }}</span>)</p>
-<p>{% urllink 'Sortir' 'logout' %}</p>
-<p>{% urllink 'Canviar contrasenya' 'password_change' %}</p>
-<p>{% urllink alumne.nom 'index' %}</p>
-<nav>
-  <h3>Dades de contacte</h3>
-  <p>
+<ul class="nav navbar-nav navbar-left">
+  <li>
     {% urllink 'Veure classe' 'contactboard:list' alumne.classe.id_interna %}
-  </p>
-  <p>{% urllink 'Les meves dades' 'contactboard:edit-alumne' alumne.pk %}</p>
-</nav>
+  </li>
+  <li>{% urllink 'Les meves dades' 'contactboard:edit-alumne' alumne.pk %}</li>
+</ul>
+<ul class="nav navbar-nav navbar-right">
+  <li class="dropdown">
+    <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button">
+        <span>{{ alumne }} </span>(<span class="username">{{ user }}</span>)
+        <span class="caret"/>
+    </a>
+    <ul class="dropdown-menu">
+      <li>{% urllink 'Canviar contrasenya' 'password_change' %}</li>
+      <li role="separator" class="divider"/>
+      <li>{% urllink 'Sortir' 'logout' %}</li>
+    </ul>
+  </li>
+</ul>
