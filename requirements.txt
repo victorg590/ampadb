@@ -3,5 +3,6 @@ Django==1.10
 django-htmlmin==0.9.1
 gunicorn==19.6.0
 whitenoise==3.2.1
+setuptools>=18.5
 # Només Heroku
 psycopg2==2.6.2
