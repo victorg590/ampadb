@@ -49,13 +49,16 @@ class AlumneForms:
         nom = forms.CharField(max_length=255, required=True)
         cognoms = forms.CharField(max_length=255, required=True)
         classe = forms.CharField(disabled=True, required=False)
-        data_de_naixement = forms.DateField(required=True, input_formats=[
-            '%Y-%m-%d',  # ISO
-            '%d-%m-%Y',
-            '%d/%m/%Y',
-            '%d-%m-%y',
-            '%d/%m/%y'
-        ])
+        data_de_naixement = forms.DateField(required=True,
+            widget=forms.DateInput(format='%d/%m/%Y'),
+            input_formats=[
+                '%d/%m/%Y',
+                '%d-%m-%Y',
+                '%d-%m-%y',
+                '%d/%m/%y',
+                '%Y-%m-%d'  # ISO
+            ]
+        )
         correu_alumne = forms.EmailField(required=False)
         correu_pare = forms.EmailField(required=False)
         telefon_pare = forms.CharField(required=False, max_length=15,
@@ -69,10 +72,17 @@ class AlumneForms:
             help_text='Si es selecciona, la classe podrà veure els correus i'
             ' els telèfons')
 
-    class EditForm(NewForm):
+    class AdminEditForm(NewForm):
         classe = forms.ModelChoiceField(required=True,
             to_field_name='id_interna',
             queryset=Classe.objects.all().order_by('curs'))
+
+    class EditForm(NewForm):
+        nom = forms.CharField(disabled=True, required=False)
+        cognoms = forms.CharField(disabled=True, required=False)
+        classe = forms.CharField(disabled=True, required=False)
+        data_de_naixement = forms.DateField(disabled=True, required=False,
+            widget=forms.DateInput(format='%d/%m/%Y'))
 
 class MailtoForm(forms.Form):
     TO_ALUMNES = 'alumnes'

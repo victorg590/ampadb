@@ -185,9 +185,14 @@ def edit_alumne(request, alumne_pk):
         if p.alumne.pk != int(alumne_pk):
             #return redirect('/contactboard/edit/{}'.format(p.alumne.pk))
             return redirect('contactboard:edit-alumne', p.alumne.pk)
+        ThisForm = AlumneForms.EditForm
+
     alumne = get_object_or_404(Alumne, pk=alumne_pk)
     if request.method == 'POST':
-        form = AlumneForms.EditForm(request.POST)
+        if is_admin(request.user):
+            form = AlumneForms.AdminEditForm(request.POST)
+        else:
+            form = AlumneForms.EditForm(request.POST)
         if form.is_valid():
             if form.has_changed():
                 cdata = form.cleaned_data
@@ -204,7 +209,7 @@ def edit_alumne(request, alumne_pk):
                 alumne.save()
             return redirect('contactboard:list', alumne.classe.id_interna)
     else:
-        form = AlumneForms.EditForm({
+        alumned = {
             'nom': alumne.nom,
             'cognoms': alumne.cognoms,
             'classe': alumne.classe.id_interna,
@@ -215,7 +220,13 @@ def edit_alumne(request, alumne_pk):
             'telefon_pare': alumne.telefon_pare,
             'telefon_mare': alumne.telefon_mare,
             'compartir': alumne.compartir
-        })
+        }
+
+    if is_admin(request.user):
+        form = AlumneForms.AdminEditForm(alumned)
+    else:
+        alumned.update({'classe': alumne.classe})
+        form = AlumneForms.EditForm(alumned, initial=alumned)
     context = {
         'form': form,
         'submitText': 'Actualitzar'
