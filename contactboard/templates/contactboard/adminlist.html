@@ -1,45 +1,6 @@
 {% extends "menu.html" %}
 {% load urllink %}
 
-{% comment %}
-{% block content %}
-<h1>Llista de cursos</h1>
-<table style="float: right"><tr>
-  <td>{% urllink 'Nou curs' 'contactboard:add-curs' %}</td>
-  <td>{% urllink 'Importar' 'importexport:import' %}</td>
-  <td>{% urllink 'Exportar' 'importexport:export' %}</td>
-  <td>{% urllink 'Enviar correu massiu' 'contactboard:mailto' %}</td>
-</tr></table>
-<table>
-  {% for curs in cursos %}
-  <tr>
-    <td>{{ curs }}</td>
-    <td>{% urllink 'Nova classe' 'contactboard:add-classe' curs.id_interna %}</td>
-    <td>{% urllink 'Editar' 'contactboard:edit-curs' curs.id_interna %}</td>
-    <td>{% urllink 'Eliminar' 'contactboard:delete-curs' curs.id_interna %}</td>
-  </tr>
-  {% empty %}
-  <tr><td colspan="3"><em>No s'han definit cursos</em></td></tr>
-  {% endfor %}
-</table>
-
-{% if classes %}
-<h2>Classes</h2>
-<table>
-  {% for classe in classes %}
-  <tr>
-    <td>{% urllink classe 'contactboard:list' classe.id_interna %}</td>
-    <td>{% urllink 'Editar' 'contactboard:edit-classe' classe.id_interna %}</td>
-    <td>{% urllink 'Eliminar' 'contactboard:delete-classe' classe.id_interna %}</td>
-  </tr>
-  {% empty %}
-  <tr><td colspan="3"><em>No s'han definit classes</em></td></tr>
-  {% endfor %}
-</table>
-{% endif %}
-{% endblock content %}
-{% endcomment %}
-
 {% block content %}
 <h1>Cursos</h1>
 <div>

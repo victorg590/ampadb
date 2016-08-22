@@ -5,7 +5,7 @@ from django.urls import reverse
 register = template.Library()
 
 @register.simple_tag
-def urllink(text, href, *args, safe=False, **kwargs):
+def urllink(text, href, *args, safe=False, classes="", **kwargs):
     """Construeix enllaços amb cerca d'URL
 
     Exemple::
@@ -17,5 +17,5 @@ def urllink(text, href, *args, safe=False, **kwargs):
     if safe:
         text = mark_safe(text)
     url = reverse(href, args=args, kwargs=kwargs)
-    return format_html('<a href="{}">{}</a>',
-        url, text)
+    return format_html('<a class="{}" href="{}">{}</a>',
+        classes, url, text)

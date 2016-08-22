@@ -7,53 +7,67 @@
 {% if unregistered %}
 <h1>No registrats</h1>
 <p>Els usuaris no registrats sempre apareixen com a "&lt;usuari&gt; (*)".</p>
-<table style="width: 100%">
-  <tr>
-    <th>Nom d'usuari</th>
-    <th>Codi</th>
-    <th>Canviar codi</th>
-    <th>Cancel·lar</th>
-  </tr>
-  {% for u in unregistered %}
-  <tr>
-    <td style="text-align: center">{{ u }}</td>
-    <td style="text-align: center">{{ u.codi }}</td>
-    <td style="text-align: center">
-      {% urllink 'Generar' 'usermanager:change-code-auto' u.username %}
-      |
-      {% urllink 'Canviar' 'usermanager:change-code' u.username %}
-    </td>
-    <td style="text-align: center">
-      {% urllink 'Cancel·lar' 'usermanager:cancel' u.username %}
-    </td>
-  </tr>
-  {% endfor %}
-</table>
+<div class="responsive"><table class="table table-hover text-center">
+  <thead>
+    <tr>
+      <th>Nom d'usuari</th>
+      <th>Codi</th>
+      <th>Canviar codi</th>
+      <th>Cancel·lar</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for u in unregistered %}
+    <tr>
+      <td>{{ u }}</td>
+      <td>{{ u.codi }}</td>
+      <td><div class="btn-group" role="group">
+        <a class="btn btn-primary"
+          href="{% url 'usermanager:change-code-auto' u.username %}">Generar</a>
+        <a class="btn btn-default"
+          href="{% url 'usermanager:change-code' u.username %}">Canviar</a>
+      </div></td>
+      <td style="text-align: center">
+        <a class="btn btn-danger"
+          href="{% url 'usermanager:cancel' u.username %}">Cancel·lar</a>
+      </td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table></div>
 {% endif %}
 <h1>Registrats</h1>
-<div style="text-align: right">
-  {% urllink 'Nou <strong>administrador</strong>' 'usermanager:new-admin' safe=True %}
+<div class="btn-group" role="group">
+  <a class="btn btn-primary" href="{% url 'usermanager:new-admin' %}">
+    Nou <strong>aministrador</strong>
+  </a>
 </div>
-<table style="width: 100%">
-  <tr>
-    <th>Nom d'usuari</th>
-    <th>Administrador</th>
-    <th>Canviar contrasenya</th>
-    <th>Eliminar</th>
-  </tr>
-  {% for u in registered %}
-  <tr>
-    {% is_admin u as adm %}
-    <td style="text-align: center">{{ u }}</td>
-    <td style="text-align: center">{{ adm|pytr }}</td>
-    <td style="text-align: center">
-      {% urllink 'Canviar contrasenya' 'usermanager:admin-changepassword' u.username %}
-    </td>
-    <td style="text-align: center">
-      {% urllink 'Eliminar' 'usermanager:delete' u.username %}
-    </td>
-  </tr>
-  {% endfor %}
+<table class="table table-hover text-center">
+  <thead>
+    <tr>
+      <th>Nom d'usuari</th>
+      <th>Administrador</th>
+      <th>Canviar contrasenya</th>
+      <th>Eliminar</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for u in registered %}
+    <tr>
+      {% is_admin u as adm %}
+      <td><span class="username">{{ u }}</span></td>
+      <td>{{ adm|pytricon }}</td>
+      <td><a class="btn btn-default"
+          href="{% url 'usermanager:admin-changepassword' u.username %}">
+          Canviar contrasenya
+      </a></td>
+      </td>
+      <td><a class="btn btn-danger"
+          href="{% url 'usermanager:delete' u.username %}">Eliminar</a>
+      </td>
+    </tr>
+    {% endfor %}
+  </tbody>
   {# Sempre ha d'haver com a mínim un usuari (administrador) #}
 </table>
 {% endblock content %}

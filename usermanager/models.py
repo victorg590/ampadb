@@ -3,6 +3,7 @@ from django.contrib.auth.models import User
 from contactboard.models import Alumne
 from django.core import validators
 from django.core.exceptions import ValidationError
+from django.utils.html import format_html
 
 class Profile(models.Model):
     user = models.OneToOneField(User, blank=True, null=True,
@@ -38,4 +39,5 @@ class UnregisteredUser(models.Model):
             "automàticament")
 
     def __str__(self):
-        return self.username + ' (*)'
+        return format_html('<span class="username">{}</span> (*)',
+            self.username)

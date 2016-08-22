@@ -3,7 +3,10 @@ body {
   padding-top: 70px;
   /* La barra és de 50px */ }
 
-table.table.text-center th, td {
+table.table > tbody th, table.table > tbody td {
+  vertical-align: middle; }
+
+table.table.text-center th, table.table.text-center td {
   text-align: center; }
 
 .username {

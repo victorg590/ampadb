@@ -6,11 +6,6 @@
 {% block content %}
 <h1>Llista de contactes de {{ classe }}</h1>
 {% if admin %}
-<!--<table table style="float: right"><tr>
-  <td>{% urllink 'Nou alumne' 'contactboard:add-alumne' classe.id_interna %}</td>
-  <td>{% urllink 'Exportar' 'importexport:export' classe.id_interna %}</td>
-  <td>{% urllink 'Enviar correu massiu' 'contactboard:mailto' classe.id_interna %}
-</tr></table>-->
 <div>
   <a class="btn btn-primary" href="{% url 'contactboard:add-alumne' classe.id_interna %}">
     Nou alumne
