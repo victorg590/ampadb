@@ -46,9 +46,10 @@ def add_classe(request, id_curs):
     else:
         form = ClasseForms.NewForm(initial={'curs': curs})
     context = {
-        'form': form
+        'form': form,
+        'submitText': 'Crear'
     }
-    return render(request, 'contactboard/classe/add.html', context)
+    return render(request, 'contactboard/add.html', context)
 
 @login_required
 @user_passes_test(is_admin)
@@ -71,9 +72,10 @@ def edit_classe(request, id_classe):
         }
         form = ClasseForms.EditForm(c, initial=c)
     context = {
-        'form': form
+        'form': form,
+        'submitText': 'Editar'
     }
-    return render(request, 'contactboard/classe/add.html', context)
+    return render(request, 'contactboard/add.html', context)
 
 @login_required
 @user_passes_test(is_admin)
@@ -85,7 +87,7 @@ def delete_classe(request, id_classe):
     context = {
         'classe': classe
     }
-    return render(request, 'contactboard/classe/delete.html', context)
+    return render(request, 'contactboard/delete-classe.html', context)
 
 @login_required
 @user_passes_test(is_admin)
@@ -104,9 +106,10 @@ def add_curs(request):
     else:
         form = CursForms.NewForm()
     context = {
-        'form': form
+        'form': form,
+        'submitText': 'Crear'
     }
-    return render(request, 'contactboard/curs/add.html', context)
+    return render(request, 'contactboard/add.html', context)
 
 @login_required
 @user_passes_test(is_admin)
@@ -127,9 +130,10 @@ def edit_curs(request, id_curs):
         }
         form = CursForms.EditForm(c, initial=c)
     context = {
-        'form': form
+        'form': form,
+        'submitText': 'Editar'
     }
-    return render(request, 'contactboard/curs/add.html', context)
+    return render(request, 'contactboard/add.html', context)
 
 @login_required
 @user_passes_test(is_admin)
@@ -142,7 +146,7 @@ def delete_curs(request, id_curs):
         'curs': curs,
         'classes': Classe.objects.filter(curs=curs)
     }
-    return render(request, 'contactboard/curs/delete.html', context)
+    return render(request, 'contactboard/delete-curs.html', context)
 
 @login_required
 @user_passes_test(is_admin)
@@ -168,9 +172,10 @@ def add_alumne(request, id_classe):
     else:
         form = AlumneForms.NewForm(initial={'classe': classe})
     context = {
-        'form': form
+        'form': form,
+        'submitText': 'Afegir'
     }
-    return render(request, 'contactboard/alumne/add.html', context)
+    return render(request, 'contactboard/add.html', context)
 
 
 @login_required
@@ -212,9 +217,10 @@ def edit_alumne(request, alumne_pk):
             'compartir': alumne.compartir
         })
     context = {
-        'form': form
+        'form': form,
+        'submitText': 'Actualitzar'
     }
-    return render(request, 'contactboard/alumne/add.html', context)
+    return render(request, 'contactboard/add.html', context)
 
 @login_required
 @user_passes_test(is_admin)
@@ -235,7 +241,7 @@ def delete_alumne(request, alumne_pk):
     context = {
         'alumne': alumne
     }
-    return render(request, 'contactboard/alumne/delete.html', context)
+    return render(request, 'contactboard/delete-alumne.html', context)
 
 @login_required
 @user_passes_test(is_admin)
