@@ -49,6 +49,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'whitenoise.runserver_nostatic',
     'django.contrib.staticfiles',
+    'bootstrap3',
 ]
 
 MIDDLEWARE_CLASSES = [
