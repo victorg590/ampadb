@@ -1,0 +1,30 @@
+// Colors
+$grey: #808080;
+$lightgrey: #D3D3D3;
+$lightblue: #ADD8E6;
+
+body {
+  padding-top: 70px; /* La barra és de 50px */
+}
+
+table.table.text-center th, td {
+    text-align: center;
+}
+
+.username {
+  font-family: monospace;
+}
+
+table tr.secret, tr.self-record {
+  background-color: $lightgrey;
+}
+
+table.table-hover .secret:hover, .self-record:hover {
+  background-color: $grey;
+  .data {
+    color: white;
+  }
+  a {
+    color: $lightblue;
+  }
+}

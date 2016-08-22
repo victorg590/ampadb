@@ -3,7 +3,7 @@ biblio.txt
 # Entorn virtual (virtualenv)
 ve/
 
-# Created by https://www.gitignore.io/api/django,python
+# Created by https://www.gitignore.io/api/django,python,sass
 
 ### Django ###
 *.log
@@ -105,3 +105,8 @@ ENV/
 
 # Rope project settings
 .ropeproject
+
+
+### Sass ###
+.sass-cache/
+*.css.map

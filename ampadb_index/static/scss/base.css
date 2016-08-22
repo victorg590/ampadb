@@ -1,0 +1,22 @@
+@charset "UTF-8";
+body {
+  padding-top: 70px;
+  /* La barra és de 50px */ }
+
+table.table.text-center th, td {
+  text-align: center; }
+
+.username {
+  font-family: monospace; }
+
+table tr.secret, tr.self-record {
+  background-color: #D3D3D3; }
+
+table.table-hover .secret:hover, .self-record:hover {
+  background-color: #808080; }
+  table.table-hover .secret:hover .data, .self-record:hover .data {
+    color: white; }
+  table.table-hover .secret:hover a, .self-record:hover a {
+    color: #ADD8E6; }
+
+/*# sourceMappingURL=base.css.map */
