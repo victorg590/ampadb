@@ -108,12 +108,12 @@ class MailtoForm(forms.Form):
         " d'adresses")
 
     def __init__(self, *args, **kwargs):
-        super(MailtoForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         self.fields['classes'] = forms.MultipleChoiceField(choices=[
             (classe.id_interna, str(classe))
             for classe in Classe.objects.all()])
 
 class MailtoClasseForm(MailtoForm):
     def __init__(self, *args, **kwargs):
-        super(MailtoClasseForm, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         del(self.fields['classes'])
