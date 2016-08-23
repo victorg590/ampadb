@@ -93,13 +93,19 @@ class MailtoForm(forms.Form):
         (TO_PARES, 'Pares'),
         (TO_MARES, 'Mares')
     ]
+    AS_TO = 'no'
+    AS_BCC = ''
+    SEND_MODE = [
+        (AS_TO, 'Per a'),
+        (AS_BCC, 'Cco')
+    ]
     enviar_a = forms.MultipleChoiceField(choices=TO,
         widget=forms.CheckboxSelectMultiple)
-    no_cco = forms.BooleanField(required=False, help_text='Per privacitat, '
-        "els correus s'envien amb còpia oculta. Marqui aixó per enviar com "
-        'destinataris directes ("Per a"). Aixó permet que tothom vegi les '
-        'adresses')
-    #from django.db.utils import OperationalError
+    enviar_com = forms.ChoiceField(choices=SEND_MODE, required=False,
+        widget=forms.RadioSelect, help_text='Per privacitat, els correus'
+        " s'envien amb còpia oculta. Canvia-ho aqui per enviar com a"
+        ' destinataris ("Per a"). Aixó permet que tothom vegi la resta'
+        " d'adresses")
 
     def __init__(self, *args, **kwargs):
         super(MailtoForm, self).__init__(*args, **kwargs)
@@ -108,4 +114,6 @@ class MailtoForm(forms.Form):
             for classe in Classe.objects.all()])
 
 class MailtoClasseForm(MailtoForm):
-    classes = None
+    def __init__(self, *args, **kwargs):
+        super(MailtoClasseForm, self).__init__(*args, **kwargs)
+        del(self.fields['classes'])

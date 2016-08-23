@@ -254,35 +254,39 @@ def delete_alumne(request, alumne_pk):
     }
     return render(request, 'contactboard/delete-alumne.html', context)
 
+def _build_mailto(fdata, classe=None):
+    if classe:
+        fdata['classes'] = [classe]
+    mailto_str = 'mailto:'
+    if fdata['enviar_com'] == MailtoForm.AS_BCC:
+        mailto_str += '?bcc='
+    for c in fdata['classes']:
+        classe = Classe.objects.get(id_interna=c)
+        for a in Alumne.objects.filter(classe=classe):
+            if (MailtoForm.TO_ALUMNES in fdata['enviar_a'] and
+                a.correu_alumne):
+                mailto_str += a.correu_alumne + ','
+            if (MailtoForm.TO_PARES in fdata['enviar_a'] and
+                a.correu_pare):
+                mailto_str += a.correu_pare + ','
+            if (MailtoForm.TO_MARES in fdata['enviar_a'] and
+                a.correu_mare):
+                mailto_str += a.correu_mare + ','
+    while mailto_str[-1] == ',':
+        mailto_str = mailto_str[:-1]
+    return mailto_str
+
+
 @login_required
 @user_passes_test(is_admin)
 def mailto(request):
     if request.method == 'POST':
         form = MailtoForm(request.POST)
         if form.is_valid():
-            cdata = form.cleaned_data
-            mailto_str = 'mailto:'
-            if not cdata['no_cco']:
-                mailto_str += '?bcc='
-            for c in cdata['classes']:
-                classe = Classe.objects.get(id_interna=c)
-                for a in Alumne.objects.filter(classe=classe):
-                    if (MailtoForm.TO_ALUMNES in cdata['enviar_a'] and
-                        a.correu_alumne):
-                        mailto_str += a.correu_alumne + ','
-                    if (MailtoForm.TO_PARES in cdata['enviar_a'] and
-                        a.correu_pare):
-                        mailto_str += a.correu_pare + ','
-                    if (MailtoForm.TO_MARES in cdata['enviar_a'] and
-                        a.correu_mare):
-                        mailto_str += a.correu_mare + ','
-            while mailto_str[-1] == ',':
-                mailto_str = mailto_str[:-1]
             response = HttpResponse()
-            print(mailto_str)
             response.write(
                 '<meta http-equiv="refresh" content="0; url={}" />'.format(
-                    mailto_str))
+                    _build_mailto(form.cleaned_data)))
             return response
     else:
         form = MailtoForm()
@@ -298,25 +302,10 @@ def mailtoclasse(request, id_classe):
     if request.method == 'POST':
         form = MailtoClasseForm(request.POST)
         if form.is_valid():
-            cdata = form.cleaned_data
-            mailto_str = 'mailto:'
-            if not cdata['no_cco']:
-                mailto_str += '?bcc='
-            for a in Alumne.objects.filter(classe=classe):
-                if (MailtoForm.TO_ALUMNES in cdata['enviar_a'] and
-                    a.correu_alumne):
-                    mailto_str += a.correu_alumne + ','
-                if MailtoForm.TO_PARES in cdata['enviar_a'] and a.correu_pare:
-                    mailto_str += a.correu_pare + ','
-                if MailtoForm.TO_MARES in cdata['enviar_a'] and a.correu_mare:
-                    mailto_str += a.correu_mare + ','
-            while mailto_str[-1] == ',':
-                mailto_str = mailto_str[:-1]
             response = HttpResponse()
-            print(mailto_str)
             response.write(
                 '<meta http-equiv="refresh" content="0; url={}" />'.format(
-                    mailto_str))
+                    _build_mailto(form.cleaned_data, id_classe)))
             return response
     else:
         form = MailtoClasseForm()
@@ -324,4 +313,5 @@ def mailtoclasse(request, id_classe):
         'form': form,
         'classe': classe
     }
+    print(context)
     return render(request, 'contactboard/mailto.html', context)
