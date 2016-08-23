@@ -56,7 +56,7 @@
     <tr>
       {% is_admin u as adm %}
       <td><span class="username">{{ u }}</span></td>
-      <td>{{ adm|pytricon }}</td>
+      <td>{{ adm|pytr }}</td>
       <td><a class="btn btn-default"
           href="{% url 'usermanager:admin-changepassword' u.username %}">
           Canviar contrasenya
