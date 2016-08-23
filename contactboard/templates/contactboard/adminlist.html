@@ -24,9 +24,13 @@
     {% for curs in cursos %}
     <tr>
       <td>{{ curs }}</td>
-      <td>{% urllink 'Nova classe' 'contactboard:add-classe' curs.id_interna %}</td>
-      <td>{% urllink 'Editar' 'contactboard:edit-curs' curs.id_interna %}</td>
-      <td>{% urllink 'Eliminar' 'contactboard:delete-curs' curs.id_interna %}</td>
+      <td><a class="btn btn-primary"
+        href="{% url 'contactboard:add-classe' curs.id_interna %}">
+        Nova classe</a></td>
+      <td><a class="btn btn-info"
+        href="{% url 'contactboard:edit-curs' curs.id_interna %}">Editar</a></td>
+      <td><a class="btn btn-danger"
+        href="{% url 'contactboard:delete-curs' curs.id_interna %}">Eliminar</a></td>
     </tr>
     {% empty %}
     <tr><td colspan="4"><em>No s'han definit cursos</em></td></tr>
@@ -47,8 +51,11 @@
     {% for classe in classes %}
     <tr>
       <td>{% urllink classe 'contactboard:list' classe.id_interna %}</td>
-      <td>{% urllink 'Editar' 'contactboard:edit-classe' classe.id_interna %}</td>
-      <td>{% urllink 'Eliminar' 'contactboard:delete-classe' classe.id_interna %}</td>
+      <td><a class="btn btn-info"
+        href="{% url 'contactboard:edit-classe' classe.id_interna %}">
+        Editar</a></td>
+      <td><a class="btn btn-danger"
+        href="{% url 'contactboard:delete-classe' classe.id_interna %}">Eliminar</a></td>
     </tr>
     {% endfor %}
 </table></div>

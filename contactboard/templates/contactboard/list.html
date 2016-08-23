@@ -1,6 +1,7 @@
 {% extends "menu.html" %}
 {% load userdata %}
 {% load pytr %}
+{% load cusername %}
 {% load urllink %}
 
 {% block content %}
@@ -62,13 +63,16 @@
       {% get_user a.pk as user %}
       <td class="data">
         {% if user %}
-        {{ user }}
+        {{ user|cuser }}
         {% else %}
-        {% urllink 'Crear' 'usermanager:new-user' a.pk %}
+        <a class="btn btn-link" href="{% url 'usermanager:new-user' a.pk %}">
+          Crear
+        </a>
         {% endif %}
       </td>
       <td>
-        {% urllink 'Eliminar' 'contactboard:delete-alumne' a.pk %}
+        <a class="btn btn-danger"
+          href="{% url 'contactboard:delete-alumne' a.pk %}">Eliminar</a>
       </td>
       {% endif %}
     </tr>
