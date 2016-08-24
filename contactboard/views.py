@@ -262,7 +262,6 @@ def mailto(request):
             while mailto_str[-1] == ',':
                 mailto_str = mailto_str[:-1]
             response = HttpResponse()
-            print(mailto_str)
             response.write(
                 '<meta http-equiv="refresh" content="0; url={}" />'.format(
                     mailto_str))
@@ -296,7 +295,6 @@ def mailtoclasse(request, id_classe):
             while mailto_str[-1] == ',':
                 mailto_str = mailto_str[:-1]
             response = HttpResponse()
-            print(mailto_str)
             response.write(
                 '<meta http-equiv="refresh" content="0; url={}" />'.format(
                     mailto_str))

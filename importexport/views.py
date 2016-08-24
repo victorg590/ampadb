@@ -1,3 +1,4 @@
+from io import StringIO
 from django.http import HttpResponse
 from django.shortcuts import render, redirect, get_object_or_404
 from ampadb.support import is_admin, redirect_with_get
@@ -86,23 +87,34 @@ def import_view(request):
 def processimport(request):
     if request.method == 'GET':
         return redirect('importexport:import')
-    form = ImportForm(request.GET, request.FILES)
+    form = ImportForm(request.POST, request.FILES)
     if not form.is_valid():
         return redirect('importexport:import')
     fformat = form.cleaned_data['format']
     if fformat == IEFormats.AUTO:
-        imf.detect_format(request.FILES['ifile'].name)
+        try:
+            imf.detect_format(request.FILES['ifile'].name)
+        except ValueError:
+            return redirect_with_get('importexport:import', [('error_text',
+                'No es pot detectar el format')])
     else:
         format = fformat
-    if format == IEFormats.AMPACSV:
-        imf.import_ampacsv(request.FILES['ifile'])
-    elif format == IEFormats.EXCELCSV:
-        imf.import_excel(request.FILES['ifile'])
-    elif format == IEFormats.PICKLE:
-        imf.import_pickle(request.FILES['ifile'])
-    elif format == IEFormats.JSON:
-        imf.import_json(request.FILES['ifile'])
-    return redirect_with_get('importexport:import', [('error_text', 'Arxiu invàlid')])
+    try:
+        if format == IEFormats.AMPACSV:
+            text = imf.bytestream_to_text(request.FILES['ifile'], encoding=(request.encoding or 'utf-8'))
+            imf.import_ampacsv(text)
+        elif format == IEFormats.EXCELCSV:
+            text = imf.bytestream_to_text(request.FILES['ifile'], encoding=(request.encoding or 'utf-8'))
+            imf.import_excel(text)
+        elif format == IEFormats.PICKLE:
+            imf.import_pickle(request.FILES['ifile'])
+        elif format == IEFormats.JSON:
+            text = imf.bytestream_to_text(request.FILES['ifile'], encoding=(request.encoding or 'utf-8'))
+            imf.import_json(text)
+        return redirect('contactboard:adminlist')
+    except imf.InvalidFormat as ex:
+        return redirect_with_get('importexport:import', [('error_text',
+            str(ex))])
 
 # Tot i que no està enllaçat, l'accés a aquesta pàgina no és un risc
 def format_view(request):

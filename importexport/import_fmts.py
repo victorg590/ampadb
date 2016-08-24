@@ -3,6 +3,7 @@ import json
 import pickle
 import gzip
 import pathlib
+import tempfile
 from datetime import datetime
 from django.core.exceptions import ValidationError
 from .forms import IEFormats
@@ -24,12 +25,22 @@ class InvalidFormat(Exception):
     def invalid(cls, columna, fila, rao):
         return cls('{} invàlid a la fila {}: {}'.format(columna, fila, rao))
 
+def bytestream_to_text(bytestream, encoding='utf-8'):
+    textstream = tempfile.TemporaryFile(mode='w+t')
+    for chunk in bytestream.chunks():
+        decoded_chunk = chunk.decode(encoding)
+        textstream.write(decoded_chunk)
+    textstream.seek(0)
+    return textstream
+
 def detect_format(filename):
     """Detecta un format a partir la extensió.
 
     Si no es pot detectar, envía un `ValueError`
     """
     path = pathlib.PurePath(filename)
+    if len(path.suffixes) < 1:
+        raise ValueError
     if path.suffixes[-1] == '.csv':
         return IEFormats.AMPACSV
     elif path.suffixes[-1] == '.json':
@@ -294,20 +305,20 @@ def _importar_fila(fila):
     return alumne.pk
 
 def import_ampacsv(infile):
-    reader = csv.DictReader(infile, dialect=ampacsv.AmpaDialect())
+    reader = csv.DictReader(infile, dialect=ampacsv.AmpaDialect())  # FIXME
     with transaction.atomic():
         for fila in reader:
             _importar_fila(fila)
 
 def import_excel(infile):
-    reader = csv.DictReader(infile, dialect='excel')
+    reader = csv.DictReader(infile, dialect='excel')  # FIXME: Obrir  com text
     with transaction.atomic():
         for fila in reader:
             _importar_fila(fila)
 
 def import_json(infile):
     date_format = '%Y-%m-%d'
-    top_dict = json.load(infile)
+    top_dict = json.load(infile)  # FIXME: Obrir com text, no binari
     try:
         for c in top_dict['cursos']:
             curs_dict = top_dict['cursos'][c]
@@ -383,14 +394,20 @@ def import_json(infile):
                     raise InvalidFormat('Referència a un alumne que no'
                         ' existeix: ' + str(uu_dict['alumne']))
     except KeyError as e:
-        raise InvalidFormat('Falta clau: ' + e)
+        raise InvalidFormat('Falta clau: ' + str(e))
 
 def import_pickle(infile):
-    with gzip.GzipFile(fileobj=infile) as gz:
-        return import_pickle_uncompressed(gz)
+    try:
+        with gzip.GzipFile(fileobj=infile) as gz:
+            return import_pickle_uncompressed(gz)
+    except OSError:
+        return import_pickle_uncompressed(infile)  # Prova per si no està comprimit
 
 def import_pickle_uncompressed(infile):
-    info = pickle.load(infile)
+    try:
+        info = pickle.load(infile)
+    except pickle.UnpicklingError:
+        raise InvalidFormat('No és un arxiu Pickle')
     try:
         if info.VERSION != 1:
             raise InvalidFormat('Versió invàlida')
