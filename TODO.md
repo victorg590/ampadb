@@ -5,14 +5,16 @@
 * [ ] Utilitzar HTTPS. PRIORITAT: **ALTA**
 
 ## UI
-* [ ] Fer UI (més enllà del HTML bàsic). PRIORITAT: **ALTA**
-* [ ] Traduïr missatges de Django (p. ex. "contrasenya massa curta").
-    PRIORITAT: **ALTA**
+* [x] <s>Fer UI (més enllà del HTML bàsic). PRIORITAT: **ALTA**</s>
+* [x] <s>Traduïr missatges de Django (p. ex. "contrasenya massa curta").
+    PRIORITAT: **ALTA**</s>
+* [ ] Traduïr missatges propis per uniformitat amb missatges de Django.
+    PRIORITAT: **baixa**
 
 ## Altres
 * [ ] Escriure *tests*. PRIORITAT: **Mitja**
 * [ ] Escriure documentació. PRIORITAT: **baixa**
 * [ ] Adaptar al [PEP 8](https://www.python.org/dev/peps/pep-0008/). PRIORITAT:
     **baixa**
-* [x] Moure CSS/JS a arxius estàtics. PRIORITAT: **Mitja**
+* [x] <s>Moure CSS/JS a arxius estàtics. PRIORITAT: **Mitja**</s>
 * [ ] Reduïr HTML i CSS (al menys quan `not DEBUG`). PRIORITAT: **Mitja**

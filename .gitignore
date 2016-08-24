@@ -1,7 +1,9 @@
-# Altres
+### Altres ###
 biblio.txt
 # Entorn virtual (virtualenv)
 ve/
+# Arxius estàtics
+ampadb/static/
 
 # Created by https://www.gitignore.io/api/django,python,sass
 
