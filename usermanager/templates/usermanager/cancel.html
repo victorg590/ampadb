@@ -1,0 +1,17 @@
+{% extends "menu.html" %}
+{% load bootstrap3 %}
+
+{% block content %}
+<h1>Cancel·lar usuari <span class="username">{{ tuser.username }}</span></h1>
+<p>Segur que vols eliminar l'usuari no registrat
+  <span class="username">{{ tuser.username }}</span>?</p>
+<p>Si es cancel·la, ja no es podrà registrar amb aquest usuari i codi fins que
+  es torni a afegir.</p>
+<form method="post">
+  {% csrf_token %}
+  <div class="form-group">
+    <button class="btn btn-danger" type="submit">Cancel·lar</button>
+    <a class="btn btn-link" href="{% url 'usermanager:list' %}">Tornar</a>
+  </div>
+</form>
+{% endblock content %}

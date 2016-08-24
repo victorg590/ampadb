@@ -50,7 +50,7 @@ def new_admin(request):
     context = {
         'form': form
     }
-    return render(request, 'usermanager/users/new_admin.html', context)
+    return render(request, 'usermanager/new_admin.html', context)
 
 @login_required
 @user_passes_test(is_admin)
@@ -74,7 +74,7 @@ def new_user(request, alumne_pk):
     context = {
         'form': form
     }
-    return render(request, 'usermanager/users/new.html', context)
+    return render(request, 'usermanager/new.html', context)
 
 @login_required
 @user_passes_test(is_admin)
@@ -85,7 +85,7 @@ def list_users(request):
         'unregistered': uu,
         'registered': users
     }
-    return render(request, 'usermanager/users/list.html', context)
+    return render(request, 'usermanager/list.html', context)
 
 @login_required
 @user_passes_test(is_admin)
@@ -102,7 +102,7 @@ def delete_user(request, username):
     context = {
         'tuser': user
     }
-    return render(request, 'usermanager/users/delete.html', context)
+    return render(request, 'usermanager/delete.html', context)
 
 @login_required
 @user_passes_test(is_admin)
@@ -117,9 +117,9 @@ def cancel_user(request, username):
         uu.delete()
         return redirect('usermanager:list')
     context = {
-        'uu': uu
+        'tuser': uu
     }
-    return render(request, 'usermanager/users/cancel.html', context)
+    return render(request, 'usermanager/cancel.html', context)
 
 @login_required
 @user_passes_test(is_admin)
@@ -134,7 +134,7 @@ def admin_changepassword(request, username):
     else:
         form = AdminChangePasswordForm()
     context = {
-        'user': user,
+        'tuser': user,
         'form': form
     }
     return render(request, 'usermanager/changepassword.html', context)
@@ -161,6 +161,6 @@ def change_code(request, username):
         form = ChangeCodeForm()
     context = {
         'form': form,
-        'user': uu
+        'tuser': uu
     }
-    return render(request, 'usermanager/users/change_code.html', context)
+    return render(request, 'usermanager/change_code.html', context)

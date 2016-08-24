@@ -1,5 +1,5 @@
 {% extends "menu.html" %}
-{% load urllink %}
+{% load bootstrap3 %}
 
 {% block content %}
 <h1>Eliminar usuari <span class="username">{{ tuser }}</span></h1>
@@ -7,9 +7,9 @@
   <span class="username">{{ tuser }}</span>?</p>
 <form method="post">
   {% csrf_token %}
-  <table><tr>
-    <td>{% urllink 'Cancel·lar' 'usermanager:list' %}</td>
-    <td><input type="submit" value="Continuar"/></td>
-  </tr></table>
+  <div class="form-group">
+    <button class="btn btn-danger" type="submit">Eliminar</button>
+    <a class="btn btn-link" href="{% url 'usermanager:list' %}">Tornar</a>
+  </div>
 </form>
 {% endblock content %}
