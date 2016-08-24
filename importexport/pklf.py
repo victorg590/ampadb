@@ -34,7 +34,7 @@ class PickledAlumne:
         alumne.correu_mare = self.correu_mare
         alumne.telefon_pare = self.telefon_pare
         alumne.telefon_mare = self.telefon_mare
-        alumne.classe = classe
+        alumne.classe = Classe.objects.get(id_interna=classe.id_interna)
         alumne.save()
         return alumne
 
@@ -54,7 +54,7 @@ class PickledClasse:
         except Classe.DoesNotExist:
             classe = Classe(id_interna=self.id_interna)
         classe.nom = self.nom
-        classe.curs = curs
+        classe.curs = Curs.objects.get(id_interna=curs.id_interna)
         classe.save()
         return classe
 
@@ -77,6 +77,8 @@ class PickledCurs:
             curs = Curs.objects.get(id_interna=self.id_interna)
         except Curs.DoesNotExist:
             curs = Curs(id_interna=self.id_interna)
+        curs.nom = self.nom
+        curs.ordre = self.ordre
         curs.save()
         return curs
 
@@ -103,9 +105,9 @@ class PickledUser:
 
     def unpickle(self):
         try:
-            user = User.objects.get(username=username)
+            user = User.objects.get(username=self.username)
         except User.DoesNotExist:
-            user = User(username=username)
+            user = User(username=self.username)
         user.password = self.password
         user.is_staff = self.is_staff
         user.is_superuser = self.is_superuser
@@ -141,6 +143,7 @@ class PickledUnregisteredUser:
         except UnregisteredUser.DoesNotExist:
             uu = UnregisteredUser(username=self.username)
         uu.codi = self.codi
+        uu.save()
         if self.alumne:
             alumne = Alumne.objects.get(pk=self.alumne)
             try:

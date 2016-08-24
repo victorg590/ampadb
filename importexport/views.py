@@ -93,7 +93,7 @@ def processimport(request):
     fformat = form.cleaned_data['format']
     if fformat == IEFormats.AUTO:
         try:
-            imf.detect_format(request.FILES['ifile'].name)
+            format = imf.detect_format(request.FILES['ifile'].name)
         except ValueError:
             return redirect_with_get('importexport:import', [('error_text',
                 'No es pot detectar el format')])
@@ -113,6 +113,7 @@ def processimport(request):
             imf.import_json(text)
         return redirect('contactboard:adminlist')
     except imf.InvalidFormat as ex:
+        raise
         return redirect_with_get('importexport:import', [('error_text',
             str(ex))])
 

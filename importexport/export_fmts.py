@@ -91,7 +91,7 @@ def export_json(outfile):
             user_dict['alumne'] = None
         top_dict['usuaris'][u.username] = user_dict
     for uu in UnregisteredUser.objects.all():
-        uu_dict = {'codi': u.codi}
+        uu_dict = {'codi': uu.codi}
         try:
             profile = Profile.objects.get(unregisteredUser=uu)
             uu_dict['alumne'] = profile.alumne.pk
@@ -126,5 +126,5 @@ def export_pickle(outfile, classe=None):
         for a in Alumne.objects.filter(classe=cl):
             alumne = PickledAlumne.transform(a)
             pcl.add_alumne(alumne)
-    with gzip.GzipFile(fileobj=outfile) as gz:
+    with gzip.GzipFile(fileobj=outfile, mode='ab') as gz:
         pickle.dump(optimize_pickle(info), gz, protocol=4)

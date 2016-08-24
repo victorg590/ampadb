@@ -414,14 +414,15 @@ def import_pickle_uncompressed(infile):
         for curs in info.cursos:
             curs.unpickle()
             for classe in curs.classes:
-                classe.unpickle()
+                classe.unpickle(curs)
                 for alumne in classe.alumnes:
-                    alumne.unpickle()
+                    alumne.unpickle(classe)
         for user in info.users:
             user.unpickle()
         for uu in info.uu:
             uu.unpickle()
     except InvalidFormat:
         raise
-    except:
-        raise InvalidFormat("No és un arxiu Pickle d'aquesta aplicació")
+    except Exception as e:
+        raise InvalidFormat("No és un arxiu Pickle d'aquesta aplicació (" +
+            str(e) + ')')
