@@ -6,16 +6,18 @@ from django.core.exceptions import ValidationError
 from django.utils.html import format_html
 
 class Profile(models.Model):
-    user = models.OneToOneField(User, blank=True, null=True,
+    user = models.OneToOneField(User, blank=True, null=True, unique=True,
         on_delete=models.SET_NULL, verbose_name='Usuari')
-    unregisteredUser = models.OneToOneField('unregisteredUser', blank=True,
-        null=True, on_delete=models.SET_NULL,
+    unregisteredUser = models.OneToOneField('UnregisteredUser', blank=True,
+        null=True, unique=True, on_delete=models.SET_NULL,
         verbose_name='Usuari (sense registrar)')
     alumne = models.OneToOneField(Alumne, primary_key=False,
         on_delete=models.CASCADE)
 
     def __str__(self):
         return str(self.alumne)
+
+    # Senyal associada: .signals.profile_pre_delete
 
 def validate_username_unique(value):
     if User.objects.filter(username=value).exists():
