@@ -1,4 +1,3 @@
-from io import StringIO
 from django.http import HttpResponse
 from django.shortcuts import render, redirect, get_object_or_404
 from ampadb.support import is_admin, redirect_with_get
@@ -10,7 +9,6 @@ from . import import_fmts as imf
 import datetime
 from . import ampacsv
 
-# Create your views here.
 @login_required
 @user_passes_test(is_admin)
 def export_view(request, classe_id=None):
@@ -113,7 +111,6 @@ def processimport(request):
             imf.import_json(text)
         return redirect('contactboard:adminlist')
     except imf.InvalidFormat as ex:
-        raise
         return redirect_with_get('importexport:import', [('error_text',
             str(ex))])
 

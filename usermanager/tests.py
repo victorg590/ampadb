@@ -4,7 +4,6 @@ from .models import *
 from django.contrib.auth.models import User
 from datetime import date
 
-# Create your tests here.
 class ProfileDeleteTestCase(TestCase):
     def setUp(self):
         curs = Curs.objects.create(id_interna='TEST', nom='TEST')

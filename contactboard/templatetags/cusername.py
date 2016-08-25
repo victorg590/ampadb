@@ -1,6 +1,6 @@
 from django import template
 from django.contrib.auth.models import User
-from django.utils.html import mark_safe, format_html
+from django.utils.html import format_html
 
 register = template.Library()
 

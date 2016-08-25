@@ -1,5 +1,4 @@
 from django.test import TestCase
-from unittest import skip
 from contactboard.models import *
 from usermanager.models import *
 from django.contrib.auth.models import User

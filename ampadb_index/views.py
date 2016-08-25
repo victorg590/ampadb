@@ -1,8 +1,7 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import redirect
 from ampadb.support import is_admin
 from django.contrib.auth.decorators import login_required
 from usermanager.models import Profile
-
 
 @login_required
 def index(request):

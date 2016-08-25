@@ -1,12 +1,8 @@
 from django.shortcuts import render, redirect, get_object_or_404
-from django.http import HttpResponse
 from .forms import *
 from .models import *
-from django.contrib.auth import logout
 from django.contrib.auth.models import User
-import random
 from contactboard.models import Alumne
-from ampadb import settings
 from ampadb.support import is_admin, gen_username, gen_codi
 from django.contrib.auth.decorators import login_required, user_passes_test
 

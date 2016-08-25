@@ -3,8 +3,6 @@ from django.core.validators import validate_email, RegexValidator
 from django.core.exceptions import ValidationError
 import re
 
-# Create your models here.
-
 # Veure https://es.wikipedia.org/wiki/Anexo:Prefijos_telef%C3%B3nicos_de_Espa%C3%B1a
 telfRegex = re.compile(r'''
     ((\+|00)34)?  # Accepta prefixos (+34/0034)

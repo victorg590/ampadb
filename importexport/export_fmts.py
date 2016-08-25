@@ -1,4 +1,3 @@
-from tempfile import TemporaryFile
 import csv
 import json
 import pickle
