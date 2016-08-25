@@ -2,6 +2,29 @@ from contactboard.models import *
 from usermanager.models import *
 from django.contrib.auth.models import User
 
+def _def_list(*vals):
+    """Torna `val` si no és None o un llista buida si ho és.
+    Útil per a arguements opcionals. Admet diversos valors a la vegada.
+
+    Si s'utilita opc=[], i la funció modifica opc, les següents trucades
+    ja no començaràn amb una llista buida, sinó amb l'opc original.
+    Veure http://pylint-messages.wikidot.com/messages:w0102
+    """
+    if len(vals) < 1:
+        return
+    elif len(vals) == 1:
+        if vals[0] is None:
+            return []
+        return vals[0]
+    else:
+        ret = []
+        for val in vals:
+            if val is None:
+                ret.append([])
+            else:
+                ret.append(val)
+        return ret
+
 class PickledAlumne:
     def __init__(self, pk, nom, cognoms, data_de_naixement, correu_alumne,
         correu_pare, correu_mare, telefon_pare, telefon_mare):
@@ -39,7 +62,8 @@ class PickledAlumne:
         return alumne
 
 class PickledClasse:
-    def __init__(self, id_interna, nom, alumnes=[]):
+    def __init__(self, id_interna, nom, alumnes=None):
+        alumnes = _def_list(alumnes)
         self.id_interna = id_interna
         self.nom = nom
         self.alumnes = alumnes
@@ -62,7 +86,8 @@ class PickledClasse:
         self.alumnes.append(alumne)
 
 class PickledCurs:
-    def __init__(self, id_interna, nom, ordre, classes=[]):
+    def __init__(self, id_interna, nom, ordre, classes=None):
+        classes = _def_list(classes)
         self.id_interna = id_interna
         self.nom = nom
         self.ordre = ordre
@@ -155,7 +180,8 @@ class PickledUnregisteredUser:
         return uu
 
 class PickledInfo:
-    def __init__(self, cursos=[], users=[], uu=[]):
+    def __init__(self, cursos=None, users=None, uu=None):
+        cursos, users, uu = _def_list(cursos, users, uu)
         self.VERSION = 1
         self.cursos = cursos
         self.users = users

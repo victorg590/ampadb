@@ -1,15 +1,15 @@
 from django.shortcuts import render, redirect, get_object_or_404
-from django.http import HttpResponse, Http404
+from django.http import HttpResponse
 from ampadb.support import is_admin
 from django.contrib.auth.decorators import login_required, user_passes_test
 from usermanager.models import Profile
-from django.urls import reverse
 
 from .models import Classe, Alumne
 from .forms import *
 
+# Conflicte amb la funció built-in list()
 @login_required
-def list(request, id_classe):
+def list_view(request, id_classe):
     classe = get_object_or_404(Classe, id_interna=id_classe)
     context = {
         'classe': classe,
@@ -116,6 +116,7 @@ def add_curs(request):
 def edit_curs(request, id_curs):
     curs = get_object_or_404(Curs, id_interna=id_curs)
     if request.method == 'POST':
+        form = CursForms.EditForm(request.POST)
         if form.is_valid():
             if form.has_changed:
                 cdata = form.cleaned_data
@@ -185,7 +186,6 @@ def edit_alumne(request, alumne_pk):
         if p.alumne.pk != int(alumne_pk):
             #return redirect('/contactboard/edit/{}'.format(p.alumne.pk))
             return redirect('contactboard:edit-alumne', p.alumne.pk)
-        ThisForm = AlumneForms.EditForm
 
     alumne = get_object_or_404(Alumne, pk=alumne_pk)
     if request.method == 'POST':

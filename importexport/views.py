@@ -30,13 +30,13 @@ def genexport(request):
     form = ExportForm(request.GET)
     if not form.is_valid():
         return redirect('importexport:export')
-    format = form.cleaned_data['format']
+    dformat = form.cleaned_data['format']  # Conflicte amb built-in format()
     if form.cleaned_data['classe']:
         classe_id = form.cleaned_data['classe']
         classe = get_object_or_404(Classe, id_interna=classe_id)
     else:
         classe = None
-    if format == IEFormats.CSV:
+    if dformat == IEFormats.CSV:
         if classe:
             filename = classe.id_interna + '.csv'
             alumnes = Alumne.objects.filter(classe=classe)
@@ -47,7 +47,7 @@ def genexport(request):
         response['Content-Disposition'] = 'attachment; filename="%s"' % filename
         exf.export_csv(response, alumnes)
         return response
-    elif format == IEFormats.AMPACSV:
+    elif dformat == IEFormats.AMPACSV:
         if classe:
             filename = classe.id_interna + '.csv'
             alumnes = Alumne.objects.filter(classe=classe)
@@ -58,13 +58,13 @@ def genexport(request):
         response['Content-Disposition'] = 'attachment; filename="%s"' % filename
         exf.export_ampacsv(response, alumnes)
         return response
-    elif format == IEFormats.JSON:
+    elif dformat == IEFormats.JSON:
         filename = datetime.datetime.today().strftime('%Y-%m-%d') + '.json'
         response = HttpResponse(content_type="application/json")
         response['Content-Disposition'] = 'attachment; filename="%s"' % filename
         exf.export_json(response)
         return response
-    elif format == IEFormats.PICKLE:
+    elif dformat == IEFormats.PICKLE:
         filename = datetime.datetime.today().strftime('%Y-%m-%d') + '.pkl.gz'
         response = HttpResponse(content_type="application/gzip")
         response['Content-Disposition'] = 'attachment; filename="%s"' % filename
@@ -91,22 +91,22 @@ def processimport(request):
     fformat = form.cleaned_data['format']
     if fformat == IEFormats.AUTO:
         try:
-            format = imf.detect_format(request.FILES['ifile'].name)
+            dformat = imf.detect_format(request.FILES['ifile'].name)
         except ValueError:
             return redirect_with_get('importexport:import', [('error_text',
                 'No es pot detectar el format')])
     else:
-        format = fformat
+        dformat = fformat
     try:
-        if format == IEFormats.AMPACSV:
+        if dformat == IEFormats.AMPACSV:
             text = imf.bytestream_to_text(request.FILES['ifile'], encoding=(request.encoding or 'utf-8'))
             imf.import_ampacsv(text)
-        elif format == IEFormats.EXCELCSV:
+        elif dformat == IEFormats.EXCELCSV:
             text = imf.bytestream_to_text(request.FILES['ifile'], encoding=(request.encoding or 'utf-8'))
             imf.import_excel(text)
-        elif format == IEFormats.PICKLE:
+        elif dformat == IEFormats.PICKLE:
             imf.import_pickle(request.FILES['ifile'])
-        elif format == IEFormats.JSON:
+        elif dformat == IEFormats.JSON:
             text = imf.bytestream_to_text(request.FILES['ifile'], encoding=(request.encoding or 'utf-8'))
             imf.import_json(text)
         return redirect('contactboard:adminlist')

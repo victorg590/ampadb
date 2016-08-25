@@ -16,7 +16,7 @@ classepatterns = [
 ]
 urlpatterns = [
     url(r'^list/admin$', views.adminlist, name='adminlist'),
-    url(r'^list/(?P<id_classe>.+)', views.list, name='list'),
+    url(r'^list/(?P<id_classe>.+)', views.list_view, name='list'),
     url(r'^add/(?P<id_classe>.+)', views.add_alumne, name='add-alumne'),
     url(r'^edit/(?P<alumne_pk>[0-9]+)', views.edit_alumne, name='edit-alumne'),
     url(r'^delete/(?P<alumne_pk>[0-9]+)', views.delete_alumne,

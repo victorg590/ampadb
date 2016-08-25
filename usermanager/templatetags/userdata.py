@@ -17,8 +17,6 @@ def get_alumne(username):
             profile = Profile.objects.get(unregisteredUser=uu)
         except UnregisteredUser.DoesNotExist:
             return None
-        except Profile.DoesNotExist:
-            return None
     except Profile.DoesNotExist:
         return None
     return profile.alumne

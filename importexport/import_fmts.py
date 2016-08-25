@@ -202,10 +202,7 @@ def _importar_fila(fila):
             raise InvalidFormat.invalid('Teléfon mare', fila, exc[0])
 
     try:
-        if fila['Compartir'] and bool(int(fila['Compartir'])):
-            alumne.compartir = True
-        else:
-            alumne.compartir = False
+        alumne.compartir = bool(fila['Compartir'] and int(fila['Compartir']))
     except KeyError:
         alumne.compartir = False
     except ValueError:
