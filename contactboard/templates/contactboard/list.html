@@ -50,7 +50,7 @@
     {% endif %}
       <td>
         {% if admin %}
-        {% urllink a 'contactboard:edit-alumne' a.pk %}
+        <a href="{{ a.get_absolute_url }}">{{ a }}</a>
         {% else %}
         {{ a }}
         {% endif %}

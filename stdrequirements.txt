@@ -5,3 +5,4 @@ django-htmlmin==0.9.1
 gunicorn==19.6.0
 whitenoise==3.2.1
 django-bootstrap3==7.0.1
+docutils==0.12

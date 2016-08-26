@@ -2,6 +2,7 @@ from django.test import TestCase
 from contactboard.models import *
 from .models import *
 from django.contrib.auth.models import User
+from django.core.exceptions import ValidationError
 from datetime import date
 
 class ProfileDeleteTestCase(TestCase):
@@ -16,7 +17,7 @@ class ProfileDeleteTestCase(TestCase):
 
         alumne2 = Alumne.objects.create(pk=2, nom='C', cognoms='D',
             classe=classe, data_de_naixement=date(2000, 1, 1))
-        user2 = UnregisteredUser.objects.create(username='c.d')
+        user2 = UnregisteredUser.objects.create(username='c.d', codi='000000')
         Profile.objects.create(alumne=alumne2, unregisteredUser=user2)
 
         alumne3 = Alumne.objects.create(pk=3, nom='E', cognoms='F',
@@ -69,3 +70,39 @@ class ProfileDeleteTestCase(TestCase):
         del profile
         self.assertRaises(Profile.DoesNotExist, Profile.objects.get,
             pk=profile_pk)
+
+class ProfileTestCase(TestCase):
+    def setUp(self):
+        curs = Curs.objects.create(id_interna='TEST', nom='TEST')
+        classe = Classe.objects.create(id_interna='TEST', nom='T', curs=curs)
+
+        self.alumne = Alumne.objects.create(pk=1, nom='A', cognoms='B',
+            classe=classe, data_de_naixement=date(2000, 1, 1))
+
+    def test_not_both_users(self):
+        profile = Profile(alumne=self.alumne)
+        user = User.objects.create(username='a.b_a')
+        profile.user = user
+        unregisteredUser = UnregisteredUser.objects.create(username='a.b_b',
+            codi='000000')
+        profile.unregisteredUser = unregisteredUser
+        self.assertRaises(ValidationError, profile.save)
+
+class UnregisteredUserTestCase(TestCase):
+    def setUp(self):
+        User.objects.create(username='a.b')
+
+    def test_no_repeated_username(self):
+        self.assertRaises(ValidationError, UnregisteredUser.objects.create,
+            username='a.b')
+
+    def test_invalid_username(self):
+        invalid_names = ['', 'á', 'ñ', 'ç', '_', '!', '$', '?',
+            ''.join('x' for _ in range(31))]
+        for n in invalid_names:
+            try:
+                UnregisteredUser.objects.create(username=n)
+            except ValidationError:
+                pass
+            else:
+                self.fail("'%s' es reconeix com a un nom d'usuari vàlid" % n)

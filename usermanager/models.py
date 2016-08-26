@@ -3,16 +3,23 @@ from django.contrib.auth.models import User
 from contactboard.models import Alumne
 from django.core import validators
 from django.core.exceptions import ValidationError
-from django.utils.html import format_html
 
 class Profile(models.Model):
-    user = models.OneToOneField(User, blank=True, null=True, unique=True,
-        on_delete=models.SET_NULL, verbose_name='Usuari')
-    unregisteredUser = models.OneToOneField('UnregisteredUser', blank=True,
-        null=True, unique=True, on_delete=models.SET_NULL,
-        verbose_name='Usuari (sense registrar)')
-    alumne = models.OneToOneField(Alumne, primary_key=False,
+    class Meta:
+        verbose_name = 'perfil'
+    user = models.OneToOneField(User, verbose_name='usuari', blank=True,
+        null=True, on_delete=models.SET_NULL)
+    unregisteredUser = models.OneToOneField('UnregisteredUser',
+        verbose_name='usuari (no registrat)',
+        blank=True, null=True, on_delete=models.SET_NULL)
+    alumne = models.OneToOneField(Alumne, primary_key=True,
         on_delete=models.CASCADE)
+
+    def clean(self):
+        super().clean()
+        if self.user and self.unregisteredUser:
+            raise ValidationError("Només es pot definir un de: `user` i"
+                " `unregisteredUser`")
 
     def __str__(self):
         return str(self.alumne)
@@ -28,10 +35,14 @@ def validate_alumne_unique(value):
         raise ValidationError('Alumne already has a user associated!')
 
 class UnregisteredUser(models.Model):
-    username = models.CharField(max_length=30, primary_key=True, validators=[
-        validators.RegexValidator(r'^[\w.@+-]+$'),
-        validate_username_unique
-    ], verbose_name="Nom d'usuari")
+    class Meta:
+        verbose_name = 'usuari no registrat'
+        verbose_name_plural = 'usuaris no registrats'
+    username = models.CharField("nom d'usuari", max_length=30, primary_key=True,
+        validators=[
+            validators.RegexValidator(r'^[\w.@+-]{1,30}$'),
+            validate_username_unique
+        ])
     # El codi és d'un sol ús, pel que, a diferència de la contrasenya,
     # no és necessari protegir-lo amb un hash
     codi = models.CharField(max_length=6, blank=False,
@@ -40,6 +51,11 @@ class UnregisteredUser(models.Model):
             "pertany a aquesta persona. Si no s'entra cap, es generarà un "
             "automàticament")
 
+    def clean(self):
+        super().clean()
+        if User.objects.filter(username=self.username).exists():
+            raise ValidationError("Aquest nom d'usuari ja exiteix i està"
+                " registrat")
+
     def __str__(self):
-        return format_html('<span class="username">{}</span> (*)',
-            self.username)
+        return self.username + ' (*)'

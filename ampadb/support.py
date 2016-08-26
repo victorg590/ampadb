@@ -1,4 +1,3 @@
-from django.urls import reverse
 from django.http import HttpResponseRedirect
 from urllib.parse import quote
 from usermanager.models import User, UnregisteredUser
@@ -72,3 +71,7 @@ def gen_codi():
         ransrc = random
     num = ransrc.randint(000000, 999999)
     return str(num).zfill(6)
+
+def signal_clean(sender, **kwargs):
+    instance = kwargs['instance']
+    return instance.full_clean()

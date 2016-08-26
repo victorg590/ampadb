@@ -1,7 +1,7 @@
 from django import forms
 from django.core.validators import RegexValidator
 from django.core.exceptions import ValidationError
-from .models import Classe, Curs, validate_valid_id, telfRegex
+from .models import Classe, Curs, validate_non_reserved_id, telfRegex
 
 def validate_classe_id_unique(value):
     if Classe.objects.filter(id_interna=value).exists():
@@ -17,7 +17,7 @@ class ClasseForms:
     class NewForm(forms.Form):
         nom = forms.CharField(max_length=50, required=True)
         id_interna = forms.SlugField(max_length=20, required=True,
-            validators=[validate_valid_id, validate_classe_id_unique],
+            validators=[validate_non_reserved_id, validate_classe_id_unique],
             help_text='Forma curta de referir-se a la classe. Ha de ser única i'
             ' <em>no</em> es pot canviar més endavant.')
         curs = forms.CharField(disabled=True, required=False)

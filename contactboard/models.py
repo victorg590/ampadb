@@ -1,4 +1,5 @@
 from django.db import models
+from django.urls import reverse
 from django.core.validators import validate_email, RegexValidator
 from django.core.exceptions import ValidationError
 import re
@@ -10,6 +11,9 @@ telfRegex = re.compile(r'''
     ''', re.X)
 
 class Alumne(models.Model):
+    class Meta:
+        ordering = ['cognoms', 'nom']
+
     nom = models.CharField(max_length=255, blank=False)
     cognoms = models.CharField(max_length=255, blank=False)
     classe = models.ForeignKey('Classe', on_delete=models.CASCADE)
@@ -25,27 +29,42 @@ class Alumne(models.Model):
         verbose_name='telèfon mare')
     compartir = models.BooleanField(default=False)
 
+    def get_absolute_url(self):
+        url = reverse('contactboard:edit-alumne', args=[self.pk])
+        print(url)
+        return url
+
     def __str__(self):
         return self.nom + ' ' + self.cognoms
 
+def validate_non_reserved_id(value):
+    if value in ['admin', '-']:
+        raise ValidationError('%(value)s is reserved for internal use',
+            params={'value': value})
+
+class Classe(models.Model):
+    class Meta:
+        ordering = ['curs', 'nom']
+
+    nom = models.CharField(max_length=50, blank=False)
+    id_interna = models.SlugField(max_length=20, primary_key=True,
+        validators=[validate_non_reserved_id])
+    curs = models.ForeignKey('Curs', on_delete=models.CASCADE,
+        related_name='classes')
+
+    def get_absolute_url(self):
+        return reverse('contactboard:list', args=[self.id_interna])
+
+    def __str__(self):
+        return self.curs.nom + ' ' + self.nom
+
 class Curs(models.Model):
+    class Meta:
+        verbose_name_plural = 'cursos'
+        ordering = ['ordre', 'nom']
     nom = models.CharField(max_length=50, blank=False)
     id_interna = models.SlugField(max_length=20, primary_key=True)
     ordre = models.PositiveSmallIntegerField(blank=True, null=True)
 
     def __str__(self):
         return self.nom
-
-def validate_valid_id(value):
-    if value in ['admin', '-']:
-        raise ValidationError('%(value)s is reserved for internal use',
-            params={'value': value})
-
-class Classe(models.Model):
-    nom = models.CharField(max_length=50, blank=False)
-    id_interna = models.SlugField(max_length=20, primary_key=True,
-        validators=[validate_valid_id])
-    curs = models.ForeignKey(Curs, on_delete=models.CASCADE, related_name='classes')
-
-    def __str__(self):
-        return self.curs.nom + ' ' + self.nom

@@ -1,6 +1,11 @@
-from django.db.models.signals import pre_delete
+from django.db.models.signals import pre_delete, pre_save
 from django.dispatch import receiver
-from .models import Profile
+from .models import Profile, UnregisteredUser
+from ampadb.support import signal_clean
+
+@receiver(pre_save, sender=Profile)
+def profile_pre_save(sender, **kwargs):
+    signal_clean(sender, **kwargs)
 
 @receiver(pre_delete, sender=Profile)
 def profile_pre_delete(sender, **kwargs):
@@ -10,3 +15,7 @@ def profile_pre_delete(sender, **kwargs):
         instance.user.delete()
     if instance.unregisteredUser:
         instance.unregisteredUser.delete()
+
+@receiver(pre_save, sender=UnregisteredUser)
+def uu_pre_save(sender, **kwargs):
+    signal_clean(sender, **kwargs)

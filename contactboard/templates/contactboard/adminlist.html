@@ -50,7 +50,7 @@
   <tbody>
     {% for classe in classes %}
     <tr>
-      <td>{% urllink classe 'contactboard:list' classe.id_interna %}</td>
+      <td><a href="{{ classe.get_absolute_url }}">{{ classe }}</a></td>
       <td><a class="btn btn-info"
         href="{% url 'contactboard:edit-classe' classe.id_interna %}">
         Editar</a></td>

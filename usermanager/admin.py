@@ -8,6 +8,4 @@ class ProfileAdmin(admin.ModelAdmin):
         ('Usuari relacionat', {'fields': ['user', 'unregisteredUser']})
     ]
 
-# class UnregisteredUserAdmin(admin.ModelAdmin):
-#     pass
 admin.site.register(UnregisteredUser)

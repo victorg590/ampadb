@@ -14,20 +14,20 @@ class CsvImportTestCase(TestCase):
 
         alumne1 = Alumne.objects.create(pk=1, nom='A', cognoms='B',
             data_de_naixement=date(2000, 1, 1), classe=classe)
-        usuari1 = User.objects.create(username='1')
+        usuari1 = User.objects.create(username='a')
         Profile.objects.create(alumne=alumne1, user=usuari1)
 
         alumne2 = Alumne.objects.create(pk=2, nom='C', cognoms='D',
             data_de_naixement=date(2000, 1, 1), classe=classe)
-        usuari2 = UnregisteredUser.objects.create(username='2', codi='000000')
+        usuari2 = UnregisteredUser.objects.create(username='b', codi='000000')
         Profile.objects.create(alumne=alumne2, unregisteredUser=usuari2)
 
-        User.objects.create(username='3')
-        UnregisteredUser.objects.create(username='4', codi='000000')
+        User.objects.create(username='c')
+        UnregisteredUser.objects.create(username='d', codi='000000')
 
         alumne5 = Alumne.objects.create(pk=5, nom='O', cognoms='P',
             data_de_naixement=date(2000, 1, 1), classe=classe)
-        usuari5 = User.objects.create(username='5')
+        usuari5 = User.objects.create(username='e')
         Profile.objects.create(alumne=alumne5, user=usuari5)
 
     def test_user_already_exists(self):
@@ -58,25 +58,25 @@ class CsvImportTestCase(TestCase):
 
     def test_associate_with_user(self):
         fila = {'Nom': 'E', 'Cognoms': 'F', 'Data de naixement': '2000-01-01',
-            'Classe': 'TEST1', 'Usuari': '3'}
+            'Classe': 'TEST1', 'Usuari': 'c'}
         alumne = Alumne.objects.get(pk=_importar_fila(fila))
         self.assertEqual('E', alumne.nom)
         self.assertEqual('F', alumne.cognoms)
         self.assertEqual(date(2000, 1, 1), alumne.data_de_naixement)
         self.assertEqual('TEST1', alumne.classe.id_interna)
-        profile = Profile.objects.get(user=User.objects.get(username='3'))
+        profile = Profile.objects.get(user=User.objects.get(username='c'))
         self.assertEqual(alumne, profile.alumne)
 
     def test_associate_with_unregistered_user(self):
         fila = {'Nom': 'G', 'Cognoms': 'H', 'Data de naixement': '2000-01-01',
-            'Classe': 'TEST1', 'Usuari': '4'}
+            'Classe': 'TEST1', 'Usuari': 'd'}
         alumne = Alumne.objects.get(pk=_importar_fila(fila))
         self.assertEqual('G', alumne.nom)
         self.assertEqual('H', alumne.cognoms)
         self.assertEqual(date(2000, 1, 1), alumne.data_de_naixement)
         self.assertEqual('TEST1', alumne.classe.id_interna)
         profile = Profile.objects.get(
-            unregisteredUser=UnregisteredUser.objects.get(username='4'))
+            unregisteredUser=UnregisteredUser.objects.get(username='d'))
         self.assertEqual(alumne, profile.alumne)
 
     def test_new_user(self):
@@ -121,7 +121,7 @@ class CsvImportTestCase(TestCase):
         alumne = Alumne.objects.get(pk=_importar_fila(fila))
         self.assertEqual(alumne_orig, alumne)
         profile = Profile.objects.get(alumne=alumne)
-        self.assertEqual('5', profile.user.username)
+        self.assertEqual('e', profile.user.username)
 
     def test_delete_1(self):
         fila = {'pk': '1', 'Eliminar': '1'}
@@ -130,18 +130,18 @@ class CsvImportTestCase(TestCase):
 
     def test_delete_2(self):
         fila = {'pk': '1', 'Eliminar': '2'}
-        profile = Profile.objects.get(user=User.objects.get(username='1')).pk
+        profile = Profile.objects.get(user=User.objects.get(username='a')).pk
         self.assertEqual(_importar_fila(fila), None)
         self.assertRaises(Alumne.DoesNotExist, Alumne.objects.get, pk=1)
         self.assertRaises(Profile.DoesNotExist, Profile.objects.get, pk=profile)
-        self.assertRaises(User.DoesNotExist, User.objects.get, username='1')
+        self.assertRaises(User.DoesNotExist, User.objects.get, username='a')
 
     def test_delete_2_unregistered(self):
         fila = {'pk': '2', 'Eliminar': '2'}
         profile = Profile.objects.get(
-            unregisteredUser=UnregisteredUser.objects.get(username='2')).pk
+            unregisteredUser=UnregisteredUser.objects.get(username='b')).pk
         self.assertEqual(_importar_fila(fila), None)
         self.assertRaises(Alumne.DoesNotExist, Alumne.objects.get, pk=2)
         self.assertRaises(Profile.DoesNotExist, Profile.objects.get, pk=profile)
         self.assertRaises(UnregisteredUser.DoesNotExist,
-            UnregisteredUser.objects.get, username='1')
+            UnregisteredUser.objects.get, username='a')
