@@ -95,7 +95,7 @@ def export_json(outfile):
                     'telefon_pare': a.telefon_pare,
                     'compartir_telefon_pare': a.compartir_telefon_pare,
                     'telefon_mare': a.telefon_mare,
-                    'compartir_telefon_pare': a.compartir_telefon_pare
+                    'compartir_telefon_mare': a.compartir_telefon_mare
                 }
                 classe_dict['alumnes'].append(alumne_dict)
             curs_dict['classes'][cl.id_interna] = classe_dict

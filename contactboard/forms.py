@@ -1,7 +1,7 @@
 from django import forms
 from django.core.validators import RegexValidator
 from django.core.exceptions import ValidationError
-from .models import Alumne, Classe, Curs, validate_non_reserved_id, telfRegex
+from .models import Alumne, Classe, Curs, validate_non_reserved_id
 
 def validate_classe_id_unique(value):
     if Classe.objects.filter(id_interna=value).exists():

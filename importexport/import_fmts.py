@@ -266,7 +266,7 @@ def _importar_fila(fila):
         alumne.compartir_telefon_mare = False
     except ValueError:
         raise InvalidFormat.invalid('Compartir telèfon mare', fila,
-            'Ha de ser 0 o 1'
+            'Ha de ser 0 o 1')
 
     try:
         curs_id = fila['Curs']
@@ -405,15 +405,15 @@ def import_json(infile):
                     alumne.data_de_naixement = datetime.strptime(
                         a['data_de_naixement'], date_format)
                     alumne.correu_alumne = a['correu_alumne']
-                    alumne.compartir_correu_alumne =
-                        a['compartir_correu_alumne']
+                    alumne.compartir_correu_alumne = a[
+                        'compartir_correu_alumne']
                     alumne.correu_pare = a['correu_pare']
                     alumne.compartir_correu_pare = a['compartir_correu_pare']
                     alumne.correu_mare = a['correu_mare']
                     alumne.compartir_correu_mare = a['compartir_correu_mare']
                     alumne.telefon_alumne = a['telefon_alumne']
-                    alumne.compartir_telefon_alumne =
-                        a['compartir_telefon_alumne']
+                    alumne.compartir_telefon_alumne = a[
+                        'compartir_telefon_alumne']
                     alumne.telefon_pare = a['telefon_pare']
                     alumne.compartir_telefon_pare = a['compartir_telefon_pare']
                     alumnne.telefon_mare = a['telefon_mare']
