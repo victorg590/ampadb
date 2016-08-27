@@ -1,7 +1,7 @@
 from django import forms
 from django.core.validators import RegexValidator
 from django.core.exceptions import ValidationError
-from .models import Classe, Curs, validate_non_reserved_id, telfRegex
+from .models import Alumne, Classe, Curs, validate_non_reserved_id, telfRegex
 
 def validate_classe_id_unique(value):
     if Classe.objects.filter(id_interna=value).exists():
@@ -44,10 +44,59 @@ class CursForms:
             help_text='Ordre dels cursos. Ex.: 1er ESO = 1, 2on ESO = 2, ...,'
             ' 1er Batx = 5...')
 
+# class AlumneForms:
+#     class NewForm(forms.Form):
+#         nom = forms.CharField(max_length=255, required=True)
+#         cognoms = forms.CharField(max_length=255, required=True)
+#         classe = forms.CharField(disabled=True, required=False)
+#         data_de_naixement = forms.DateField(required=True,
+#             widget=forms.DateInput(format='%d/%m/%Y'),
+#             input_formats=[
+#                 '%d/%m/%Y',
+#                 '%d-%m-%Y',
+#                 '%d-%m-%y',
+#                 '%d/%m/%y',
+#                 '%Y-%m-%d'  # ISO
+#             ]
+#         )
+#         correu_alumne = forms.EmailField(required=False)
+#         correu_pare = forms.EmailField(required=False)
+#         telefon_pare = forms.CharField(required=False, max_length=15,
+#             validators=[RegexValidator(telfRegex)],
+#             label='Telèfon pare')
+#         correu_mare = forms.EmailField(required=False)
+#         telefon_mare = forms.CharField(required=False, max_length=15,
+#             validators=[RegexValidator(telfRegex)],
+#             label='Telèfon mare')
+#         compartir = forms.BooleanField(required=False, initial=False,
+#             help_text='Si es selecciona, la classe podrà veure els correus i'
+#             ' els telèfons')
+#
+#     class AdminEditForm(NewForm):
+#         classe = forms.ModelChoiceField(required=True,
+#             to_field_name='id_interna',
+#             queryset=Classe.objects.all().order_by('curs'))
+#
+#     class EditForm(NewForm):
+#         nom = forms.CharField(disabled=True, required=False)
+#         cognoms = forms.CharField(disabled=True, required=False)
+#         classe = forms.CharField(disabled=True, required=False)
+#         data_de_naixement = forms.DateField(disabled=True, required=False,
+#             widget=forms.DateInput(format='%d/%m/%Y'))
+
+class _AlumneMeta:
+    model = Alumne
+    fields = ['nom', 'cognoms', 'classe', 'data_de_naixement',
+        'correu_alumne', 'compartir_correu_alumne', 'correu_pare',
+        'compartir_correu_pare', 'correu_mare', 'compartir_correu_mare',
+        'telefon_alumne', 'compartir_telefon_alumne', 'telefon_pare',
+        'compartir_telefon_pare', 'telefon_mare',
+        'compartir_telefon_mare']
+
 class AlumneForms:
-    class NewForm(forms.Form):
-        nom = forms.CharField(max_length=255, required=True)
-        cognoms = forms.CharField(max_length=255, required=True)
+    class NewForm(forms.ModelForm):
+        class Meta(_AlumneMeta):
+            pass
         classe = forms.CharField(disabled=True, required=False)
         data_de_naixement = forms.DateField(required=True,
             widget=forms.DateInput(format='%d/%m/%Y'),
@@ -59,30 +108,18 @@ class AlumneForms:
                 '%Y-%m-%d'  # ISO
             ]
         )
-        correu_alumne = forms.EmailField(required=False)
-        correu_pare = forms.EmailField(required=False)
-        telefon_pare = forms.CharField(required=False, max_length=15,
-            validators=[RegexValidator(telfRegex)],
-            label='Telèfon pare')
-        correu_mare = forms.EmailField(required=False)
-        telefon_mare = forms.CharField(required=False, max_length=15,
-            validators=[RegexValidator(telfRegex)],
-            label='Telèfon mare')
-        compartir = forms.BooleanField(required=False, initial=False,
-            help_text='Si es selecciona, la classe podrà veure els correus i'
-            ' els telèfons')
 
-    class AdminEditForm(NewForm):
-        classe = forms.ModelChoiceField(required=True,
-            to_field_name='id_interna',
-            queryset=Classe.objects.all().order_by('curs'))
-
-    class EditForm(NewForm):
+    class EditForm(forms.ModelForm):
+        class Meta(_AlumneMeta):
+            pass
         nom = forms.CharField(disabled=True, required=False)
         cognoms = forms.CharField(disabled=True, required=False)
-        classe = forms.CharField(disabled=True, required=False)
         data_de_naixement = forms.DateField(disabled=True, required=False,
             widget=forms.DateInput(format='%d/%m/%Y'))
+
+    class AdminEditForm(forms.ModelForm):
+        class Meta(_AlumneMeta):
+            pass
 
 class MailtoForm(forms.Form):
     TO_ALUMNES = 'alumnes'

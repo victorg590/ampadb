@@ -27,22 +27,37 @@ def _def_list(*vals):
 
 class PickledAlumne:
     def __init__(self, pk, nom, cognoms, data_de_naixement, correu_alumne,
-        correu_pare, correu_mare, telefon_pare, telefon_mare):
+        compartir_correu_alumne, correu_pare, compartir_correu_pare,
+        correu_mare, compartir_correu_mare, telefon_alumne,
+        compartir_telefon_alumne, telefon_pare, compartir_telefon_pare,
+        telefon_mare, compartir_telefon_mare):
         self.pk = pk
         self.nom = nom
         self.cognoms = cognoms
         self.data_de_naixement = data_de_naixement
         self.correu_alumne = correu_alumne
+        self.compartir_correu_alumne = compartir_correu_alumne
         self.correu_pare = correu_pare
+        self.compartir_correu_pare = compartir_telefon_pare
         self.correu_mare = correu_mare
+        self.compartir_correu_mare = compartir_correu_mare
+        self.telefon_alumne = telefon_alumne
+        self.compartir_telefon_alumne = compartir_telefon_alumne
         self.telefon_pare = telefon_pare
+        self.compartir_telefon_pare = compartir_telefon_pare
         self.telefon_mare = telefon_mare
+        self.compartir_telefon_mare = compartir_telefon_mare
 
     @classmethod
     def transform(cls, alumne):
         return cls(alumne.pk, alumne.nom, alumne.cognoms,
-            alumne.data_de_naixement, alumne.correu_alumne, alumne.correu_pare,
-            alumne.correu_mare, alumne.telefon_pare, alumne.telefon_mare)
+            alumne.data_de_naixement, alumne.correu_alumne,
+            alumne.compartir_correu_alumne, alumne.correu_pare,
+            alumne.compartir_correu_pare, alumne.correu_mare,
+            alumne.compartir_correu_mare, alumne.telefon_alumne,
+            alumne.compartir_telefon_alumne, alumne.telefon_pare,
+            alumne.compartir_telefon_pare, alumne.telefon_mare,
+            alumne.compartir_telefon_mare)
 
     def unpickle(self, classe):
         try:
@@ -53,10 +68,17 @@ class PickledAlumne:
         alumne.cognoms = self.cognoms
         alumne.data_de_naixement = self.data_de_naixement
         alumne.correu_alumne = self.correu_alumne
+        alumne.compartir_correu_alumne = self.compartir_correu_alumne
         alumne.correu_pare = self.correu_pare
+        alumne.compartir_correu_pare = self.compartir_correu_pare
         alumne.correu_mare = self.correu_mare
+        alumne.compartir_correu_mare = self.compartir_correu_mare
+        alumne.telefon_alumne = self.telefon_alumne
+        alumne.compartir_telefon_alumne = self.compartir_telefon_alumne
         alumne.telefon_pare = self.telefon_pare
+        alumne.compartir_telefon_pare = self.compartir_telefon_pare
         alumne.telefon_mare = self.telefon_mare
+        alumne.compartir_telefon_mare = self.compartir_telefon_mare
         alumne.classe = Classe.objects.get(id_interna=classe.id_interna)
         alumne.save()
         return alumne

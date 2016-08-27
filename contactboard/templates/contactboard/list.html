@@ -27,10 +27,12 @@
   <thead>
     <tr>
       <th>Nom</th>
+      <th>E-mail alumne</th>
       <th>E-mail pare</th>
       <th>E-mail mare</th>
-      <th>Telf. pare</th>
-      <th>Telf. mare</th>
+      <th>Tèlf. alumne</th>
+      <th>Tèlf. pare</th>
+      <th>Tèlf. mare</th>
       {% if admin %}
       <th>Usuari</th>
       <th>Eliminar</th>
@@ -40,25 +42,60 @@
   <tbody>
     {% get_alumne user as me %}
     {% for a in alumnes %}
-    {% if a.compartir or admin %}
-    {% if not a.compartir %}
-    <tr class="secret">
-    {% elif a == me %}
-    <tr class="self_record">
+    {% if a == me %}
+    <tr class="self-record">
     {% else %}
     <tr>
     {% endif %}
-      <td>
-        {% if admin %}
-        <a href="{{ a.get_absolute_url }}">{{ a }}</a>
-        {% else %}
-        {{ a }}
-        {% endif %}
-      </td>
+      <td><a href="{{ a.get_absolute_url }}">{{ a.nom }} {{ a.cognoms }}</a></td>
+      {% if a.compartir_correu_alumne %}
+      <td>{{ a.correu_alumne|urlize }}</td>
+      {% elif admin %}
+      <td class="secret">{{ a.correu_alumne|urlize }}</td>
+      {% else %}
+      <td></td>
+      {% endif %}
+
+      {% if a.compartir_correu_pare %}
       <td>{{ a.correu_pare|urlize }}</td>
+      {% elif admin %}
+      <td class="secret">{{ a.correu_pare|urlize }}</td>
+      {% else %}
+      <td></td>
+      {% endif %}
+
+      {% if a.compartir_correu_mare %}
       <td>{{ a.correu_mare|urlize }}</td>
+      {% elif admin %}
+      <td class="secret">{{ a.correu_mare|urlize }}</td>
+      {% else %}
+      <td></td>
+      {% endif %}
+
+      {% if a.compartir_telefon_alumne %}
+      <td class="data">{{ a.telefon_alumne }}</td>
+      {% elif admin %}
+      <td class="secret data">{{ a.telefon_alumne }}</td>
+      {% else %}
+      <td></td>
+      {% endif %}
+
+      {% if a.compartir_telefon_pare %}
       <td class="data">{{ a.telefon_pare }}</td>
+      {% elif admin %}
+      <td class="secret data">{{ a.telefon_pare }}</td>
+      {% else %}
+      <td></td>
+      {% endif %}
+
+      {% if a.compartir_telefon_mare %}
       <td class="data">{{ a.telefon_mare }}</td>
+      {% elif admin %}
+      <td class="secret data">{{ a.telefon_mare }}</td>
+      {% else %}
+      <td></td>
+      {% endif %}
+
       {% if admin %}
       {% get_user a.pk as user %}
       <td class="data">
@@ -76,8 +113,10 @@
       </td>
       {% endif %}
     </tr>
-    {% endif %}
     {% endfor %}
+  </tbody>
+</table></div>
+
   </tbody>
 </table>
 {% endblock content %}

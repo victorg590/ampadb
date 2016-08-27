@@ -2,6 +2,7 @@
 $grey: #808080;
 $lightgrey: #D3D3D3;
 $lightblue: #ADD8E6;
+$white: #FFFFFF;
 
 body {
   padding-top: 70px; /* La barra és de 50px */
@@ -23,16 +24,27 @@ table.table.text-center {
   font-family: monospace;
 }
 
-table tr.secret, tr.self-record {
+.secret,.self-record {
   background-color: $lightgrey;
 }
 
-table.table-hover .secret:hover, .self-record:hover {
+/*table.table-hover .secret:hover, tr:hover td.self-record {
   background-color: $grey;
   .data {
     color: white;
   }
   a {
     color: $lightblue;
+  }
+}*/
+table.table-hover tr:hover {
+  .secret, .self-record {
+    background-color: $grey;
+    a {
+      color: $lightblue;
+    }
+  }
+  .secret.data {
+    color: $white;
   }
 }

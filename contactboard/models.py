@@ -18,16 +18,46 @@ class Alumne(models.Model):
     cognoms = models.CharField(max_length=255, blank=False)
     classe = models.ForeignKey('Classe', on_delete=models.CASCADE)
     data_de_naixement = models.DateField(blank=False)
-    correu_alumne = models.EmailField(blank=True, validators=[validate_email])
-    correu_pare = models.EmailField(blank=True, validators=[validate_email])
-    correu_mare = models.EmailField(blank=True, validators=[validate_email])
-    telefon_pare = models.CharField(max_length=15, blank=True,
-        validators=[RegexValidator(regex=telfRegex)],
-        verbose_name='telèfon pare')
-    telefon_mare = models.CharField(max_length=15, blank=True,
-        validators=[RegexValidator(regex=telfRegex)],
-        verbose_name='telèfon mare')
-    compartir = models.BooleanField(default=False)
+    correu_alumne = models.EmailField("correu de l'alumne", blank=True,
+        validators=[validate_email])
+    compartir_correu_alumne = models.BooleanField("compartir correu de"
+        " l'alumne", default=False)
+    correu_pare = models.EmailField("correu del pare", blank=True,
+        validators=[validate_email])
+    compartir_correu_pare = models.BooleanField("compartir correu del pare",
+        default=False)
+    correu_mare = models.EmailField("correu de la mare", blank=True,
+        validators=[validate_email])
+    compartir_correu_mare = models.BooleanField("compartir correu de la mare",
+        default=False)
+    telefon_alumne = models.CharField("telèfon de l'alumne", max_length=15,
+        blank=True, validators=[RegexValidator(regex=telfRegex)])
+    compartir_telefon_alumne = models.BooleanField("compartir telèfon de"
+        " l'alumne", default=False)
+    telefon_pare = models.CharField("telèfon del pare", max_length=15,
+        blank=True, validators=[RegexValidator(regex=telfRegex)])
+    compartir_telefon_pare = models.BooleanField("compartir telèfon del pare",
+        default=False)
+    telefon_mare = models.CharField("telèfon de la mare", max_length=15,
+        blank=True, validators=[RegexValidator(regex=telfRegex)])
+    compartir_telefon_mare = models.BooleanField("compartir telèfon de la mare",
+        default=False)
+
+    @property
+    def compartir(self):
+        fields = [self.compartir_correu_alumne, self.compartir_correu_pare,
+            self.compartir_correu_mare, self.compartir_telefon_alumne,
+            self.compartir_telefon_pare, self.compartir_telefon_mare]
+        return all(fields)
+
+    @compartir.setter
+    def compartir(self, value):
+        self.compartir_correu_alumne = value
+        self.compartir_correu_pare = value
+        self.compartir_correu_mare = value
+        self.compartir_telefon_alumne = value
+        self.compartir_telefon_pare = value
+        self.compartir_telefon_mare = value
 
     def get_absolute_url(self):
         url = reverse('contactboard:edit-alumne', args=[self.pk])

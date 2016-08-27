@@ -12,7 +12,7 @@ from . import ampacsv
 def export_csv(outfile, alumnes):
     fieldnames = ['First Name', 'Last Name', 'Birthday', 'E-mail Address',
         'E-mail 2 Address', 'E-mail 3 Address', 'Home Phone', 'Home Phone 2',
-        'Categories']
+        'Home Phone 3', 'Categories']
     writer = csv.DictWriter(outfile, fieldnames)
     writer.writeheader()
     for a in alumnes:
@@ -25,8 +25,9 @@ def export_csv(outfile, alumnes):
             'E-mail Address': a.correu_alumne,
             'E-mail 2 Address': a.correu_pare,
             'E-mail 3 Address': a.correu_mare,
-            'Home Phone': a.telefon_pare,
-            'Home Phone 2': a.telefon_mare,
+            'Home Phone': a.telefon_alumne,
+            'Home Phone 2': a.telefon_pare,
+            'Home Phone 3': a.telefon_mare,
             'Categories': str(a.classe)
         })
 
@@ -51,11 +52,17 @@ def export_ampacsv(outfile, alumnes):
             'Cognoms': a.cognoms,
             'Data de naixement': a.data_de_naixement.strftime('%Y-%m-%d'),
             'Correu alumne': a.correu_alumne,
+            'Compartir correu alumne': int(a.compartir_correu_alumne),
             'Correu pare': a.correu_pare,
+            'Compartir correu pare': int(a.compartir_correu_pare),
             'Correu mare': a.correu_mare,
-            'Teléfon pare': a.telefon_pare,
-            'Teléfon mare': a.telefon_mare,
-            'Compartir': int(a.compartir),
+            'Compartir correu mare': int(a.compartir_correu_mare),
+            'Telèfon alumne': a.telefon_alumne,
+            'Compartir telèfon alumne': int(a.compartir_telefon_alumne),
+            'Telèfon pare': a.telefon_pare,
+            'Compartir telèfon pare': int(a.compartir_telefon_pare),
+            'Telèfon mare': a.telefon_mare,
+            'Compartir telèfon mare': int(a.compartir_telefon_mare),
             'Classe': a.classe.id_interna,
             'Curs': a.classe.curs.id_interna,
             'Usuari': username,
@@ -71,12 +78,25 @@ def export_json(outfile):
         for cl in Classe.objects.filter(curs=c):
             classe_dict = {'nom': cl.nom, 'alumnes': []}
             for a in Alumne.objects.filter(classe=cl):
-                alumne_dict = {'pk': a.pk, 'nom': a.nom, 'cognoms': a.cognoms,
-                    'data_de_naixement': a.data_de_naixement.strftime(date_format),
+                alumne_dict = {
+                    'pk': a.pk,
+                    'nom': a.nom,
+                    'cognoms': a.cognoms,
+                    'data_de_naixement':
+                        a.data_de_naixement.strftime(date_format),
                     'correu_alumne': a.correu_alumne,
-                    'correu_pare': a.correu_pare, 'correu_mare': a.correu_mare,
+                    'compartir_correu_alumne': a.compartir_correu_alumne,
+                    'correu_pare': a.correu_pare,
+                    'compartir_correu_pare': a.compartir_correu_pare,
+                    'correu_mare': a.correu_mare,
+                    'compartir_correu_mare': a.compartir_correu_mare,
+                    'telefon_alumne': a.telefon_alumne,
+                    'compartir_telefon_alumne': a.compartir_telefon_alumne,
                     'telefon_pare': a.telefon_pare,
-                    'telefon_mare': a.telefon_mare, 'compartir': a.compartir}
+                    'compartir_telefon_pare': a.compartir_telefon_pare,
+                    'telefon_mare': a.telefon_mare,
+                    'compartir_telefon_pare': a.compartir_telefon_pare
+                }
                 classe_dict['alumnes'].append(alumne_dict)
             curs_dict['classes'][cl.id_interna] = classe_dict
         top_dict['cursos'][c.id_interna] = curs_dict

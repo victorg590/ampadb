@@ -150,6 +150,15 @@ def _importar_fila(fila):
             raise InvalidFormat.invalid('Correu alumne', fila, exc[0])
 
     try:
+        tmp = fila['Compartir correu alumne']
+        alumne.compartir_correu_alumne = bool(tmp and int(tmp))
+    except KeyError:
+        alumne.compartir_correu_alumne = False
+    except ValueError:
+        raise InvalidFormat.invalid('Compartir correu alumne', fila,
+            'Ha de ser 0 o 1')
+
+    try:
         alumne.correu_pare = fila['Correu pare']
         alumne.clean_fields()
     except KeyError:
@@ -161,6 +170,15 @@ def _importar_fila(fila):
             exc = None
         if exc:
             raise InvalidFormat.invalid('Correu pare', fila, exc[0])
+
+    try:
+        tmp = fila['Compartir correu pare']
+        alumne.compartir_correu_pare = bool(tmp and int(tmp))
+    except KeyError:
+        alumne.compartir_correu_pare = False
+    except ValueError:
+        raise InvalidFormat.invalid('Compartir correu pare', fila,
+            'Ha de ser 0 o 1')
 
     try:
         alumne.correu_mare = fila['Correu mare']
@@ -176,7 +194,38 @@ def _importar_fila(fila):
             raise InvalidFormat.invalid('Correu mare', fila, exc[0])
 
     try:
-        alumne.telefon_pare = fila['Teléfon pare']
+        tmp = fila['Compartir correu mare']
+        alumne.compartir_correu_mare = bool(tmp and int(tmp))
+    except KeyError:
+        alumne.compartir_correu_mare = False
+    except ValueError:
+        raise InvalidFormat.invalid('Compartir correu mare', fila,
+            'Ha de ser 0 o 1')
+
+    try:
+        alumne.telefon_alumne = fila['Telèfon alumne']
+        alumne.clean_fields()
+    except KeyError:
+        pass
+    except ValidationError as e:
+        try:
+            exc = e['telefon_alumne']
+        except KeyError:
+            pass
+        else:
+            raise InvalidFormat.invalid('Telèfon alumne', fila, exc[0])
+
+    try:
+        tmp = fila['Compartir telèfon alumne']
+        alumne.compartir_telefon_alumne = bool(tmp and int(tmp))
+    except KeyError:
+        alumne.compartir_telefon_alumne = False
+    except ValueError:
+        raise InvalidFormat.invalid('Compartir telèfon alumne', fila,
+            'Ha de ser 0 o 1')
+
+    try:
+        alumne.telefon_pare = fila['Telèfon pare']
         alumne.clean_fields()
     except KeyError:
         pass
@@ -186,10 +235,19 @@ def _importar_fila(fila):
         except KeyError:
             exc = None
         if exc:
-            raise InvalidFormat.invalid('Teléfon pare', fila, exc[0])
+            raise InvalidFormat.invalid('Telèfon pare', fila, exc[0])
 
     try:
-        alumne.telefon_mare = fila['Teléfon mare']
+        tmp = fila['Compartir telèfon pare']
+        alumne.compartir_telefon_pare = bool(tmp and int(tmp))
+    except KeyError:
+        alumne.compartir_telefon_pare = False
+    except ValueError:
+        raise InvalidFormat.invalid('Compartir telèfon pare', fila,
+            'Ha de ser 0 o 1')
+
+    try:
+        alumne.telefon_mare = fila['Telèfon mare']
         alumne.clean_fields()
     except KeyError:
         pass
@@ -199,14 +257,16 @@ def _importar_fila(fila):
         except KeyError:
             exc = None
         if exc:
-            raise InvalidFormat.invalid('Teléfon mare', fila, exc[0])
+            raise InvalidFormat.invalid('Telèfon mare', fila, exc[0])
 
     try:
-        alumne.compartir = bool(fila['Compartir'] and int(fila['Compartir']))
+        tmp = fila['Compartir telèfon mare']
+        alumne.compartir_telefon_mare = bool(tmp and int(tmp))
     except KeyError:
-        alumne.compartir = False
+        alumne.compartir_telefon_mare = False
     except ValueError:
-        raise InvalidFormat.invalid('Compartir', fila, 'Ha de ser 0 o 1')
+        raise InvalidFormat.invalid('Compartir telèfon mare', fila,
+            'Ha de ser 0 o 1'
 
     try:
         curs_id = fila['Curs']
@@ -302,20 +362,20 @@ def _importar_fila(fila):
     return alumne.pk
 
 def import_ampacsv(infile):
-    reader = csv.DictReader(infile, dialect=ampacsv.AmpaDialect())  # FIXME
+    reader = csv.DictReader(infile, dialect=ampacsv.AmpaDialect())
     with transaction.atomic():
         for fila in reader:
             _importar_fila(fila)
 
 def import_excel(infile):
-    reader = csv.DictReader(infile, dialect='excel')  # FIXME: Obrir  com text
+    reader = csv.DictReader(infile, dialect='excel')
     with transaction.atomic():
         for fila in reader:
             _importar_fila(fila)
 
 def import_json(infile):
     date_format = '%Y-%m-%d'
-    top_dict = json.load(infile)  # FIXME: Obrir com text, no binari
+    top_dict = json.load(infile)
     try:
         for c in top_dict['cursos']:
             curs_dict = top_dict['cursos'][c]
@@ -345,10 +405,19 @@ def import_json(infile):
                     alumne.data_de_naixement = datetime.strptime(
                         a['data_de_naixement'], date_format)
                     alumne.correu_alumne = a['correu_alumne']
+                    alumne.compartir_correu_alumne =
+                        a['compartir_correu_alumne']
                     alumne.correu_pare = a['correu_pare']
+                    alumne.compartir_correu_pare = a['compartir_correu_pare']
                     alumne.correu_mare = a['correu_mare']
+                    alumne.compartir_correu_mare = a['compartir_correu_mare']
+                    alumne.telefon_alumne = a['telefon_alumne']
+                    alumne.compartir_telefon_alumne =
+                        a['compartir_telefon_alumne']
                     alumne.telefon_pare = a['telefon_pare']
+                    alumne.compartir_telefon_pare = a['compartir_telefon_pare']
                     alumnne.telefon_mare = a['telefon_mare']
+                    alumne.compartir_telefon_mare = a['compartir_telefon_mare']
                     alumne.classe = classe
                     alumne.save()
         for u in top_dict['usuaris']:

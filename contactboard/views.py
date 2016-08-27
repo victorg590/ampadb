@@ -155,20 +155,22 @@ def add_alumne(request, id_classe):
     classe = get_object_or_404(Classe, id_interna=id_classe)
     if request.method == 'POST':
         form = AlumneForms.NewForm(request.POST)
+        form.classe = classe
         if form.is_valid():
-            cdata = form.cleaned_data
-            alumne = Alumne()
-            alumne.nom = cdata['nom']
-            alumne.cognoms = cdata['cognoms']
-            alumne.classe = classe
-            alumne.data_de_naixement = cdata['data_de_naixement']
-            alumne.correu_alumne = cdata['correu_alumne']
-            alumne.correu_pare = cdata['correu_pare']
-            alumne.correu_mare = cdata['correu_mare']
-            alumne.telefon_pare = cdata['telefon_pare']
-            alumne.telefon_mare = cdata['telefon_mare']
-            alumne.compartir = cdata['compartir']
-            alumne.save()
+            # cdata = form.cleaned_data
+            # alumne = Alumne()
+            # alumne.nom = cdata['nom']
+            # alumne.cognoms = cdata['cognoms']
+            # alumne.classe = classe
+            # alumne.data_de_naixement = cdata['data_de_naixement']
+            # alumne.correu_alumne = cdata['correu_alumne']
+            # alumne.correu_pare = cdata['correu_pare']
+            # alumne.correu_mare = cdata['correu_mare']
+            # alumne.telefon_pare = cdata['telefon_pare']
+            # alumne.telefon_mare = cdata['telefon_mare']
+            # alumne.compartir = cdata['compartir']
+            # alumne.save()
+            form.save()
             return redirect('contactboard:list', id_classe)
     else:
         form = AlumneForms.NewForm(initial={'classe': classe})
@@ -184,49 +186,34 @@ def edit_alumne(request, alumne_pk):
     if not is_admin(request.user):
         p = Profile.objects.get(user=request.user)
         if p.alumne.pk != int(alumne_pk):
-            #return redirect('/contactboard/edit/{}'.format(p.alumne.pk))
             return redirect('contactboard:edit-alumne', p.alumne.pk)
 
     alumne = get_object_or_404(Alumne, pk=alumne_pk)
     if request.method == 'POST':
         if is_admin(request.user):
-            form = AlumneForms.AdminEditForm(request.POST)
+            form = AlumneForms.AdminEditForm(request.POST, instance=alumne)
         else:
-            form = AlumneForms.EditForm(request.POST)
+            form = AlumneForms.EditForm(request.POST, instance=alumne)
         if form.is_valid():
             if form.has_changed():
-                cdata = form.cleaned_data
-                alumne.nom = cdata['nom']
-                alumne.cognoms = cdata['cognoms']
-                alumne.classe = cdata['classe']
-                alumne.data_de_naixement = cdata['data_de_naixement']
-                alumne.correu_alumne = cdata['correu_alumne']
-                alumne.correu_pare = cdata['correu_pare']
-                alumne.correu_mare = cdata['correu_mare']
-                alumne.telefon_pare = cdata['telefon_pare']
-                alumne.telefon_mare = cdata['telefon_mare']
-                alumne.compartir = cdata['compartir']
-                alumne.save()
+                # cdata = form.cleaned_data
+                # alumne.nom = cdata['nom']
+                # alumne.cognoms = cdata['cognoms']
+                # alumne.classe = cdata['classe']
+                # alumne.data_de_naixement = cdata['data_de_naixement']
+                # alumne.correu_alumne = cdata['correu_alumne']
+                # alumne.correu_pare = cdata['correu_pare']
+                # alumne.correu_mare = cdata['correu_mare']
+                # alumne.telefon_pare = cdata['telefon_pare']
+                # alumne.telefon_mare = cdata['telefon_mare']
+                # alumne.compartir = cdata['compartir']
+                form.save()
             return redirect('contactboard:list', alumne.classe.id_interna)
-    else:
-        alumned = {
-            'nom': alumne.nom,
-            'cognoms': alumne.cognoms,
-            'classe': alumne.classe.id_interna,
-            'data_de_naixement': alumne.data_de_naixement,
-            'correu_alumne': alumne.correu_alumne,
-            'correu_pare': alumne.correu_pare,
-            'correu_mare': alumne.correu_mare,
-            'telefon_pare': alumne.telefon_pare,
-            'telefon_mare': alumne.telefon_mare,
-            'compartir': alumne.compartir
-        }
-
     if is_admin(request.user):
-        form = AlumneForms.AdminEditForm(alumned)
+        form = AlumneForms.AdminEditForm(instance=alumne)
     else:
-        alumned.update({'classe': alumne.classe})
-        form = AlumneForms.EditForm(alumned, initial=alumned)
+        form = AlumneForms.EditForm(instance=alumne,
+            initial={'classe': alumne.classe})
     context = {
         'form': form,
         'submitText': 'Actualitzar'
