@@ -157,19 +157,6 @@ def add_alumne(request, id_classe):
         form = AlumneForms.NewForm(request.POST)
         form.classe = classe
         if form.is_valid():
-            # cdata = form.cleaned_data
-            # alumne = Alumne()
-            # alumne.nom = cdata['nom']
-            # alumne.cognoms = cdata['cognoms']
-            # alumne.classe = classe
-            # alumne.data_de_naixement = cdata['data_de_naixement']
-            # alumne.correu_alumne = cdata['correu_alumne']
-            # alumne.correu_pare = cdata['correu_pare']
-            # alumne.correu_mare = cdata['correu_mare']
-            # alumne.telefon_pare = cdata['telefon_pare']
-            # alumne.telefon_mare = cdata['telefon_mare']
-            # alumne.compartir = cdata['compartir']
-            # alumne.save()
             form.save()
             return redirect('contactboard:list', id_classe)
     else:
@@ -196,17 +183,6 @@ def edit_alumne(request, alumne_pk):
             form = AlumneForms.EditForm(request.POST, instance=alumne)
         if form.is_valid():
             if form.has_changed():
-                # cdata = form.cleaned_data
-                # alumne.nom = cdata['nom']
-                # alumne.cognoms = cdata['cognoms']
-                # alumne.classe = cdata['classe']
-                # alumne.data_de_naixement = cdata['data_de_naixement']
-                # alumne.correu_alumne = cdata['correu_alumne']
-                # alumne.correu_pare = cdata['correu_pare']
-                # alumne.correu_mare = cdata['correu_mare']
-                # alumne.telefon_pare = cdata['telefon_pare']
-                # alumne.telefon_mare = cdata['telefon_mare']
-                # alumne.compartir = cdata['compartir']
                 form.save()
             return redirect('contactboard:list', alumne.classe.id_interna)
     if is_admin(request.user):

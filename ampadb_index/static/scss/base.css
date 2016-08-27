@@ -15,15 +15,6 @@ table.table.text-center th, table.table.text-center td {
 .secret, .self-record {
   background-color: #D3D3D3; }
 
-/*table.table-hover .secret:hover, tr:hover td.self-record {
-  background-color: $grey;
-  .data {
-    color: white;
-  }
-  a {
-    color: $lightblue;
-  }
-}*/
 table.table-hover tr:hover .secret, table.table-hover tr:hover .self-record {
   background-color: #808080; }
   table.table-hover tr:hover .secret a, table.table-hover tr:hover .self-record a {

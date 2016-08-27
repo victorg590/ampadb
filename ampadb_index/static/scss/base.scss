@@ -28,15 +28,6 @@ table.table.text-center {
   background-color: $lightgrey;
 }
 
-/*table.table-hover .secret:hover, tr:hover td.self-record {
-  background-color: $grey;
-  .data {
-    color: white;
-  }
-  a {
-    color: $lightblue;
-  }
-}*/
 table.table-hover tr:hover {
   .secret, .self-record {
     background-color: $grey;
