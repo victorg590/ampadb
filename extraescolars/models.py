@@ -23,6 +23,7 @@ class Extraescolar(models.Model):
         null=True, help_text="Fins a quan es permet la "
             "inscripció. No es faràn inscripcions despés d'aquest moment.")
     # Permet preus en [0, 100) (en EUR)
+    @staticmethod
     def _preu_default():
         return Decimal('0.00')
     preu = models.DecimalField(max_digits=4, decimal_places=2, blank=True,

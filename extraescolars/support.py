@@ -1,17 +1,6 @@
 from django.utils import timezone
 from contactboard.models import Curs
 
-# def status_inscripcio(extraescolar, alumne):
-#     if alumne and not extraescolar.cursos.filter(
-#         id_interna=alumne.classe.curs.id_interna).exists():
-#         return False, 'no per a curs', None
-#     des_de = extraescolar.inscripcio_des_de
-#     if des_de and timezone.now() < des_de:
-#         return False, 'no obert', des_de
-#     fins_a = extraescolar.inscripcio_fins_a
-#     if fins_a and fins_a < timezone.now():
-#         return False, 'expirat', fins_a
-#     return True, None, None
 def status_inscripcio(extraescolar, alumne):
     reqs = []
     des_de = extraescolar.inscripcio_des_de

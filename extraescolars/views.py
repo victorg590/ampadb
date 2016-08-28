@@ -87,16 +87,12 @@ def cancel(request, act_id):
         return datacheck
     alumne = get_alumne(request.user.username)
     if request.method != 'POST' or not status_inscripcio(activitat, alumne)[0]:
-        print('N/A')
         return redirect('extraescolars:show', act_id)
     try:
         inscripcio = Inscripcio.objects.get(activitat=activitat, alumne=alumne)
-        print('Found')
         if not inscripcio.confirmat:
-            print('OK')
             inscripcio.delete()
     except Inscripcio.DoesNotExist:
-        print('Not found')
         pass
     return redirect('extraescolars:show', act_id)
 

@@ -1,7 +1,6 @@
 from django import forms
 from django.core.exceptions import ValidationError
-from django.core.validators import validate_email, RegexValidator
-from contactboard.models import telfRegex
+from django.core.validators import validate_email
 import re
 
 # Veure http://www.interior.gob.es/web/servicios-al-ciudadano/dni/calculo-del-digito-de-control-del-nif-nie
