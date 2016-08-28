@@ -1,6 +1,7 @@
 from django.http import HttpResponseRedirect
 from urllib.parse import quote
 from usermanager.models import User, UnregisteredUser
+from usermanager.models import Profile
 import logging
 import random
 
@@ -75,3 +76,17 @@ def gen_codi():
 def signal_clean(sender, **kwargs):
     instance = kwargs['instance']
     return instance.full_clean()
+
+def get_alumne(username):
+    try:
+        user = User.objects.get(username=username)
+        profile = Profile.objects.get(user=user)
+    except User.DoesNotExist:
+        try:
+            uu = UnregisteredUser.objects.get(username=username)
+            profile = Profile.objects.get(unregisteredUser=uu)
+        except UnregisteredUser.DoesNotExist:
+            return None
+    except Profile.DoesNotExist:
+        return None
+    return profile.alumne

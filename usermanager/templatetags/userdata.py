@@ -3,23 +3,14 @@ from django.contrib.auth.models import User
 from usermanager.models import Profile
 from contactboard.models import Alumne
 from ampadb.support import is_admin
+from ampadb.support import get_alumne
 
 register = template.Library()
 
-@register.simple_tag
-def get_alumne(username):
-    try:
-        user = User.objects.get(username=username)
-        profile = Profile.objects.get(user=user)
-    except User.DoesNotExist:
-        try:
-            uu = UnregisteredUser.objects.get(username=username)
-            profile = Profile.objects.get(unregisteredUser=uu)
-        except UnregisteredUser.DoesNotExist:
-            return None
-    except Profile.DoesNotExist:
-        return None
-    return profile.alumne
+# @register.simple_tag
+# def get_alumne(username):
+#     return _get_alumne(username)
+register.simple_tag(get_alumne)
 
 @register.simple_tag
 def get_user(alumne_pk):

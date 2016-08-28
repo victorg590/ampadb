@@ -1,0 +1,25 @@
+{% if activitat.preu or requires %}
+<ul>
+  {% if activitat.preu %}
+  <li><strong>Preu: </strong>{{ activitat.preu }} €</li>
+  {% endif %}
+  {% for req in requires %}
+  <li>
+    {% if req.ok %}
+    <span class="glyphicon glyphicon-ok" style="color:green"></span>
+    {% else %}
+    <span class="glyphicon glyphicon-remove" style="color:red"></span>
+    {% endif %}
+    {% if req.motiu == 'inici'%}
+    Després del {{ req.data|date:'d/m/Y' }} a les
+    {{ req.data|date:'H:i:s'}}
+    {% elif req.motiu == 'final' %}
+    Abans del {{ req.data|date:'d/m/Y' }} a les
+    {{ req.data|date:'H:i:s' }}
+    {% elif req.motiu == 'cursos' %}
+    És a: {{ req.cursos }}
+    {% endif %}
+  </li>
+  {% endfor %}
+</ul>
+{% endif %}

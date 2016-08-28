@@ -6,8 +6,10 @@ import re
 
 # Veure https://es.wikipedia.org/wiki/Anexo:Prefijos_telef%C3%B3nicos_de_Espa%C3%B1a
 telfRegex = re.compile(r'''
+    ^
     ((\+|00)34)?  # Accepta prefixos (+34/0034)
     [679][0-9]{8}
+    $
     ''', re.X)
 
 class Alumne(models.Model):
@@ -18,6 +20,12 @@ class Alumne(models.Model):
     cognoms = models.CharField(max_length=255, blank=False)
     classe = models.ForeignKey('Classe', on_delete=models.CASCADE)
     data_de_naixement = models.DateField(blank=False)
+    nom_pare = models.CharField('nom del pare', max_length=255, blank=True)
+    cognoms_pare = models.CharField('cognoms del pare', max_length=255,
+        blank=True)
+    nom_mare = models.CharField('nom de la mare', max_length=255, blank=True)
+    cognoms_mare = models.CharField('cognoms de la mare', max_length=255,
+        blank=True)
     correu_alumne = models.EmailField("correu de l'alumne", blank=True,
         validators=[validate_email])
     compartir_correu_alumne = models.BooleanField("compartir correu de"

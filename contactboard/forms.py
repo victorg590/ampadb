@@ -45,12 +45,12 @@ class CursForms:
 
 class _AlumneMeta:
     model = Alumne
-    fields = ['nom', 'cognoms', 'classe', 'data_de_naixement',
-        'correu_alumne', 'compartir_correu_alumne', 'correu_pare',
-        'compartir_correu_pare', 'correu_mare', 'compartir_correu_mare',
-        'telefon_alumne', 'compartir_telefon_alumne', 'telefon_pare',
-        'compartir_telefon_pare', 'telefon_mare',
-        'compartir_telefon_mare']
+    fields = ['nom', 'cognoms', 'classe', 'data_de_naixement', 'nom_pare',
+        'cognoms_pare', 'nom_mare', 'cognoms_mare', 'correu_alumne',
+        'compartir_correu_alumne', 'correu_pare', 'compartir_correu_pare',
+        'correu_mare', 'compartir_correu_mare', 'telefon_alumne',
+        'compartir_telefon_alumne', 'telefon_pare', 'compartir_telefon_pare',
+        'telefon_mare', 'compartir_telefon_mare']
 
 class AlumneForms:
     class NewForm(forms.ModelForm):

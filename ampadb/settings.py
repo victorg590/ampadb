@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     'contactboard.apps.ContactboardConfig',
     'usermanager.apps.UsermanagerConfig',
     'importexport.apps.ImportexportConfig',
+    'extraescolars.apps.ExtraescolarsConfig',
     'django.contrib.admin',
     'django.contrib.admindocs',
     'django.contrib.auth',

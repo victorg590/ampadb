@@ -1,0 +1,15 @@
+{% extends "./show.html" %}
+
+{% block inscripcio %}
+<h2>Inscripció</h2>
+{% include "./requires.html" %}
+{% if oberta %}
+<form method="post"
+  action="{% url 'extraescolars:inscripcio' activitat.id_interna %}">
+  {% csrf_token %}
+  <button class="btn btn-primary" type="submit">Inscriure's</button>
+</form>
+{% else %}
+<button class="btn btn-primary" disabled>Inscriure's</button>
+{% endif %}
+{% endblock inscripcio %}

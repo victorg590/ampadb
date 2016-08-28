@@ -4,6 +4,7 @@ biblio.txt
 ve/
 # Arxius estàtics
 ampadb/static/
+db.*.sqlite3
 
 # Created by https://www.gitignore.io/api/django,python,sass
 
