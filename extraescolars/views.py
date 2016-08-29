@@ -66,6 +66,7 @@ def show(request, act_id):
     except Inscripcio.DoesNotExist:
         return render(request, 'extraescolars/show_no_inscrit.html', context)
 
+@login_required
 def inscripcio(request, act_id):
     activitat = get_object_or_404(Extraescolar, id_interna=act_id)
     datacheck = check_data(request)
@@ -83,6 +84,7 @@ def inscripcio(request, act_id):
     inscripcio.save()
     return redirect('extraescolars:show', act_id)
 
+@login_required
 def cancel(request, act_id):
     activitat = get_object_or_404(Extraescolar, id_interna=act_id)
     datacheck = check_data(request)
@@ -107,6 +109,7 @@ def _genpdf(context):
     weasyprint.HTML(string=html).write_pdf(response)
     return response
 
+@login_required
 def genfull(request):
     alumne = get_alumne(request.user.username)
     inscripcions = Inscripcio.objects.filter(alumne=alumne)
