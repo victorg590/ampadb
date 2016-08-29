@@ -1,6 +1,7 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.http import HttpResponse
 from django.template import loader
+from django.contrib.auth.decorators import login_required
 from .models import Extraescolar, Inscripcio
 from .forms import InscripcioForm
 from ampadb.support import get_alumne
@@ -29,6 +30,7 @@ def check_data(request):
     return None
 
 # Conflicte amb el built-in list()
+@login_required
 def list_view(request):
     activitats = []
     alumne = get_alumne(request.user.username)
@@ -47,6 +49,7 @@ def list_view(request):
     }
     return render(request, 'extraescolars/list.html', context)
 
+@login_required
 def show(request, act_id):
     activitat = get_object_or_404(Extraescolar, id_interna=act_id)
     inscripcio = status_inscripcio(activitat, get_alumne(request.user.username))

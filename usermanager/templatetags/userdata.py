@@ -1,5 +1,4 @@
 from django import template
-from django.contrib.auth.models import User
 from usermanager.models import Profile
 from contactboard.models import Alumne
 from ampadb.support import is_admin
@@ -7,9 +6,6 @@ from ampadb.support import get_alumne
 
 register = template.Library()
 
-# @register.simple_tag
-# def get_alumne(username):
-#     return _get_alumne(username)
 register.simple_tag(get_alumne)
 
 @register.simple_tag
