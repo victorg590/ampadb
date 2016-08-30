@@ -1,10 +1,10 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.http import HttpResponse
 from django.template import loader
-from django.contrib.auth.decorators import login_required
+from django.contrib.auth.decorators import login_required, user_passes_test
 from .models import Extraescolar, Inscripcio
-from .forms import InscripcioForm
-from ampadb.support import get_alumne
+from .forms import InscripcioForm, ExtraescolarForms
+from ampadb.support import get_alumne, is_admin
 from .support import status_inscripcio
 import weasyprint
 
@@ -130,3 +130,36 @@ def genfull(request):
         'form': form
     }
     return render(request, 'extraescolars/genfull.html', context)
+
+@login_required
+@user_passes_test(is_admin)
+def add(request):
+    if request.method == 'POST':
+        form = ExtraescolarForms.AddForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect('extraescolars:list')
+    else:
+        form = ExtraescolarForms.AddForm()
+    context = {
+        'form': form,
+        'submitText': 'Crear'
+    }
+    return render(request, 'extraescolars/add.html', context)
+
+@login_required
+@user_passes_test(is_admin)
+def edit(request, act_id):
+    activitat = get_object_or_404(Extraescolar, id_interna=act_id)
+    if request.method == 'POST':
+        form = ExtraescolarForms.EditForm(request.POST, instance=activitat)
+        if form.is_valid():
+            form.save()
+            return redirect('extraescolars:list')
+    else:
+        form = ExtraescolarForms.EditForm(instance=activitat)
+    context = {
+        'form': form,
+        'submitText': 'Editar'
+    }
+    return render(request, 'extraescolars/add.html', context)

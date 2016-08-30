@@ -2,7 +2,6 @@ from django.conf.urls import url, include
 from .apps import UsermanagerConfig
 from . import views
 
-#app_name = UsermanagerConfig.name
 adminpatterns = [
     url(r'^new$', views.new_admin, name='new-admin'),
     url(r'^new/(?P<alumne_pk>[0-9]{1,30})', views.new_user, name='new-user'),

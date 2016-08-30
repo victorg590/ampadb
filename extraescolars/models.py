@@ -15,7 +15,6 @@ class Extraescolar(models.Model):
             "d'extraescolars. Máxim 80 caracters.")
     descripcio = models.TextField('Descripció', blank=True,
         help_text=_text_md)
-    horari = models.TextField(blank=True, help_text=_text_md)
     inscripcio_des_de = models.DateTimeField('Inscripció des de', blank=True,
         null=True, help_text="Des de quan es permet la "
             "inscripció. No es faràn inscripcions abans d'aquest moment.")
@@ -23,11 +22,8 @@ class Extraescolar(models.Model):
         null=True, help_text="Fins a quan es permet la "
             "inscripció. No es faràn inscripcions despés d'aquest moment.")
     # Permet preus en [0, 100) (en EUR)
-    @staticmethod
-    def _preu_default():
-        return Decimal('0.00')
     preu = models.DecimalField(max_digits=4, decimal_places=2, blank=True,
-        null=False, default=_preu_default,
+        null=False, default=Decimal('0.00'),
         validators=[validators.DecimalValidator(4, 2),
             validators.MinValueValidator(0.00)],
         help_text='Preu en euros. Ha de ser major o igual a 0 i menor que 100')

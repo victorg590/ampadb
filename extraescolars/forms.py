@@ -1,6 +1,21 @@
 from django import forms
 from django.core.exceptions import ValidationError
+from .models import Extraescolar
 import re
+
+class _ExtraescolarMeta:
+    model = Extraescolar
+    fields = ['nom', 'id_interna', 'descripcio_curta', 'descripcio',
+        'inscripcio_des_de', 'inscripcio_fins_a', 'preu', 'cursos']
+
+class ExtraescolarForms:
+    class AddForm(forms.ModelForm):
+        class Meta(_ExtraescolarMeta):
+            pass
+    class EditForm(forms.ModelForm):
+        class Meta(_ExtraescolarMeta):
+            pass
+        id_interna = forms.CharField(disabled=True, required=False)
 
 # Veure http://www.interior.gob.es/web/servicios-al-ciudadano/dni/calculo-del-digito-de-control-del-nif-nie
 def validate_dni(dni):
