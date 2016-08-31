@@ -107,6 +107,15 @@ DATABASES['default'].update(dj_database_url.config(conn_max_age=500))
 LOGIN_REDIRECT_URL = 'index'
 LOGOUT_REDIRECT_URL = 'login'
 
+# Seguretat
+CSRF_COOKIE_HTTPONLY = True
+SESSION_COOKIE_HTTPONLY = True
+HTTPS_ONLY = bool(int(os.environ.get('HTTPS_ONLY', '0')))
+if HTTPS_ONLY:
+    SECURE_SSL_REDIRECT = True
+    SESSION_COOKIE_SECURE = True
+    CSRF_COOKIE_SECURE = True
+    SECURE_HSTS_SECONDS = int(os.environ.get('HSTS_SECONDS', '36000'))
 
 # Password validation
 # https://docs.djangoproject.com/en/1.9/ref/settings/#auth-password-validators

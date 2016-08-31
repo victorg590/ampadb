@@ -2,7 +2,7 @@
 
 ## Accés i seguretat
 * [ ] Permetre recuperació de contrasenya per correu. PRIORITAT: **ALTA**
-* [ ] Utilitzar HTTPS. PRIORITAT: **ALTA**
+* [x] <s>Utilitzar HTTPS. PRIORITAT: **ALTA**</s>
 
 ## UI
 * [x] <s>Fer UI (més enllà del HTML bàsic). PRIORITAT: **ALTA**</s>
