@@ -1,0 +1,35 @@
+{% extends "menu.html" %}
+
+{% block content %}
+<div>
+  <a class="btn btn-primary" href="{% url 'extraescolars:add' %}">Nova extraescolar</a>
+  <a class="btn btn-default" href="{% url 'extraescolars:inscripcions' %}">Veure inscripcions</a>
+</div>
+
+<div class="table-responsive"><table class="table table-stripped">
+  <thead>
+    <tr>
+      <th>Activitat</th>
+      <th>Descripció</th>
+      <th>Editar</th>
+      <th>Eliminar</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for a in activitats %}
+    <tr>
+      <td><a href="{{ a.get_absolute_url }}">{{ a }}</a></td>
+      <td>{{ a.descripcio_curta }}</td>
+      <td><a class="btn btn-default"
+        href="{% url 'extraescolars:edit' a.id_interna %}">Editar</a></td>
+      <td><a class="btn btn-danger"
+        href="{% url 'extraescolars:delete' a.id_interna %}">Eliminar</a></td>
+    </tr>
+    {% empty %}
+    <tr>
+      <td colspan="4"><em>No hi ha extraescolars.</em></td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% endblock content %}

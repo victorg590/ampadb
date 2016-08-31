@@ -1,0 +1,15 @@
+{% extends "menu.html" %}
+{% load bootstrap3 %}
+
+{% block content %}
+<h1>Eliminar extraescolar {{ extraescolar }}</h1>
+<p>Segur que vols eliminar la activitat {{ extraescolar }}? (Aixó també
+  eliminarà les inscripcions a aquesta extraescolar.)</p>
+<form method="post">
+  {% csrf_token %}
+  <div class="form-group">
+    <button class="btn btn-danger" type="submit">Eliminar</button>
+    <a class="btn btn-link" href="{% url 'extraescolars:list' %}">Tornar</a>
+  </div>
+</form>
+{% endblock content %}

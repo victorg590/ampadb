@@ -3,8 +3,9 @@ from django.http import HttpResponse
 from django.template import loader
 from django.contrib.auth.decorators import login_required, user_passes_test
 from .models import Extraescolar, Inscripcio
-from .forms import InscripcioForm, ExtraescolarForms
-from ampadb.support import get_alumne, is_admin
+from .forms import InscripcioForm, ExtraescolarForms, SearchInscripcioForm
+from .forms import InscripcioAdminForm
+from ampadb.support import get_alumne, is_admin, redirect_with_get
 from .support import status_inscripcio
 import weasyprint
 
@@ -32,6 +33,11 @@ def check_data(request):
 # Conflicte amb el built-in list()
 @login_required
 def list_view(request):
+    if is_admin(request.user):
+        context = {
+            'activitats': Extraescolar.objects.all()
+        }
+        return render(request, 'extraescolars/admin-list.html', context)
     activitats = []
     alumne = get_alumne(request.user.username)
     inscripcions = []
@@ -52,6 +58,11 @@ def list_view(request):
 @login_required
 def show(request, act_id):
     activitat = get_object_or_404(Extraescolar, id_interna=act_id)
+    if is_admin(request.user):
+        context = {
+            'activitat': activitat
+        }
+        return render(request, 'extraescolars/show.html', context)
     inscripcio = status_inscripcio(activitat, get_alumne(request.user.username))
     context = {
         'activitat': activitat,
@@ -163,3 +174,54 @@ def edit(request, act_id):
         'submitText': 'Editar'
     }
     return render(request, 'extraescolars/add.html', context)
+
+@login_required
+@user_passes_test(is_admin)
+def delete(request, act_id):
+    activitat = get_object_or_404(Extraescolar, id_interna=act_id)
+    if request.method == 'POST':
+        activitat.delete()
+    else:
+        context = {
+            'extraescolar': activitat
+        }
+        return render(request, 'extraescolars/delete.html', context)
+
+@login_required
+@user_passes_test(is_admin)
+def inscripcions(request):
+    if request.method == 'POST':
+        q = request.POST.get('q')
+    else:
+        q = request.GET.get('q')
+    msg = request.GET.get('msg', '')
+    context = {}
+    if q:
+        search_form = SearchInscripcioForm(request.GET)
+        if search_form.is_valid():
+            pk = search_form.cleaned_data['q']
+            context['ins'] = Inscripcio.objects.get(pk=pk)
+            if request.method == 'POST':
+                form = InscripcioAdminForm(request.POST,
+                    instance=context['ins'])
+            else:
+                form = InscripcioAdminForm(instance=context['ins'])
+            if form.is_valid():
+                form.save()
+            context['form'] = form
+    else:
+        search_form = SearchInscripcioForm()
+    context.update({
+        'msg': msg,
+        'search_form': search_form
+    })
+    return render(request, 'extraescolars/inscripcions.html', context)
+
+@login_required
+@user_passes_test(is_admin)
+def cancel_ins(request, ins_pk):
+    inscripcio = get_object_or_404(Inscripcio, pk=ins_pk)
+    if request.method != 'POST':
+        return redirect_with_get('extraescolar:inscripcions', {'q': ins_pk})
+    inscripcio.delete()
+    return redirect_with_get('extraescolar:inscripcions', {'msg': 'deleted'})

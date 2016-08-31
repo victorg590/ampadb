@@ -1,6 +1,6 @@
 from django import forms
 from django.core.exceptions import ValidationError
-from .models import Extraescolar
+from .models import Extraescolar, Inscripcio
 import re
 
 class _ExtraescolarMeta:
@@ -68,3 +68,20 @@ class InscripcioForm(forms.Form):
         if cleaned_data.get('iban') and not cleaned_data.get('nif_titular'):
             raise ValidationError("S'ha d'introduïr el NIF del titular amb el"
                 " compte.")
+
+def validate_inscripcio_exists(pk):
+    try:
+        pk = int(pk)
+    except ValueError:
+        raise ValidationError('Clau invàlida: ' + pk)
+    if not Inscripcio.objects.filter(pk=pk).exists():
+        raise ValidationError('No existeix la inscripció ' + str(pk))
+
+class SearchInscripcioForm(forms.Form):
+    q = forms.CharField(label='Id inscripció',
+        validators=[validate_inscripcio_exists])
+
+class InscripcioAdminForm(forms.ModelForm):
+    class Meta:
+        model = Inscripcio
+        fields = ['confirmat', 'pagat']

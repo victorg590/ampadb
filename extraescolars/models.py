@@ -47,7 +47,7 @@ class Inscripcio(models.Model):
         "confirmat (ex. si s'ha enviat la inscripció per correu o si s'ha "
         "lliurat a l'AMPA).")
     pagat = models.BooleanField(default=False, help_text="Si està pagat. "
-        "Si el preu de l'activitat és 0 (gratuït), es marcarà automàticament "
+        "Si el preu de l'activitat és 0 (gratuïta), es marcarà automàticament "
         "al guardar.")
 
     def __str__(self):

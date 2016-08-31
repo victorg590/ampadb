@@ -14,7 +14,6 @@
 <form method="post" action="{% url 'extraescolars:cancel' activitat.id_interna %}">
   {% csrf_token %}
   {% if oberta and not ins.confirmat %}
-  <!-- Should work -->
   <button class="btn btn-danger" type="submit">Cancel·lar inscripció</button>
   {% else %}
   <button class="btn btn-danger" disabled>Cancel·lar inscripció</button>

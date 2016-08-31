@@ -10,6 +10,8 @@
     PRIORITAT: **ALTA**</s>
 * [ ] Traduïr missatges propis per uniformitat amb missatges de Django.
     PRIORITAT: **baixa**
+* [ ] Millorar UI d'administració d'`extraescolars` per a permitir veure alumnes
+    inscrits i afegir-ne de nous.
 
 ## Altres
 * [ ] Escriure *tests*. PRIORITAT: **Mitja**
