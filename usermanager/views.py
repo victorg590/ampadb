@@ -1,3 +1,4 @@
+from django.http import HttpResponse
 from django.shortcuts import render, redirect, get_object_or_404
 from .forms import *
 from .models import *
@@ -5,6 +6,7 @@ from django.contrib.auth.models import User
 from contactboard.models import Alumne
 from ampadb.support import is_admin, gen_username, gen_codi
 from django.contrib.auth.decorators import login_required, user_passes_test
+import csv
 
 def register(request):
     if request.method == 'POST':
@@ -160,3 +162,28 @@ def change_code(request, username):
         'tuser': uu
     }
     return render(request, 'usermanager/change_code.html', context)
+
+class _MockAlumne:
+    def __init__(self):
+        self.nom = ''
+        self.cognoms = ''
+
+    def __str__(self):
+        return self.nom + self.cognoms
+
+@login_required
+@user_passes_test(is_admin)
+def export_uu(request):
+    uu = UnregisteredUser.objects.all()
+    response = HttpResponse(content_type="text/csv")
+    response['Content-Disposition'] = 'attachment; filename="users.csv"'
+    writer = csv.DictWriter(response, ['Nom', 'Usuari', 'Codi'])
+    writer.writeheader()
+    for u in uu:
+        try:
+            alumne = Profile.objects.get(unregisteredUser=u).alumne
+        except Profile.DoesNotExist:
+            alumne = _MockAlumne()
+        writer.writerow({'Nom': str(alumne), 'Usuari': u.username,
+            'Codi': u.codi})
+    return response

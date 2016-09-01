@@ -5,8 +5,13 @@
 
 {% block content %}
 {% if unregistered %}
-<h1>No registrats</h1>
-<p>Els usuaris no registrats sempre apareixen com a "&lt;usuari&gt; (*)".</p>
+<h1>No registrats
+<small>Els usuaris no registrats sempre apareixen com a "&lt;usuari&gt; (*)".</small></h1>
+<div>
+  <a class="btn btn-default" href="{% url 'usermanager:export-uu' %}">
+    Exportar llista d'usuaris no registrats
+  </a>
+</div>
 <div class="responsive"><table class="table table-hover text-center">
   <thead>
     <tr>
