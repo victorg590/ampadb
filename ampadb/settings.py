@@ -10,6 +10,7 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/1.9/ref/settings/
 """
 
+from .find_settings import AmpaDbSettings
 import os
 import dj_database_url
 
@@ -17,20 +18,21 @@ import dj_database_url
 PROJECT_DIR = os.path.dirname(os.path.abspath(__file__))
 BASE_DIR = os.path.dirname(PROJECT_DIR)
 
+_settings = AmpaDbSettings()
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/1.9/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = os.environ.get('AMPADB_SECRET_KEY', None)
+SECRET_KEY = _settings.get('secret_key')
 if not SECRET_KEY:
     from django.utils.crypto import get_random_string
     chars = 'abcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*(-_=+)'
     SECRET_KEY = get_random_string(50, chars)
-    os.environ['AMPADB_SECRET_KEY'] = SECRET_KEY
+    _settings.set('secret_key', SECRET_KEY)
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = bool(int(os.environ.get('AMPADB_DEBUG', '0')))
+DEBUG = _settings.getboolean('debug', default=True)
 
 ALLOWED_HOSTS = ['*']
 
@@ -110,12 +112,12 @@ LOGOUT_REDIRECT_URL = 'login'
 # Seguretat
 CSRF_COOKIE_HTTPONLY = True
 SESSION_COOKIE_HTTPONLY = True
-HTTPS_ONLY = bool(int(os.environ.get('HTTPS_ONLY', '0')))
+HTTPS_ONLY = _settings.getboolean('https_only', default=False)
 if HTTPS_ONLY:
     SECURE_SSL_REDIRECT = True
     SESSION_COOKIE_SECURE = True
     CSRF_COOKIE_SECURE = True
-    SECURE_HSTS_SECONDS = int(os.environ.get('HSTS_SECONDS', '3600'))
+    SECURE_HSTS_SECONDS = _settings.getint('hsts_seconds', 3600)
 
 # Password validation
 # https://docs.djangoproject.com/en/1.9/ref/settings/#auth-password-validators
