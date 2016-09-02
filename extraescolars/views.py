@@ -60,7 +60,8 @@ def show(request, act_id):
     activitat = get_object_or_404(Extraescolar, id_interna=act_id)
     if is_admin(request.user):
         context = {
-            'activitat': activitat
+            'activitat': activitat,
+            'inscripcions': Inscripcio.objects.filter(activitat=activitat)
         }
         return render(request, 'extraescolars/show.html', context)
     inscripcio = status_inscripcio(activitat, get_alumne(request.user.username))

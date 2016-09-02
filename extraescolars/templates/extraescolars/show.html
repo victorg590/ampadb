@@ -1,5 +1,6 @@
 {% extends "menu.html" %}
 {% load md %}
+{% load pytr %}
 
 {% block content %}
 <div class="page-header">
@@ -14,5 +15,32 @@
 {{ activitat.horari|md }}
 {% endif %}
 
+{% if admin %}
+<p>Per a afegir alumnes directament, s'ha de fer a
+  l'<a href="{% url 'admin:extraescolars_extraescolar_change' activitat.pk %}">
+    admnistració de la DB</a></p>
+{% if inscripcions.count %}
+<h2>Alumnes inscrits</h2>
+<div class="table-responsive"><table class="table table-stripped">
+  <thead>
+    <tr>
+    <th>Alumne</th>
+    <th>Confirmat</th>
+    <th>Pagat</th>
+    <th>Núm. Inscripció</th>
+  </thead>
+  <tbody>
+    {% for i in inscripcions %}
+    <tr>
+      <td>{{ i.alumne }}</td>
+      <td>{{ i.confirmat|pytr }}</td>
+      <td>{{ i.pagat|pytr }}</td>
+      <td><a href="{{ i.get_absolute_url }}">{{ i.pk }}</a></td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table></div>
+{% endif %}
+{% endif %}
 {% block inscripcio %}{% endblock %}
 {% endblock content %}

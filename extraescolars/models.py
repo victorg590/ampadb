@@ -50,6 +50,9 @@ class Inscripcio(models.Model):
         "Si el preu de l'activitat és 0 (gratuïta), es marcarà automàticament "
         "al guardar.")
 
+    def get_absolute_url(self):
+        return reverse('extraescolars:inscripcions') + '?q={}'.format(self.pk)
+
     def __str__(self):
         return str(self.alumne) + ' - ' + str(self.activitat)
 
