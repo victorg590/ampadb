@@ -1,7 +1,7 @@
 # Tasques pendents
 
 ## Accés i seguretat
-* [ ] Permetre recuperació de contrasenya per correu. PRIORITAT: **ALTA**
+* [x] <s>Permetre recuperació de contrasenya per correu. PRIORITAT: **ALTA**</s>
 * [x] <s>Utilitzar HTTPS. PRIORITAT: **ALTA**</s>
 
 ## UI

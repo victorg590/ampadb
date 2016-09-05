@@ -4,11 +4,14 @@ import configparser
 
 class AmpaDbSettings:
     def __init__(self):
-        settings_file = os.environ.get('AMPADB_SETTINGS')
-        if settings_file and os.path.isfile(settings_file):
-            self.config = configparser.ConfigParser()
-            self.config.read(settings_file)
-            self.settings_file = settings_file
+        settings_var = os.environ.get('AMPADB_SETTINGS')
+        if settings_var:
+            settings_files = settings_var.split(os.pathsep)
+            for f in settings_files:
+                if os.path.isfile(f):
+                    self.config = configparser.ConfigParser()
+                    self.config.read(f)
+            self.settings_file = settings_files[0]
         else:
             self.config = None
 
@@ -74,8 +77,4 @@ class AmpaDbSettings:
         return default
 
     def set(self, key, value):
-        if self.config:
-            self.config['DEFAULT'][key] = value
-            with open(self.settings_file, 'w') as cfg:
-                config.write(cfg)
         os.environ['AMPADB_' + key.upper()] = value

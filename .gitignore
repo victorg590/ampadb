@@ -2,6 +2,8 @@
 biblio.txt
 # Entorn virtual (virtualenv)
 ve/
+# Configuració privada
+private.ini
 # Arxius estàtics
 ampadb/static/
 db.*.sqlite3

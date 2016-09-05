@@ -21,10 +21,10 @@ BASE_DIR = os.path.dirname(PROJECT_DIR)
 _settings = AmpaDbSettings()
 
 # Quick-start development settings - unsuitable for production
-# See https://docs.djangoproject.com/en/1.9/howto/deployment/checklist/
+# See https://docs.djangoproject.com/en/1.10/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = _settings.get('secret_key')
+SECRET_KEY = _settings.get('secret_key', raw=True)
 if not SECRET_KEY:
     from django.utils.crypto import get_random_string
     chars = 'abcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*(-_=+)'
@@ -93,7 +93,7 @@ WSGI_APPLICATION = 'ampadb.wsgi.application'
 
 
 # Database
-# https://docs.djangoproject.com/en/1.9/ref/settings/#databases
+# https://docs.djangoproject.com/en/1.10/ref/settings/#databases
 
 DATABASES = {
     'default': {
@@ -125,7 +125,7 @@ else:
     SECURE_HSTS_SECONDS = 0
 
 # Password validation
-# https://docs.djangoproject.com/en/1.9/ref/settings/#auth-password-validators
+# https://docs.djangoproject.com/en/1.10/ref/settings/#auth-password-validators
 
 PASSWORD_HASHERS = [
     'django.contrib.auth.hashers.PBKDF2PasswordHasher',
@@ -166,7 +166,7 @@ AUTH_PASSWORD_VALIDATORS = [
 ]
 
 # Internationalization
-# https://docs.djangoproject.com/en/1.9/topics/i18n/
+# https://docs.djangoproject.com/en/1.10/topics/i18n/
 
 LANGUAGE_CODE = 'ca'
 
@@ -184,7 +184,7 @@ USE_TZ = True
 
 
 # Static files (CSS, JavaScript, Images)
-# https://docs.djangoproject.com/en/1.9/howto/static-files/
+# https://docs.djangoproject.com/en/1.10/howto/static-files/
 
 STATIC_ROOT = os.path.join(PROJECT_DIR, 'static')
 STATIC_URL = '/static/'
@@ -194,3 +194,15 @@ STATICFILES_FINDERS = [
     'django.contrib.staticfiles.finders.FileSystemFinder',
     'django.contrib.staticfiles.finders.AppDirectoriesFinder',
 ]
+
+# Correu
+# https://docs.djangoproject.com/en/1.10/topics/email/
+
+DEFAULT_CHARSET = 'utf-8'
+EMAIL_HOST = _settings.get('email_host')
+EMAIL_PORT = _settings.getint('email_port')
+EMAIL_HOST_USER = _settings.get('email_user')
+EMAIL_HOST_PASSWORD = _settings.get('email_password')
+EMAIL_USE_TLS = _settings.getboolean('email_tls', False)
+EMAIL_USE_SSL = _settings.getboolean('email_ssl', False)
+DEFAULT_FROM_EMAIL = _settings.get('from_email', EMAIL_HOST_USER)

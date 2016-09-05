@@ -6,4 +6,7 @@
 #   . env.sh
 
 # Utilitza la configuració a l'arxiu "debug.ini"
-export AMPADB_CONFIG="`pwd`/debug.ini"
+export AMPADB_SETTINGS="$(pwd)/debug.ini"
+if [ -f "private.ini" ]; then
+  AMPADB_SETTINGS="$AMPADB_CONFIG:$(pwd)/private.ini"
+fi

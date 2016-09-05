@@ -14,7 +14,9 @@
   <form method="post">
     {% csrf_token %}
     {% bootstrap_form form %}
-    {% buttons submit="Registrar-se" %}{% endbuttons %}
+    {% buttons submit="Registrar-se" %}
+    <a class="btn btn-link" href="{% url 'login' %}">Tornar</a>
+    {% endbuttons %}
   </form>
 </div>
 {% endblock body %}

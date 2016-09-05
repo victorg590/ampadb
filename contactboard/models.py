@@ -75,6 +75,8 @@ class Alumne(models.Model):
     def __str__(self):
         return self.nom + ' ' + self.cognoms
 
+    # Senyals associada: .signals.alumne_pre_save, .signals.alumne_pre_save
+
 def validate_non_reserved_id(value):
     if value in ['admin', '-']:
         raise ValidationError('%(value)s is reserved for internal use',
