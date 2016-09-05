@@ -197,7 +197,6 @@ STATICFILES_FINDERS = [
 
 # Correu
 # https://docs.djangoproject.com/en/1.10/topics/email/
-
 DEFAULT_CHARSET = 'utf-8'
 EMAIL_HOST = _settings.get('email_host')
 EMAIL_PORT = _settings.getint('email_port')
@@ -206,3 +205,8 @@ EMAIL_HOST_PASSWORD = _settings.get('email_password')
 EMAIL_USE_TLS = _settings.getboolean('email_tls', False)
 EMAIL_USE_SSL = _settings.getboolean('email_ssl', False)
 DEFAULT_FROM_EMAIL = _settings.get('from_email', EMAIL_HOST_USER)
+SERVER_EMAIL = _settings.get('server_email', DEFAULT_FROM_EMAIL)
+_ADMINS_raw = _settings.getjson('admins', '{}')
+ADMINS = list(_ADMINS_raw.items())
+_MANAGERS_raw = _settings.getjson('managers', '{}')
+MANAGERS = list(_MANAGERS_raw.items())

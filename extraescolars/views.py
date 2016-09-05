@@ -8,6 +8,8 @@ from .forms import InscripcioAdminForm
 from ampadb.support import get_alumne, is_admin, redirect_with_get
 from .support import status_inscripcio
 import weasyprint
+from django.views.decorators.debug import (sensitive_variables,
+    sensitive_post_parameters)
 
 def check_data(request):
     alumne = get_alumne(request.user.username)
@@ -113,6 +115,7 @@ def cancel(request, act_id):
         pass
     return redirect('extraescolars:show', act_id)
 
+@sensitive_variables()
 def _genpdf(context):
     response = HttpResponse(content_type='application/pdf')
     response['Content-Disposition'] = 'filename="Inscripció extraescolars.pdf"'
@@ -121,6 +124,8 @@ def _genpdf(context):
     weasyprint.HTML(string=html).write_pdf(response)
     return response
 
+@sensitive_post_parameters('dni_pare', 'dni_mare', 'iban', 'nif_titular')
+@sensitive_variables('form', 'context')
 @login_required
 def genfull(request):
     alumne = get_alumne(request.user.username)

@@ -7,7 +7,11 @@ from contactboard.models import Alumne
 from ampadb.support import is_admin, gen_username, gen_codi
 from django.contrib.auth.decorators import login_required, user_passes_test
 import csv
+from django.views.decorators.debug import (sensitive_variables,
+    sensitive_post_parameters)
 
+@sensitive_post_parameters('password', 'password_confirm')
+@sensitive_variables('form', 'cdata')
 def register(request):
     if request.method == 'POST':
         form = RegisterForm(request.POST)
@@ -30,6 +34,8 @@ def register(request):
     }
     return render(request, 'registration/register.html', context)
 
+@sensitive_post_parameters('password', 'password_confirm')
+@sensitive_variables('form', 'cdata')
 @login_required
 @user_passes_test(is_admin)
 def new_admin(request):
@@ -119,6 +125,8 @@ def cancel_user(request, username):
     }
     return render(request, 'usermanager/cancel.html', context)
 
+@sensitive_post_parameters()
+@sensitive_variables('form', 'cdata')
 @login_required
 @user_passes_test(is_admin)
 def admin_changepassword(request, username):

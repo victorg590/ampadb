@@ -1,6 +1,7 @@
 import os
 import os.path
 import configparser
+import json
 
 class AmpaDbSettings:
     def __init__(self):
@@ -76,5 +77,30 @@ class AmpaDbSettings:
                 fallback=default)
         return default
 
+    def getjson(self, key, default=None, raw=False):
+        if self.config:
+            found = self.config.get('DEFAULT', key, raw=raw,fallback=None)
+            if found is not None:
+                try:
+                    return json.loads(found)
+                except json.JSONDecodeError:
+                    found = None
+        found = os.environ.get('AMPADB_' + key.upper())
+        if found is not None:
+            try:
+                return json.loads(found)
+            except json.JSONDecodeError:
+                found = None
+        if self.config:
+            try:
+                return json.loads(self.config.get('FALLBACK', key, raw=raw,
+                    fallback=default))
+            except json.JSONDecodeError:
+                pass
+        return default
+
     def set(self, key, value):
         os.environ['AMPADB_' + key.upper()] = value
+
+    def setjson(self, key, value):
+        return self.set(key, json.dumps(value))
