@@ -28,8 +28,8 @@ def parse_md(md):
         tree.append(E.P(html.unescape(clean_html)))
         print(tree[0].text)
     for table in tree.iter('table'):
-        tree.classes &= ['table', 'table-striped', 'table-bordered',
+        table.classes &= ['table', 'table-striped', 'table-bordered',
             'table-hover', 'table-condensed']  # Classes permeses
-        tree.classes |= ['table']  # Afegir sempre la classe "table"
+        table.classes |= ['table']  # Afegir sempre la classe "table"
     return lxml.html.tostring(tree, encoding='utf-8', method='html',
         pretty_print=True).decode('utf-8')
