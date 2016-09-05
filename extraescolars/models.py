@@ -13,7 +13,7 @@ class Extraescolar(models.Model):
         max_length=80,
         help_text="Una descripció curta per mostrar a la llista "
             "d'extraescolars. Máxim 80 caracters.")
-p    descripcio = models.TextField('Descripció', blank=True,
+    descripcio = models.TextField('Descripció', blank=True,
         help_text=_text_md)
     inscripcio_des_de = models.DateTimeField('Inscripció des de', blank=True,
         null=True, help_text="Des de quan es permet la "
