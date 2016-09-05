@@ -4,7 +4,7 @@ from django.urls import reverse
 from contactboard.models import Curs, Alumne
 from decimal import Decimal
 
-_text_md = 'Suporta <a href="https://ca.wikipedia.org/wiki/Markdown">Markdown</a>'
+_text_md = 'Suporta <a href="/markdown">Markdown</a>'
 
 class Extraescolar(models.Model):
     nom = models.CharField(blank=False, null=False, max_length=50)
@@ -13,7 +13,7 @@ class Extraescolar(models.Model):
         max_length=80,
         help_text="Una descripció curta per mostrar a la llista "
             "d'extraescolars. Máxim 80 caracters.")
-    descripcio = models.TextField('Descripció', blank=True,
+p    descripcio = models.TextField('Descripció', blank=True,
         help_text=_text_md)
     inscripcio_des_de = models.DateTimeField('Inscripció des de', blank=True,
         null=True, help_text="Des de quan es permet la "

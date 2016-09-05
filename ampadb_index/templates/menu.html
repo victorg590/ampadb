@@ -17,6 +17,8 @@
   <div class="collapse navbar-collapse" id="main-navbar">
     {% if admin %}
     {% include "ampadb/admin_menu.html" %}
+    {% elif anonymous %}
+    {% include "ampadb/anonymous_menu.html" %}
     {% else %}
     {% include "ampadb/user_menu.html" %}
     {% endif %}

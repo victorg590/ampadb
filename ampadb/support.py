@@ -12,8 +12,8 @@ def is_admin(user):
 def context_processor(request):
     user = request.user
     if not user.is_authenticated():
-        return {'admin': False}
-    return {'admin': is_admin(user)}
+        return {'anonymous': True, 'admin': False}
+    return {'anonymous': False, 'admin': is_admin(user)}
 
 
 def redirect_with_get(url, get_params, *args, **kwargs):

@@ -1,13 +1,23 @@
 from django import template
 from django.utils.html import mark_safe
-import bleach
-import markdown
+from ampadb_index.parse_md import parse_md
 
 register = template.Library()
 
 @register.filter
 def md(text):
-    html = markdown.markdown(bleach.clean(text), output_format='html5',
-        enable_attributes=False, lazy_ol=False,
-        extensions=['markdown.extensions.extra'])
-    return mark_safe(html)
+    return mark_safe(parse_md(text))
+
+class MarkdownNode(template.Node):
+    def __init__(self, nodelist):
+        self.nodelist = nodelist
+
+    def render(self, context):
+        text = self.nodelist.render(context)
+        return mark_safe(parse_md(text))
+
+@register.tag(name="markdown")
+def do_markdown(parser, token):
+    nodelist = parser.parse(('endmarkdown'))
+    parser.delete_first_token()
+    return MarkdownNode(nodelist)
