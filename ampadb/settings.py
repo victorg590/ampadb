@@ -44,6 +44,7 @@ INSTALLED_APPS = [
     'usermanager.apps.UsermanagerConfig',
     'importexport.apps.ImportexportConfig',
     'extraescolars.apps.ExtraescolarsConfig',
+    'missatges.apps.MissatgesConfig',
     'django.contrib.admin',
     'django.contrib.admindocs',
     'django.contrib.auth',

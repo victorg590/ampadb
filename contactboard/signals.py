@@ -17,7 +17,11 @@ def alumne_post_save(sender, **kwargs):
             return
     except Profile.DoesNotExist:
         return
-    profile.user.email = kwargs['instance'].correu_alumne
+    instance = kwargs['instance']
+    profile.user.email = instance.correu_alumne
+    profile.user.first_name = instance.nom_alumne
+    profile.user.last_name = instance.cognoms_alumne
+
 
 @receiver(pre_save, sender=Classe)
 def classe_pre_save(sender, **kwargs):

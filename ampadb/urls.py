@@ -23,6 +23,7 @@ urlpatterns = [
     url(r'^contactboard/', include('contactboard.urls')),
     url(r'^importexport/', include('importexport.urls')),
     url(r'^extraescolars/', include('extraescolars.urls')),
+    url(r'^missatges/', include('missatges.urls')),
     url(r'^', include('usermanager.urls')),
     url(r'^', include('ampadb_index.urls'))
 ]

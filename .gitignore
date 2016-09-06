@@ -1,7 +1,7 @@
 ### Altres ###
 biblio.txt
-# Entorn virtual (virtualenv)
-ve/
+# Entorn virtual
+virtualenv/
 # Configuració privada
 private.ini
 # Arxius estàtics
