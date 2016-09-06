@@ -19,8 +19,8 @@ def alumne_post_save(sender, **kwargs):
         return
     instance = kwargs['instance']
     profile.user.email = instance.correu_alumne
-    profile.user.first_name = instance.nom_alumne
-    profile.user.last_name = instance.cognoms_alumne
+    profile.user.first_name = instance.nom
+    profile.user.last_name = instance.cognoms
 
 
 @receiver(pre_save, sender=Classe)
