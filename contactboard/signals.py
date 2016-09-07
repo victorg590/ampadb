@@ -2,7 +2,6 @@ from django.db.models.signals import pre_save, post_save
 from django.dispatch import receiver
 from .models import Alumne, Classe
 from usermanager.models import Profile
-from django.contrib.auth.models import User
 from ampadb.support import signal_clean
 
 @receiver(pre_save, sender=Alumne)

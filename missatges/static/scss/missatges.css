@@ -1,0 +1,10 @@
+tr > td > span {
+  visibility: hidden; }
+
+tr.no-llegit > td {
+  font-weight: bold; }
+  tr.no-llegit > td > span {
+    visibility: visible;
+    color: #00BFFF; }
+
+/*# sourceMappingURL=missatges.css.map */

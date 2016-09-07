@@ -11,7 +11,7 @@ fi
 if [ ! -d "virtualenv" ]; then
   echo "No existeix l'entorn virtual. Ara es crearà."
   virtualenv3 "virtualenv"
-  [ $? == 127 ] && echo "Cal instalar virtualenv per a Python 3"
+  [ $? != 0 ] && echo "Cal instalar virtualenv per a Python 3" && return
   . virtualenv/bin/activate
   pip install 'setuptools>=18.5'
   pip install -r stdrequirements.txt

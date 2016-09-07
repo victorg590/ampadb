@@ -1,0 +1,18 @@
+$deepskyblue: #00BFFF;
+$lightgrey: #D3D3D3;
+$grey: #808080;
+
+tr > td > span {
+  visibility: hidden;
+}
+
+tr.no-llegit {
+  > td {
+    font-weight: bold;
+
+    > span {
+      visibility: visible;
+      color: $deepskyblue;
+    }
+  }
+}

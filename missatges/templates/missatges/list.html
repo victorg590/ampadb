@@ -1,8 +1,15 @@
 {% extends "menu.html" %}
+{% load llegit %}
+{% load static %}
+
+{% block head %}
+{{ block.super }}
+<link rel="stylesheet" href="{% static 'scss/missatges.css' %}" />
+{% endblock head %}
 
 {% block content %}
-<h1>Missatges</h1>
 {% if grups %}
+<h1>Missatges</h1>
 <h2>Grups de missatgeria</h2>
 <p>Reps els missatges dels següents grups de missatgeria:</p>
 <ul>
@@ -23,11 +30,18 @@
   </thead>
   <tbody>
     {% for msg in missatges_rebuts %}
+    {% llegit user msg as ha_llegit %}
+    {% if not ha_llegit %}
+    <tr class="no-llegit">
+    {% else %}
     <tr>
+    {% endif %}
       <td>{{ msg|truncatechars:80 }}</td>
       <td>{{ msg.de }}</td>
       <td>{{ msg.a }}</td>
-      <td>{# TODO #}</td>
+      <td>
+        <span class="glyphicon glyphicon-exclamation-sign no-llegit"></span>
+      </td>
     </tr>
     {% empty %}
     <tr>
@@ -38,9 +52,17 @@
 </table>
 
 <h2>Missatges enviats</h2>
+{% else %}
+<div class="page-header">
+  <h1>Missatges</h1>
+  <h1><small>Si tens algun problema o suggerència per a l'AMPA o sobre
+  l'aplicació, pots enviar-nos un missatge.</small></h1>
+</div>
 {% endif %}
-<p>Si tens algun problema o suggerència per a l'AMPA o sobre l'aplicació, pots
-  enviar-nos un missatge.</p>
+
+<div>
+  <a class="btn btn-primary" href="{% url 'missatges:new' %}">Nou missatge</a>
+</div>
 <table class="table table-hover">
   <thead>
     <tr>
@@ -51,10 +73,15 @@
   </thead>
   <tbody>
     {% for msg in missatges_enviats %}
+    {% llegit user msg as ha_llegit %}
+    {% if not ha_llegit %}
+    <tr class="no-llegit">
+    {% else %}
     <tr>
+    {% endif %}
       <td>{{ msg|truncatechars:80 }}</td>
       <td>{{ msg.a }}</td>
-      <td>{# TODO #}</td>
+      <td><span class="glyphicon glyphicon-exclamation-sign no-llegit"></span></td>
     </tr>
     {% empty %}
     <tr>
