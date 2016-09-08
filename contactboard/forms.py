@@ -55,18 +55,19 @@ class _AlumneMeta:
 class AlumneForms:
     class NewForm(forms.ModelForm):
         class Meta(_AlumneMeta):
-            pass
-        classe = forms.CharField(disabled=True, required=False)
-        data_de_naixement = forms.DateField(required=True,
-            widget=forms.DateInput(format='%d/%m/%Y'),
-            input_formats=[
-                '%d/%m/%Y',
-                '%d-%m-%Y',
-                '%d-%m-%y',
-                '%d/%m/%y',
-                '%Y-%m-%d'  # ISO
-            ]
-        )
+            exclude = ['classe']
+            widgets = {
+                'data_de_naixement': forms.widgets.DateInput(attrs={
+                    'format': '%d/%m/%Y',
+                    'input_formats': [
+                        '%d/%m/%Y',
+                        '%d-%m-%Y',
+                        '%d-%m-%y',
+                        '%d/%m/%y',
+                        '%Y-%m-%d'  # ISO
+                    ]
+                })
+            }
 
     class EditForm(forms.ModelForm):
         class Meta(_AlumneMeta):

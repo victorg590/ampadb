@@ -24,6 +24,8 @@ class Profile(models.Model):
     def __str__(self):
         return str(self.alumne)
 
+    def __repr__(self):
+        return '<Profile: {s} (User={user}, UU={uu})>'.format(s=str(self), user=self.user, uu=self.unregisteredUser)
     # Senyal associada: .signals.profile_pre_delete
 
 def validate_username_unique(value):

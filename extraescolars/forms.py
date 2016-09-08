@@ -48,6 +48,7 @@ class InscripcioForm(forms.Form):
     dni_mare = forms.CharField(label="DNI de la mare", max_length=9,
         help_text='DNI o NIE de la mare (no es guardarà).',
         validators=[validate_dni])
+    catsalut = forms.CharField(label="Núm. targeta sanitària (Catsalut)")
     iban = forms.CharField(label="IBAN", required=False, help_text="Núm. de "
         "compte (si cal) (no es guardarà)")
     nif_titular = forms.CharField(label="NIF del titular del compte",

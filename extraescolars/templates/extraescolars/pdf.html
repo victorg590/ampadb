@@ -22,7 +22,7 @@
         <th>Nom</th>
         <th>Correu electrònic</th>
         <th>Telèfon</th>
-        <th>DNI</th>
+        <th>DNI*</th>
       </tr>
     </thead>
     <tbody>
@@ -31,7 +31,7 @@
         <td>{{ alumne.nom }} {{ alumne.cognoms }}</td>
         <td>{{ alumne.correu_alumne }}</td>
         <td>{{ alumne.telefon_alumne }}</td>
-        <td></td>
+        <td>TS: {{ dades.catsalut }}</td>
       </tr>
       <tr>
         <td>Pare</td>
@@ -49,6 +49,7 @@
       </tr>
     </tbody>
   </table>
+  <p>* En el cas de l'alumne, el número de la targeta sanitària</p>
   {% if dades.iban %}
   <p><strong>IBAN: </strong>{{ dades.iban }}</p>
   <p><strong>NIF titular: </strong>{{ dades.nif_titular }}</p>

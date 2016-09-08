@@ -155,14 +155,17 @@ def add_alumne(request, id_classe):
     classe = get_object_or_404(Classe, id_interna=id_classe)
     if request.method == 'POST':
         form = AlumneForms.NewForm(request.POST)
-        form.classe = classe
         if form.is_valid():
-            form.save()
+            alumne = form.save(commit=False)
+            alumne.classe = classe
+            alumne.save()
+            #alumne.save_m2m()  # Innecessàri si no s'afegeix un camp ManyToMany
             return redirect('contactboard:list', id_classe)
     else:
-        form = AlumneForms.NewForm(initial={'classe': classe})
+        form = AlumneForms.NewForm()
     context = {
         'form': form,
+        'classe': classe,
         'submitText': 'Afegir'
     }
     return render(request, 'contactboard/add.html', context)

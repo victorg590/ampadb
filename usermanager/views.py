@@ -22,8 +22,8 @@ def register(request):
             user = User.objects.create_user(uu.username,
                 password=cdata['password'])
             user.save()
+            profile.unregisteredUser = None
             profile.user = user
-            profile.uu = None
             profile.save()
             uu.delete()
             return redirect('login')
@@ -69,7 +69,11 @@ def new_user(request, alumne_pk):
             uu = UnregisteredUser(username=cdata['username'],
                 codi=cdata['codi'])
             uu.save()
-            p = Profile(alumne=alumne, unregisteredUser=uu)
+            try:
+                p = Profile.objects.get(alumne=alumne)
+                p.unregisteredUser = uu
+            except Profile.DoesNotExist:
+                p = Profile(alumne=alumne, unregisteredUser=uu)
             p.save()
             return redirect('contactboard:list', alumne.classe.id_interna)
     else:
