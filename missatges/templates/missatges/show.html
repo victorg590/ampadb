@@ -1,0 +1,34 @@
+{% extends "mdmenu.html" %}
+{% load md %}
+{% load static %}
+
+{% block head %}
+{{ block.super }}
+<link rel="stylesheet" href="{% static 'scss/missatges.css' %}" />
+<script src="{% static 'js/tooltip.js' %}"></script>
+{% endblock head %}
+
+{% block content %}
+<h1>{{ assumpte }}</h1>
+{% for msg in missatges %}
+{% if msg.per == user %}
+<div class="well msg-self">
+{% elif msg.per == msg.conversacio.de %}
+<div class="well msg-user">
+{% else %}
+<div class="well msg-answer">
+{% endif %}
+  <p><small>Enviat per {{ msg.per }}
+    <span data-toggle="tooltip" data-placement="bottom"
+      title="{{ msg.enviat|date:'d M Y H:i' }}">{{ msg.enviat|timesince }}
+    </span>
+    {% if msg.ha_sigut_editat %}
+    <span data-toggle="tooltip" data-placement="bottom"
+      title="{{ msg.editat|date:'d M Y H:i' }}">
+      (Editat {{ msg.editat|timesince }})
+    </span>
+    {% endif %}
+  {{ msg.contingut|md }}
+</div>
+{% endfor %}
+{% endblock content %}

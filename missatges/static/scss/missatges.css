@@ -7,4 +7,13 @@ tr.no-llegit > td {
     visibility: visible;
     color: #00BFFF; }
 
+.msg-self {
+  background-color: #d2f9d2; }
+
+.msg-user {
+  background-color: #d8edf3; }
+
+.msg-answer {
+  background-color: #f2f2f2; }
+
 /*# sourceMappingURL=missatges.css.map */

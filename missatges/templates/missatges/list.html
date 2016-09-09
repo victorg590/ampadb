@@ -36,7 +36,7 @@
     {% else %}
     <tr>
     {% endif %}
-      <td>{{ msg|truncatechars:80 }}</td>
+      <td><a href="{{ msg.get_absolute_url }}">{{ msg|truncatechars:80 }}</a></td>
       <td>{{ msg.de }}</td>
       <td>{{ msg.a }}</td>
       <td>
@@ -79,7 +79,7 @@
     {% else %}
     <tr>
     {% endif %}
-      <td>{{ msg|truncatechars:80 }}</td>
+      <td><a href="{{ msg.get_absolute_url }}">{{ msg|truncatechars:80 }}</a></td>
       <td>{{ msg.a }}</td>
       <td><span class="glyphicon glyphicon-exclamation-sign no-llegit"></span></td>
     </tr>

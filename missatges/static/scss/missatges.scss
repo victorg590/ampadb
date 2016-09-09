@@ -1,6 +1,9 @@
 $deepskyblue: #00BFFF;
 $lightgrey: #D3D3D3;
 $grey: #808080;
+$usercolor: #d8edf3;
+$selfcolor: #d2f9d2;
+$answercolor: #f2f2f2;
 
 tr > td > span {
   visibility: hidden;
@@ -15,4 +18,16 @@ tr.no-llegit {
       color: $deepskyblue;
     }
   }
+}
+
+.msg-self {
+  background-color: $selfcolor;
+}
+
+.msg-user {
+  background-color: $usercolor;
+}
+
+.msg-answer {
+  background-color: $answercolor;
 }

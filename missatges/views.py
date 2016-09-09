@@ -1,5 +1,5 @@
 from django.shortcuts import render, redirect, get_object_or_404
-from .models import GrupDeMissatgeria, Conversacio, Missatge
+from .models import GrupDeMissatgeria, Conversacio, Missatge, EstatMissatge
 from .forms import ComposeForm
 from django.contrib.auth.decorators import login_required
 
@@ -49,3 +49,19 @@ def compose(request, to):
         'form': form
     }
     return render(request, 'missatges/compose.html', context)
+
+@login_required
+def show(request, cid):
+    conversacio = get_object_or_404(Conversacio, pk=cid)
+    if conversacio.can_access(request.user):
+        # Marca com a llegit
+        for msg in Missatge.objects.filter(conversacio=conversacio):
+            EstatMissatge.objects.update_or_create(destinatari=request.user,
+                missatge=msg, defaults={'vist': True})
+    else:
+        return redirect('missatges:list')
+    context = {
+        'assumpte': str(conversacio),
+        'missatges': Missatge.objects.filter(conversacio=conversacio)
+    }
+    return render(request, 'missatges/show.html', context)

@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import User
+from django.urls import reverse
 from django.utils.functional import cached_property
 from datetime import timedelta
 
@@ -19,25 +20,9 @@ class GrupDeMissatgeria(models.Model):
     def __str__(self):
         return self.nom
 
-class Conversacio(models.Model):
-    class Meta:
-        verbose_name = 'conversació'
-        verbose_name_plural = 'conversacions'
-
-    de = models.ForeignKey(User, on_delete=models.SET_NULL, blank=False,
-        null=True)
-    a = models.ForeignKey(GrupDeMissatgeria, on_delete=models.SET_NULL,
-        blank=False, null=True)
-    assumpte = models.CharField(max_length=80)
-    tancat = models.BooleanField(blank=True, default=False)
-
-    def __str__(self):
-        rstr = self.assumpte
-        if self.tancat:
-            rstr += ' [TANCAT]'
-        return rstr
-
 class EstatMissatge(models.Model):
+    class Meta:
+        unique_together = ('destinatari', 'missatge')
     destinatari = models.ForeignKey(User, on_delete=models.CASCADE)
     missatge = models.ForeignKey('Missatge', on_delete=models.CASCADE)
     vist = models.BooleanField(blank=True, default=False)
@@ -45,7 +30,8 @@ class EstatMissatge(models.Model):
 class Missatge(models.Model):
     class Meta:
         unique_together = ('conversacio', 'ordre')
-    conversacio = models.ForeignKey(Conversacio, on_delete=models.CASCADE,
+        ordering = ['-ordre']
+    conversacio = models.ForeignKey('Conversacio', on_delete=models.CASCADE,
         blank=False, null=False, verbose_name='conversació')
     per = models.ForeignKey(User, on_delete=models.SET_NULL, blank=False,
         null=True, related_name='ha_enviat')
@@ -77,3 +63,37 @@ class Missatge(models.Model):
             return self.contingut[:77] + '...'
         else:
             return self.contingut
+
+class Conversacio(models.Model):
+    class Meta:
+        verbose_name = 'conversació'
+        verbose_name_plural = 'conversacions'
+
+    de = models.ForeignKey(User, on_delete=models.SET_NULL, blank=False,
+        null=True)
+    a = models.ForeignKey(GrupDeMissatgeria, on_delete=models.SET_NULL,
+        blank=False, null=True)
+    assumpte = models.CharField(max_length=80)
+    tancat = models.BooleanField(blank=True, default=False)
+
+    def __str__(self):
+        rstr = self.assumpte
+        if self.tancat:
+            rstr += ' [TANCAT]'
+        return rstr
+
+    def get_absolute_url(self):
+        return reverse('missatges:show', args=[self.pk])
+
+    def can_access(self, usuari):
+        """Comprova si una persona està a la conversació i, per tant, si pot
+        accedir
+        """
+        return (usuari == self.de) or (self.a.usuaris.filter(
+            username=usuari.username).exists())
+
+    def tots_llegits(self, usuari):
+        """Torna si s'han llegit tots els missatges de la conversació"""
+        return not EstatMissatge.objects.filter(destinatari=usuari,
+            missatge__in=Missatge.objects.filter(conversacio=self),
+            vist=False).exists()
