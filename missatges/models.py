@@ -37,26 +37,42 @@ class Missatge(models.Model):
         null=True, related_name='ha_enviat')
     destinataris = models.ManyToManyField(User, through='EstatMissatge')
     ordre = models.PositiveSmallIntegerField(editable=False)
-    contingut = models.TextField(blank=False,
+    contingut = models.TextField(blank=True,
         help_text='Suporta <a href="/markdown">Markdown</a>')
     enviat = models.DateTimeField(auto_now_add=True, blank=False,null=False)
     editat = models.DateTimeField(auto_now=True, blank=False, null=False)
+    estat = models.CharField(max_length=8, blank=True, choices=[
+        ('CLOSED', 'Tancat'),
+        ('REOPENED', 'Reobert')
+    ])
 
     def ha_sigut_editat(self):
-        '''Indica si un missatge ha sigut editat'''
+        """Indica si un missatge ha sigut editat"""
         return abs(self.editat - self.enviat) > timedelta(seconds=2)
         # Permet un marge de +/- 2 segons
     ha_sigut_editat.boolean = True
     ha_sigut_editat.short_description = 'Ha sigut editat?'
 
     def calcular_destinataris(self):
+        if self.estat:
+            # Les notificacions d'estat no tenen destinataris
+            return
         if not self.per in self.destinataris.all():
-            EstatMissatge.objects.create(destinatari=self.per, missatge=self)
+            EstatMissatge.objects.create(destinatari=self.per, missatge=self,
+                vist=True)
         en_grup = self.conversacio.a
         for u in (u for u in self.conversacio.a.usuaris.all()
             if u not in self.destinataris.all()):
             EstatMissatge.objects.create(destinatari=u, missatge=self)
         self.save()
+
+    def clean(self):
+        super().clean()
+        if self.contingut and self.estat:
+            raise ValidationError("Només un de `contingut` i `estat` es pot "
+                "definir")
+        elif not (self.contingut or self.estat):
+            raise ValidationError("O `contingut` o `estat` s'ha de definir")
 
     def __str__(self):
         if len(self.contingut) > 80:
@@ -86,11 +102,18 @@ class Conversacio(models.Model):
         return reverse('missatges:show', args=[self.pk])
 
     def can_access(self, usuari):
-        """Comprova si una persona està a la conversació i, per tant, si pot
+        """
+        Comprova si una persona està a la conversació i, per tant, si pot
         accedir
         """
         return (usuari == self.de) or (self.a.usuaris.filter(
             username=usuari.username).exists())
+
+    def marcar_com_a_llegits(self, usuari):
+        """Marca tots el missatges com a llegits per a l'usuari"""
+        for msg in Missatge.objects.filter(conversacio=self):
+            EstatMissatge.objects.update_or_create(destinatari=usuari,
+                missatge=msg, defaults={'vist': True})
 
     def tots_llegits(self, usuari):
         """Torna si s'han llegit tots els missatges de la conversació"""

@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from .models import GrupDeMissatgeria, Conversacio, Missatge, EstatMissatge
-from .forms import ComposeForm
+from .forms import ComposeForm, ReplyForm
 from django.contrib.auth.decorators import login_required
 
 @login_required
@@ -55,13 +55,57 @@ def show(request, cid):
     conversacio = get_object_or_404(Conversacio, pk=cid)
     if conversacio.can_access(request.user):
         # Marca com a llegit
-        for msg in Missatge.objects.filter(conversacio=conversacio):
-            EstatMissatge.objects.update_or_create(destinatari=request.user,
-                missatge=msg, defaults={'vist': True})
+        conversacio.marcar_com_a_llegits(request.user)
     else:
         return redirect('missatges:list')
     context = {
-        'assumpte': str(conversacio),
+        'conversacio': conversacio,
         'missatges': Missatge.objects.filter(conversacio=conversacio)
     }
     return render(request, 'missatges/show.html', context)
+
+@login_required
+def reply(request, cid):
+    conversacio = get_object_or_404(Conversacio, pk=cid)
+    if not conversacio.can_access(request.user):
+        return redirect('missatges:list')
+    if request.method == 'POST':
+        form = ReplyForm(request.POST)
+        if form.is_valid():
+            msg = Missatge()
+            msg.conversacio = conversacio
+            msg.per = request.user
+            msg.contingut = form.cleaned_data['missatge']
+            msg.save()
+            msg.calcular_destinataris()
+            return redirect('missatges:show', conversacio.pk)
+    else:
+        form = ReplyForm()
+    context = {
+        'form': form
+    }
+    return render(request, 'missatges/reply.html', context)
+
+@login_required
+def close(request, cid):
+    conversacio = get_object_or_404(Conversacio, pk=cid)
+    if not conversacio.can_access(request.user):
+        return redirect('missatges:list')
+    if conversacio.tancat:
+        msg = Missatge()
+        msg.conversacio = conversacio
+        msg.per = request.user
+        msg.estat = 'REOPENED'
+        msg.save()
+        conversacio.tancat = False
+        conversacio.save()
+        return redirect('missatges:show', conversacio.pk)
+    else:
+        msg = Missatge()
+        msg.conversacio = conversacio
+        msg.per = request.user
+        msg.estat = 'CLOSED'
+        msg.save()
+        conversacio.tancat = True
+        conversacio.save()
+        return redirect('missatges:show', conversacio.pk)

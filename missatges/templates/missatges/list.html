@@ -1,5 +1,6 @@
 {% extends "menu.html" %}
 {% load llegit %}
+{% load printuser %}
 {% load static %}
 
 {% block head %}
@@ -37,7 +38,7 @@
     <tr>
     {% endif %}
       <td><a href="{{ msg.get_absolute_url }}">{{ msg|truncatechars:80 }}</a></td>
-      <td>{{ msg.de }}</td>
+      <td>{{ msg.de|printuser }}</td>
       <td>{{ msg.a }}</td>
       <td>
         <span class="glyphicon glyphicon-exclamation-sign no-llegit"></span>

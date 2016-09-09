@@ -1,5 +1,6 @@
 {% extends "mdmenu.html" %}
 {% load md %}
+{% load printuser %}
 {% load static %}
 
 {% block head %}
@@ -9,8 +10,39 @@
 {% endblock head %}
 
 {% block content %}
-<h1>{{ assumpte }}</h1>
+<h1>{{ conversacio }}</h1>
+<div>
+{% if conversacio.tancat %}
+<button class="btn btn-primary" disabled>Respondre</button>
+<a class="btn btn-success" href="{% url 'missatges:close' conversacio.pk %}">
+  Reobrir
+</a>
+{% else %}
+<a class="btn btn-primary" href="{% url 'missatges:reply' conversacio.pk %}">
+  Respondre
+</a>
+<a class="btn btn-danger" href="{% url 'missatges:close' conversacio.pk %}">
+  Tancar
+</a>
+{% endif %}
+</div>
+<hr />
 {% for msg in missatges %}
+{% if msg.estat %}
+{% if msg.estat == 'CLOSED' %}
+<p class="alert alert-danger">Tancat per {{ msg.per|printuser }} fa
+  <span data-toggle="tooltip" data-placement="bottom"
+    title="{{ msg.enviat|date:'d M Y H:i' }}">{{ msg.enviat|timesince }}
+  </span>
+</p>
+{% elif msg.estat == 'REOPENED' %}
+<p class="alert alert-success">Reobert per {{ msg.per|printuser }} fa
+  <span data-toggle="tooltip" data-placement="bottom"
+    title="{{ msg.enviat|date:'d M Y H:i' }}">{{ msg.enviat|timesince }}
+  </span>
+</p>
+{% endif %}
+{% else %}
 {% if msg.per == user %}
 <div class="well msg-self">
 {% elif msg.per == msg.conversacio.de %}
@@ -18,7 +50,7 @@
 {% else %}
 <div class="well msg-answer">
 {% endif %}
-  <p><small>Enviat per {{ msg.per }}
+  <p><small>Enviat per {{ msg.per|printuser }} fa
     <span data-toggle="tooltip" data-placement="bottom"
       title="{{ msg.enviat|date:'d M Y H:i' }}">{{ msg.enviat|timesince }}
     </span>
@@ -28,7 +60,9 @@
       (Editat {{ msg.editat|timesince }})
     </span>
     {% endif %}
+  </small></p>
   {{ msg.contingut|md }}
 </div>
+{% endif %}
 {% endfor %}
 {% endblock content %}

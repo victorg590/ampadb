@@ -1,5 +1,4 @@
 from django import template
-from missatges.models import Conversacio, EstatMissatge
 
 register = template.Library()
 

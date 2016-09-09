@@ -1,9 +1,9 @@
-tr > td > span {
+tr td span.no-llegit {
   visibility: hidden; }
 
-tr.no-llegit > td {
+tr.no-llegit td {
   font-weight: bold; }
-  tr.no-llegit > td > span {
+  tr.no-llegit td span.no-llegit {
     visibility: visible;
     color: #00BFFF; }
 
