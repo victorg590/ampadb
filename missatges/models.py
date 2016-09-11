@@ -22,6 +22,8 @@ class GrupDeMissatgeria(models.Model):
 
 class EstatMissatge(models.Model):
     class Meta:
+        verbose_name = 'estat del missatge'
+        verbose_name_plural = 'estat dels missatges'
         unique_together = ('destinatari', 'missatge')
     destinatari = models.ForeignKey(User, on_delete=models.CASCADE)
     missatge = models.ForeignKey('Missatge', on_delete=models.CASCADE)

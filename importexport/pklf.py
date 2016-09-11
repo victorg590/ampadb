@@ -365,10 +365,12 @@ class PickledMissatge:
         return cls(per=msg.per.username, ordre=msg.ordre, **kwargs)
 
     def unpickle(self, conversacio):
-        return Missatge.objects.update_or_create(conversacio=conversacio,
+        msg = Missatge.objects.update_or_create(conversacio=conversacio,
             ordre=self.ordre, default={
             'per': User.objects.get(username=self.per)}.update(
             {k: getattr(self, k) for k in self.data}))[0]
+        msg.calcular_destinataris(True)
+        return msg
 
     def to_json(self):
         dest = {k: getattr(self, k) for k in self.data if k not in ['enviat',

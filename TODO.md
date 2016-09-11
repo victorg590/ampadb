@@ -8,7 +8,7 @@
 * [x] <s>Fer UI (més enllà del HTML bàsic). PRIORITAT: **ALTA**</s>
 * [x] <s>Traduïr missatges de Django (p. ex. "contrasenya massa curta").
     PRIORITAT: **ALTA**</s>
-* [ ] Millorar UI d'administració d'`extraescolars` per a permitir veure alumnes
+* [ ] Millorar UI d'administració d'`extraescolars` per a permetre veure alumnes
     inscrits i afegir-ne de nous. PRIORITAT: **ALTA**
 
 ## Altres

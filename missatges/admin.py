@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import GrupDeMissatgeria, Conversacio, Missatge
+from .models import GrupDeMissatgeria, Conversacio, Missatge, EstatMissatge
 
 @admin.register(GrupDeMissatgeria)
 class GrupDeMissatgeriaAdmin(admin.ModelAdmin):
@@ -17,3 +17,10 @@ class ConversacioAdmin(admin.ModelAdmin):
     list_filter = ['tancat', 'a']
     search_fields = ['assumpte']
     inlines = [MissatgeInline]
+
+@admin.register(EstatMissatge)
+class EstatMissatgeAdmin(admin.ModelAdmin):
+    raw_id_fields = ['destinatari', 'missatge']
+    list_display = ['pk', 'missatge', 'destinatari', 'vist']
+    list_editable = ['vist']
+    list_filter = ['vist']
