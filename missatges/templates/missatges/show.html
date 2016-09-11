@@ -32,13 +32,13 @@
 {% if msg.estat == 'CLOSED' %}
 <p class="alert alert-danger">Tancat per {{ msg.per|printuser }} fa
   <span data-toggle="tooltip" data-placement="bottom"
-    title="{{ msg.enviat|date:'d M Y H:i' }}">{{ msg.enviat|timesince }}
+    title="{{ msg.enviat|date:'d M Y H:i:s' }}">{{ msg.enviat|timesince }}
   </span>
 </p>
 {% elif msg.estat == 'REOPENED' %}
 <p class="alert alert-success">Reobert per {{ msg.per|printuser }} fa
   <span data-toggle="tooltip" data-placement="bottom"
-    title="{{ msg.enviat|date:'d M Y H:i' }}">{{ msg.enviat|timesince }}
+    title="{{ msg.enviat|date:'d M Y H:i:s' }}">{{ msg.enviat|timesince }}
   </span>
 </p>
 {% endif %}
@@ -52,12 +52,12 @@
 {% endif %}
   <p><small>Enviat per {{ msg.per|printuser }} fa
     <span data-toggle="tooltip" data-placement="bottom"
-      title="{{ msg.enviat|date:'d M Y H:i' }}">{{ msg.enviat|timesince }}
+      title="{{ msg.enviat|date:'d M Y H:i:s' }}">{{ msg.enviat|timesince }}
     </span>
     {% if msg.ha_sigut_editat %}
     <span data-toggle="tooltip" data-placement="bottom"
-      title="{{ msg.editat|date:'d M Y H:i' }}">
-      (Editat {{ msg.editat|timesince }})
+      title="{{ msg.editat|date:'d M Y H:i:s' }}">
+      (Editat fa {{ msg.editat|timesince }})
     </span>
     {% endif %}
   </small></p>

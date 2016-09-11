@@ -59,16 +59,23 @@ def genexport(request):
         exf.export_ampacsv(response, alumnes)
         return response
     elif dformat == IEFormats.JSON:
-        filename = datetime.datetime.today().strftime('%Y-%m-%d') + '.json'
+        if classe:
+            filename = classe.id_interna + '.csv'
+        else:
+            filename = datetime.datetime.today().strftime('%Y-%m-%d') + '.json'
         response = HttpResponse(content_type="application/json")
         response['Content-Disposition'] = 'attachment; filename="%s"' % filename
-        exf.export_json(response)
+        exf.export_json(response, classe)
         return response
     elif dformat == IEFormats.PICKLE:
-        filename = datetime.datetime.today().strftime('%Y-%m-%d') + '.pkl.gz'
+        if classe:
+            filename = classe.id_interna + '.csv'
+        else:
+            filename = datetime.datetime.today().strftime('%Y-%m-%d') + \
+                '.pkl.gz'
         response = HttpResponse(content_type="application/gzip")
         response['Content-Disposition'] = 'attachment; filename="%s"' % filename
-        exf.export_pickle(response)
+        exf.export_pickle(response, classe)
         return response
 
 @login_required

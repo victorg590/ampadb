@@ -41,19 +41,26 @@
   <tr>
     <td><a href="https://ca.wikipedia.org/wiki/JSON" rel="nofollow">JSON</a></td>
     <td>{{ True|pytr }}</td>
+    {% if classe %}
+    <td><code>{{ classe.id_interna }}.json</code></td>
+    {% else %}
     <td><code>{% now 'Y-m-d' %}.json</code></td>
+    {% endif %}
     <td>Aquest format permet exportar la base de dades a un format llegible.
       Per fer la transferència més ràpida, l'arxiu resultant està minimitzat;
       utilitzi una eina com
       <a href="https://docs.python.org/3.5/library/json.html#module-json.tool" rel="nofollow">
-      <code>json.tool</code></a> o un altre "<i>prettifier</i>" de JSON.
-      <em>Aquest format no permet l'exportació parcial.</em></td>
+      <code>json.tool</code></a> o un altre "<i>prettifier</i>" de JSON.</td>
   </tr>
   <tr>
     <td><a href="https://docs.python.org/3.5/library/pickle.html" rel="nofollow">
       Pickle</a></td>
     <td>{{ True|pytr }}</td>
+    {% if classe %}
+    <td><code>{{ classe.id_interna }}.pkl.gz</code></td>
+    {% else %}
     <td><code>{% now 'Y-m-d' %}.pkl.gz</code></td>
+    {% endif %}
     <td>Aquest format està pensat per a còpies de seguretat.
       Dóna un arxiu binari comprés (no llegible per humans)
       més petit que el JSON equivalent.</td>

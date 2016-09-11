@@ -53,7 +53,7 @@ class Missatge(models.Model):
     ha_sigut_editat.boolean = True
     ha_sigut_editat.short_description = 'Ha sigut editat?'
 
-    def calcular_destinataris(self):
+    def calcular_destinataris(self, vist=False):
         if self.estat:
             # Les notificacions d'estat no tenen destinataris
             return
@@ -63,7 +63,8 @@ class Missatge(models.Model):
         en_grup = self.conversacio.a
         for u in (u for u in self.conversacio.a.usuaris.all()
             if u not in self.destinataris.all()):
-            EstatMissatge.objects.create(destinatari=u, missatge=self)
+            EstatMissatge.objects.create(destinatari=u, missatge=self,
+                vist=vist)
         self.save()
 
     def clean(self):

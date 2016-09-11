@@ -11,6 +11,7 @@ from contactboard.models import *
 from usermanager.models import *
 from django.db import transaction
 from ampadb.support import gen_username, gen_codi, username_exists
+from .pklf import CURRENT_VERSION, PickledInfo
 
 class InvalidFormat(Exception):
     @classmethod
@@ -135,6 +136,26 @@ def _importar_fila(fila):
             ". S'espera el format 'YYYY-MM-DD'.")
     if data_de_naixement:
         alumne.data_de_naixement = data_de_naixement
+
+    try:
+        alumne.nom_pare = fila['Nom pare']
+    except KeyError:
+        pass
+
+    try:
+        alumne.cognoms_pare = fila['Cognoms pare']
+    except KeyError:
+        pass
+
+    try:
+        alumne.nom_mare = fila['Nom mare']
+    except KeyError:
+        pass
+
+    try:
+        alumne.cognoms_mare = fila['Congnoms mare']
+    except KeyError:
+        pass
 
     try:
         alumne.correu_alumne = fila['Correu alumne']
@@ -374,93 +395,14 @@ def import_excel(infile):
             _importar_fila(fila)
 
 def import_json(infile):
-    date_format = '%Y-%m-%d'
-    top_dict = json.load(infile)
     try:
-        for c in top_dict['cursos']:
-            curs_dict = top_dict['cursos'][c]
-            try:
-                curs = Curs.objects.get(id_interna=c)
-            except Curs.DoesNotExist:
-                curs = Curs(id_interna=c)
-            curs.nom = curs_dict['nom']
-            curs.ordre = curs_dict['ordre']
-            curs.save()
-            for cl in curs_dict['classes']:
-                classe_dict = curs_dict['classes'][cl]
-                try:
-                    classe = Classe.objects.get(id_interna=cl)
-                except Classe.DoesNotExist:
-                    classe = Classe(id_interna=cl)
-                classe.nom = classe_dict['nom']
-                classe.curs = curs
-                classe.save()
-                for a in classe_dict['alumnes']:
-                    try:
-                        alumne = Alumne.objects.get(pk=a['pk'])
-                    except Alumne.DoesNotExist:
-                        alumne = Alumne(pk=a['pk'])
-                    alumne.nom = a['nom']
-                    alumne.cognoms = a['cognoms']
-                    alumne.data_de_naixement = datetime.strptime(
-                        a['data_de_naixement'], date_format)
-                    alumne.correu_alumne = a['correu_alumne']
-                    alumne.compartir_correu_alumne = a[
-                        'compartir_correu_alumne']
-                    alumne.correu_pare = a['correu_pare']
-                    alumne.compartir_correu_pare = a['compartir_correu_pare']
-                    alumne.correu_mare = a['correu_mare']
-                    alumne.compartir_correu_mare = a['compartir_correu_mare']
-                    alumne.telefon_alumne = a['telefon_alumne']
-                    alumne.compartir_telefon_alumne = a[
-                        'compartir_telefon_alumne']
-                    alumne.telefon_pare = a['telefon_pare']
-                    alumne.compartir_telefon_pare = a['compartir_telefon_pare']
-                    alumnne.telefon_mare = a['telefon_mare']
-                    alumne.compartir_telefon_mare = a['compartir_telefon_mare']
-                    alumne.classe = classe
-                    alumne.save()
-        for u in top_dict['usuaris']:
-            user_dict = top_dict['usuaris'][u]
-            try:
-                user = User.objects.get(username=u)
-            except User.DoesNotExist:
-                user = User(username=u)
-            user.password = user_dict['password']
-            user.is_staff = user_dict['is_staff']
-            user.is_superuser = user_dict['is_superuser']
-            user.save()
-            if user_dict['alumne']:
-                try:
-                    profile = Profile.objects.get(user=user)
-                except Profile.DoesNotExist:
-                    profile = Profile(user=user)
-                try:
-                    profile.alumne = Alumne.objects.get(pk=user_dict['alumne'])
-                except Alumne.DoesNotExist:
-                    raise InvalidFormat('Referència a un alumne que no'
-                        ' existeix: ' + str(user_dict['alumne']))
-                profile.save()
-        for uu in top_dict['uu']:
-            uu_dict = top_dict['uu'][uu]
-            try:
-                user = UnregisteredUser.objects.get(username=uu)
-            except UnregisteredUser.DoesNotExist:
-                user = UnregisteredUser(username=uu)
-            user.codi = uu_dict['codi']
-            user.save()
-            if uu_dict['alumne']:
-                try:
-                    profile = Profile.objects.get(user=user)
-                except Profile.DoesNotExist:
-                    profile = Profile(unregisteredUser=user)
-                try:
-                    profile.alumne = Alumne.objects.get(pk=user_dict['alumne'])
-                except Alumne.DoesNotExist:
-                    raise InvalidFormat('Referència a un alumne que no'
-                        ' existeix: ' + str(uu_dict['alumne']))
-    except KeyError as e:
-        raise InvalidFormat('Falta clau: ' + str(e))
+        info = PickledInfo.from_json(json.load(infile))
+        info.unpickle()
+    except InvalidFormat:
+        raise
+    except Exception as e:
+        raise InvalidFormat("No és un arxiu JSON d'aquesta aplicació (" +
+            str(e) + ')') from e
 
 def import_pickle(infile):
     try:
@@ -475,20 +417,10 @@ def import_pickle_uncompressed(infile):
     except pickle.UnpicklingError:
         raise InvalidFormat('No és un arxiu Pickle')
     try:
-        if info.VERSION != 1:
-            raise InvalidFormat('Versió invàlida')
-        for curs in info.cursos:
-            curs.unpickle()
-            for classe in curs.classes:
-                classe.unpickle(curs)
-                for alumne in classe.alumnes:
-                    alumne.unpickle(classe)
-        for user in info.users:
-            user.unpickle()
-        for uu in info.uu:
-            uu.unpickle()
+        info.check_version(CURRENT_VERSION)
+        info.unpickle()
     except InvalidFormat:
         raise
     except Exception as e:
         raise InvalidFormat("No és un arxiu Pickle d'aquesta aplicació (" +
-            str(e) + ')')
+            str(e) + ')') from e
