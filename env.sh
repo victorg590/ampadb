@@ -8,13 +8,17 @@ export AMPADB_SETTINGS="$(pwd)/debug.ini"
 if [ -f "private.ini" ]; then
   AMPADB_SETTINGS="$AMPADB_CONFIG:$(pwd)/private.ini"
 fi
-if [ ! -d "virtualenv" ]; then
+if [ ! -d "venv" ]; then
   echo "No existeix l'entorn virtual. Ara es crearà."
-  virtualenv3 "virtualenv"
-  [ $? != 0 ] && echo "Cal instalar virtualenv per a Python 3" && return
-  . virtualenv/bin/activate
-  pip install 'setuptools>=18.5'
-  pip install -r stdrequirements.txt
+  virtualenv3 --system-site-packages "venv"
+  if [ $? != 0 ]; then
+    # virtualenv ha fallat
+    echo "virtualenv no està instalat o ha fallat."
+    return 1
+  fi
+  . venv/bin/activate
+  pip3 install 'setuptools>=18.5'
+  pip3 install -r stdrequirements.txt
 else
-  . virtualenv/bin/activate
+  . venv/bin/activate
 fi
