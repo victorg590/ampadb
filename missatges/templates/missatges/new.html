@@ -1,0 +1,16 @@
+{% extends "menu.html" %}
+
+{% block content %}
+<h1>Nou missatge</h1>
+<p>Quin missatge vols enviar?</p>
+<ul>
+  {% for g in grups %}
+  <li>
+    <a href="{% url 'missatges:compose' g.1.pk %}">{{ g.0 }}</a>
+  </li>
+  {% empty %}
+  <li><em>No s'han configurat els missatges.</em></li>
+  {% endfor %}
+</ul>
+
+{% endblock content %}

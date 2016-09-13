@@ -1,7 +1,8 @@
-from django.urls import reverse
 from django.http import HttpResponseRedirect
+from django.urls import reverse
 from urllib.parse import quote
 from usermanager.models import User, UnregisteredUser
+from usermanager.models import Profile
 import logging
 import random
 
@@ -11,8 +12,8 @@ def is_admin(user):
 def context_processor(request):
     user = request.user
     if not user.is_authenticated():
-        return {'admin': False}
-    return {'admin': is_admin(user)}
+        return {'anonymous': True, 'admin': False}
+    return {'anonymous': False, 'admin': is_admin(user)}
 
 
 def redirect_with_get(url, get_params, *args, **kwargs):
@@ -72,3 +73,21 @@ def gen_codi():
         ransrc = random
     num = ransrc.randint(000000, 999999)
     return str(num).zfill(6)
+
+def signal_clean(sender, **kwargs):
+    instance = kwargs['instance']
+    return instance.full_clean()
+
+def get_alumne(username):
+    try:
+        user = User.objects.get(username=username)
+        profile = Profile.objects.get(user=user)
+    except User.DoesNotExist:
+        try:
+            uu = UnregisteredUser.objects.get(username=username)
+            profile = Profile.objects.get(unregisteredUser=uu)
+        except UnregisteredUser.DoesNotExist:
+            return None
+    except Profile.DoesNotExist:
+        return None
+    return profile.alumne

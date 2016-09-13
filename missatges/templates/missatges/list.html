@@ -1,0 +1,94 @@
+{% extends "menu.html" %}
+{% load llegit %}
+{% load printuser %}
+{% load static %}
+
+{% block head %}
+{{ block.super }}
+<link rel="stylesheet" href="{% static 'scss/missatges.css' %}" />
+{% endblock head %}
+
+{% block content %}
+{% if grups %}
+<h1>Missatges</h1>
+<h2>Grups de missatgeria</h2>
+<p>Reps els missatges dels següents grups de missatgeria:</p>
+<ul>
+  {% for g in grups %}
+  <li>{{ g }}</li>
+  {% endfor %}
+</ul>
+
+<h2>Missatges de grups</h2>
+<table class="table table-hover">
+  <thead>
+    <tr>
+      <th>Assumpte</th>
+      <th>De</th>
+      <th>Al grup</th>
+      <th><!-- Llegit --></th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for msg in missatges_rebuts %}
+    {% llegit user msg as ha_llegit %}
+    {% if not ha_llegit %}
+    <tr class="no-llegit">
+    {% else %}
+    <tr>
+    {% endif %}
+      <td><a href="{{ msg.get_absolute_url }}">{{ msg|truncatechars:80 }}</a></td>
+      <td>{{ msg.de|printuser }}</td>
+      <td>{{ msg.a }}</td>
+      <td>
+        <span class="glyphicon glyphicon-exclamation-sign no-llegit"></span>
+      </td>
+    </tr>
+    {% empty %}
+    <tr>
+      <td colspan="4"><em>No hi ha missatges</em></td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+
+<h2>Missatges enviats</h2>
+{% else %}
+<div class="page-header">
+  <h1>Missatges</h1>
+  <h1><small>Si tens algun problema o suggerència per a l'AMPA o sobre
+  l'aplicació, pots enviar-nos un missatge.</small></h1>
+</div>
+{% endif %}
+
+<div>
+  <a class="btn btn-primary" href="{% url 'missatges:new' %}">Nou missatge</a>
+</div>
+<table class="table table-hover">
+  <thead>
+    <tr>
+      <th>Assumpte</th>
+      <th>A</th>
+      <th><!-- Llegit --></th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for msg in missatges_enviats %}
+    {% llegit user msg as ha_llegit %}
+    {% if not ha_llegit %}
+    <tr class="no-llegit">
+    {% else %}
+    <tr>
+    {% endif %}
+      <td><a href="{{ msg.get_absolute_url }}">{{ msg|truncatechars:80 }}</a></td>
+      <td>{{ msg.a }}</td>
+      <td><span class="glyphicon glyphicon-exclamation-sign no-llegit"></span></td>
+    </tr>
+    {% empty %}
+    <tr>
+      <td colspan="3">No hi ha missatges</td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+{% endblock content %}

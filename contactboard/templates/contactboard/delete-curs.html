@@ -1,0 +1,26 @@
+{% extends "menu.html" %}
+{% load urllink %}
+
+{% block content %}
+<h1>Eliminar {{ curs }}</h1>
+<p>Estàs segur de que vols eliminar el curs {{ curs }}?
+{% if classes %}
+Aixó també eliminarà les següents classes:</p>
+<ul>
+  {% for classe in classes %}
+  <li>{{ classe }}</li>
+  {% endfor %}
+</ul>
+{% else %}
+</p>
+{% endif %}
+<form method="post">
+  {% csrf_token %}
+  <div class="form-group">
+    <button class="btn btn-danger" type="submit">Eliminar</button>
+    <a class="btn btn-link" href="{% url 'contactboard:adminlist' %}">
+      Tornar
+    </a>
+  </div>
+</form>
+{% endblock content %}

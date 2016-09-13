@@ -1,0 +1,40 @@
+{% extends "menu.html" %}
+{% load bootstrap3 %}
+{% load autourl %}
+
+{% block content %}
+{% if msg == 'deleted' %}
+<div class="alert alert-success">
+  <a href="#" class="close" data-dismiss="alert">
+    <span class="glyphicon glyphicon-remove"></span>
+  </a>
+  S'ha cancel·lat la inscripció
+</div>
+{% endif %}
+<form method="get">
+  {% bootstrap_form search_form %}
+  {% buttons submit='Buscar' %}{% endbuttons %}
+</form>
+{% if ins %}
+<p><b>Alumne: </b>{{ ins.alumne|autourl }}</p>
+<p><b>Activitat: </b>{{ ins.activitat|autourl }}</p>
+{% if ins.activitat.preu %}
+{% if ins.pagat %}
+<p><b>Pagat: </b><span style="color:#008000">Sí</span></p>
+{% else %}
+<p><b>Pagat: </b><span style="color:#FF0000">No</span>
+  (<b>Preu: </b>{{ ins.activitat.preu }} €)</p>
+{% endif %}
+{% endif %}
+<form method="post">
+  {% csrf_token %}
+  <input type="hidden" name="q" value="{{ ins.pk }}"/>
+  {% bootstrap_form form %}
+  {% buttons submit='Cambiar' %}{% endbuttons %}
+</form>
+<form method="post" action="{% url 'extraescolars:cancel-inscripcio' ins.pk %}">
+  {% csrf_token %}
+  <button class="btn btn-danger" type="submit">Cancel·lar inscripció</button>
+</form>
+{% endif %}
+{% endblock content %}

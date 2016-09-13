@@ -1,15 +1,15 @@
 from django.shortcuts import render, redirect, get_object_or_404
-from django.http import HttpResponse, Http404
+from django.http import HttpResponse
 from ampadb.support import is_admin
 from django.contrib.auth.decorators import login_required, user_passes_test
 from usermanager.models import Profile
-from django.urls import reverse
 
 from .models import Classe, Alumne
 from .forms import *
 
+# Conflicte amb la funció built-in list()
 @login_required
-def list(request, id_classe):
+def list_view(request, id_classe):
     classe = get_object_or_404(Classe, id_interna=id_classe)
     context = {
         'classe': classe,
@@ -46,9 +46,10 @@ def add_classe(request, id_curs):
     else:
         form = ClasseForms.NewForm(initial={'curs': curs})
     context = {
-        'form': form
+        'form': form,
+        'submitText': 'Crear'
     }
-    return render(request, 'contactboard/classe/add.html', context)
+    return render(request, 'contactboard/add.html', context)
 
 @login_required
 @user_passes_test(is_admin)
@@ -71,9 +72,10 @@ def edit_classe(request, id_classe):
         }
         form = ClasseForms.EditForm(c, initial=c)
     context = {
-        'form': form
+        'form': form,
+        'submitText': 'Editar'
     }
-    return render(request, 'contactboard/classe/add.html', context)
+    return render(request, 'contactboard/add.html', context)
 
 @login_required
 @user_passes_test(is_admin)
@@ -85,7 +87,7 @@ def delete_classe(request, id_classe):
     context = {
         'classe': classe
     }
-    return render(request, 'contactboard/classe/delete.html', context)
+    return render(request, 'contactboard/delete-classe.html', context)
 
 @login_required
 @user_passes_test(is_admin)
@@ -104,15 +106,17 @@ def add_curs(request):
     else:
         form = CursForms.NewForm()
     context = {
-        'form': form
+        'form': form,
+        'submitText': 'Crear'
     }
-    return render(request, 'contactboard/curs/add.html', context)
+    return render(request, 'contactboard/add.html', context)
 
 @login_required
 @user_passes_test(is_admin)
 def edit_curs(request, id_curs):
     curs = get_object_or_404(Curs, id_interna=id_curs)
     if request.method == 'POST':
+        form = CursForms.EditForm(request.POST)
         if form.is_valid():
             if form.has_changed:
                 cdata = form.cleaned_data
@@ -127,9 +131,10 @@ def edit_curs(request, id_curs):
         }
         form = CursForms.EditForm(c, initial=c)
     context = {
-        'form': form
+        'form': form,
+        'submitText': 'Editar'
     }
-    return render(request, 'contactboard/curs/add.html', context)
+    return render(request, 'contactboard/add.html', context)
 
 @login_required
 @user_passes_test(is_admin)
@@ -142,7 +147,7 @@ def delete_curs(request, id_curs):
         'curs': curs,
         'classes': Classe.objects.filter(curs=curs)
     }
-    return render(request, 'contactboard/curs/delete.html', context)
+    return render(request, 'contactboard/delete-curs.html', context)
 
 @login_required
 @user_passes_test(is_admin)
@@ -151,26 +156,19 @@ def add_alumne(request, id_classe):
     if request.method == 'POST':
         form = AlumneForms.NewForm(request.POST)
         if form.is_valid():
-            cdata = form.cleaned_data
-            alumne = Alumne()
-            alumne.nom = cdata['nom']
-            alumne.cognoms = cdata['cognoms']
+            alumne = form.save(commit=False)
             alumne.classe = classe
-            alumne.data_de_naixement = cdata['data_de_naixement']
-            alumne.correu_alumne = cdata['correu_alumne']
-            alumne.correu_pare = cdata['correu_pare']
-            alumne.correu_mare = cdata['correu_mare']
-            alumne.telefon_pare = cdata['telefon_pare']
-            alumne.telefon_mare = cdata['telefon_mare']
-            alumne.compartir = cdata['compartir']
             alumne.save()
+            #alumne.save_m2m()  # Innecessàri si no s'afegeix un camp ManyToMany
             return redirect('contactboard:list', id_classe)
     else:
-        form = AlumneForms.NewForm(initial={'classe': classe})
+        form = AlumneForms.NewForm()
     context = {
-        'form': form
+        'form': form,
+        'classe': classe,
+        'submitText': 'Afegir'
     }
-    return render(request, 'contactboard/alumne/add.html', context)
+    return render(request, 'contactboard/add.html', context)
 
 
 @login_required
@@ -178,43 +176,28 @@ def edit_alumne(request, alumne_pk):
     if not is_admin(request.user):
         p = Profile.objects.get(user=request.user)
         if p.alumne.pk != int(alumne_pk):
-            #return redirect('/contactboard/edit/{}'.format(p.alumne.pk))
             return redirect('contactboard:edit-alumne', p.alumne.pk)
+
     alumne = get_object_or_404(Alumne, pk=alumne_pk)
     if request.method == 'POST':
-        form = AlumneForms.EditForm(request.POST)
+        if is_admin(request.user):
+            form = AlumneForms.AdminEditForm(request.POST, instance=alumne)
+        else:
+            form = AlumneForms.EditForm(request.POST, instance=alumne)
         if form.is_valid():
             if form.has_changed():
-                cdata = form.cleaned_data
-                alumne.nom = cdata['nom']
-                alumne.cognoms = cdata['cognoms']
-                alumne.classe = cdata['classe']
-                alumne.data_de_naixement = cdata['data_de_naixement']
-                alumne.correu_alumne = cdata['correu_alumne']
-                alumne.correu_pare = cdata['correu_pare']
-                alumne.correu_mare = cdata['correu_mare']
-                alumne.telefon_pare = cdata['telefon_pare']
-                alumne.telefon_mare = cdata['telefon_mare']
-                alumne.compartir = cdata['compartir']
-                alumne.save()
+                form.save()
             return redirect('contactboard:list', alumne.classe.id_interna)
+    if is_admin(request.user):
+        form = AlumneForms.AdminEditForm(instance=alumne)
     else:
-        form = AlumneForms.EditForm({
-            'nom': alumne.nom,
-            'cognoms': alumne.cognoms,
-            'classe': alumne.classe.id_interna,
-            'data_de_naixement': alumne.data_de_naixement,
-            'correu_alumne': alumne.correu_alumne,
-            'correu_pare': alumne.correu_pare,
-            'correu_mare': alumne.correu_mare,
-            'telefon_pare': alumne.telefon_pare,
-            'telefon_mare': alumne.telefon_mare,
-            'compartir': alumne.compartir
-        })
+        form = AlumneForms.EditForm(instance=alumne,
+            initial={'classe': alumne.classe})
     context = {
-        'form': form
+        'form': form,
+        'submitText': 'Actualitzar'
     }
-    return render(request, 'contactboard/alumne/add.html', context)
+    return render(request, 'contactboard/add.html', context)
 
 @login_required
 @user_passes_test(is_admin)
@@ -235,7 +218,30 @@ def delete_alumne(request, alumne_pk):
     context = {
         'alumne': alumne
     }
-    return render(request, 'contactboard/alumne/delete.html', context)
+    return render(request, 'contactboard/delete-alumne.html', context)
+
+def _build_mailto(fdata, classe=None):
+    if classe:
+        fdata['classes'] = [classe]
+    mailto_str = 'mailto:'
+    if fdata['enviar_com'] == MailtoForm.AS_BCC:
+        mailto_str += '?bcc='
+    for c in fdata['classes']:
+        classe = Classe.objects.get(id_interna=c)
+        for a in Alumne.objects.filter(classe=classe):
+            if (MailtoForm.TO_ALUMNES in fdata['enviar_a'] and
+                a.correu_alumne):
+                mailto_str += a.correu_alumne + ','
+            if (MailtoForm.TO_PARES in fdata['enviar_a'] and
+                a.correu_pare):
+                mailto_str += a.correu_pare + ','
+            if (MailtoForm.TO_MARES in fdata['enviar_a'] and
+                a.correu_mare):
+                mailto_str += a.correu_mare + ','
+    while mailto_str[-1] == ',':
+        mailto_str = mailto_str[:-1]
+    return mailto_str
+
 
 @login_required
 @user_passes_test(is_admin)
@@ -243,28 +249,10 @@ def mailto(request):
     if request.method == 'POST':
         form = MailtoForm(request.POST)
         if form.is_valid():
-            cdata = form.cleaned_data
-            mailto_str = 'mailto:'
-            if not cdata['no_cco']:
-                mailto_str += '?bcc='
-            for c in cdata['classes']:
-                classe = Classe.objects.get(id_interna=c)
-                for a in Alumne.objects.filter(classe=classe):
-                    if (MailtoForm.TO_ALUMNES in cdata['enviar_a'] and
-                        a.correu_alumne):
-                        mailto_str += a.correu_alumne + ','
-                    if (MailtoForm.TO_PARES in cdata['enviar_a'] and
-                        a.correu_pare):
-                        mailto_str += a.correu_pare + ','
-                    if (MailtoForm.TO_MARES in cdata['enviar_a'] and
-                        a.correu_mare):
-                        mailto_str += a.correu_mare + ','
-            while mailto_str[-1] == ',':
-                mailto_str = mailto_str[:-1]
             response = HttpResponse()
             response.write(
                 '<meta http-equiv="refresh" content="0; url={}" />'.format(
-                    mailto_str))
+                    _build_mailto(form.cleaned_data)))
             return response
     else:
         form = MailtoForm()
@@ -280,24 +268,10 @@ def mailtoclasse(request, id_classe):
     if request.method == 'POST':
         form = MailtoClasseForm(request.POST)
         if form.is_valid():
-            cdata = form.cleaned_data
-            mailto_str = 'mailto:'
-            if not cdata['no_cco']:
-                mailto_str += '?bcc='
-            for a in Alumne.objects.filter(classe=classe):
-                if (MailtoForm.TO_ALUMNES in cdata['enviar_a'] and
-                    a.correu_alumne):
-                    mailto_str += a.correu_alumne + ','
-                if MailtoForm.TO_PARES in cdata['enviar_a'] and a.correu_pare:
-                    mailto_str += a.correu_pare + ','
-                if MailtoForm.TO_MARES in cdata['enviar_a'] and a.correu_mare:
-                    mailto_str += a.correu_mare + ','
-            while mailto_str[-1] == ',':
-                mailto_str = mailto_str[:-1]
             response = HttpResponse()
             response.write(
                 '<meta http-equiv="refresh" content="0; url={}" />'.format(
-                    mailto_str))
+                    _build_mailto(form.cleaned_data, id_classe)))
             return response
     else:
         form = MailtoClasseForm()
@@ -305,4 +279,5 @@ def mailtoclasse(request, id_classe):
         'form': form,
         'classe': classe
     }
+    print(context)
     return render(request, 'contactboard/mailto.html', context)

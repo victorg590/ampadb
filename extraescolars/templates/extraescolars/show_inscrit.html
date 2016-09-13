@@ -1,0 +1,22 @@
+{% extends "./show.html" %}
+{% load bootstrap3 %}
+
+{% block inscripcio %}
+<h2>Inscripció</h2>
+{% include "./requires.html" %}
+{% if ins.confirmat %}
+<div class="alert alert-info"><p>Ja estàs inscrit. <small>(Posa't en contacte
+  amb l'AMPA per a cancel·lar la inscripció.)</small></p></div>
+{% else %}
+<div class="alert alert-warning"><p>Per acabar la inscripció cal que entreguis
+  el full d'inscripció a l'AMPA</p></div>
+{% endif %}
+<form method="post" action="{% url 'extraescolars:cancel' activitat.id_interna %}">
+  {% csrf_token %}
+  {% if oberta and not ins.confirmat %}
+  <button class="btn btn-danger" type="submit">Cancel·lar inscripció</button>
+  {% else %}
+  <button class="btn btn-danger" disabled>Cancel·lar inscripció</button>
+  {% endif %}
+</form>
+{% endblock inscripcio %}

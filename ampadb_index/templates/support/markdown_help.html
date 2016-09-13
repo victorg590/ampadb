@@ -1,0 +1,347 @@
+{% extends "mdmenu.html" %}
+{% load md %}
+
+{% block content %}
+<div class="page-header">
+  <h1>Utilitzant Markdown</h1>
+</div>
+<p>Tot i que la majoria dels textos del lloc són text pla, alguns poden necessitar
+  format. Aquests camps, identificats amb "Suporta Markdown", admeten uns indicadors
+  especials per donar format, el llenguatge de marques lleuger <a
+    href="https://ca.wikipedia.org/wiki/Markdown" rel="nofollow">Markdown</a>.
+  Aquests indicadors són els següents:
+</p>
+<h2>Salts de línia</h2>
+<p>Per a evitar línies llargues, un salt de línia es convertirà en un espai
+  i permetrà continuar-la a sota. Per a canviar de paràgraf, utilitza dos
+  salts de línea.</p>
+<pre><code>
+  Aixó és
+  una línia
+
+  Però aixó és
+  un altre paràgraf
+</code></pre>
+<div class="well">
+{% markdown %}
+Aixó és
+una línea
+
+Però aixó és
+un altre paràgraf
+{% endmarkdown %}
+</div>
+
+<h2>Émfasi</h2>
+<p>Markdown permet cursiva i negreta amb un i dos asteriscs, respectivament.
+  També es poden utilitzar guions baixos, però no es substituiràn en mig de una
+  paraula. <br />
+  Per mostrar un asterisc o un guió baix, s'ha d'escapar amb \</p>
+<pre><code>
+  *cursiva*
+  _cursiva_
+  Aquí_no_es_canvia
+  _Aquí_sí_
+  **negreta**
+  __negreta__
+  Aquí__no__es__canvia
+  __Aquí__sí__
+
+  \*Entre asteriscs\* (i una barra inclinada: \\)
+</code></pre>
+<div class="well">
+{% markdown %}
+*cursiva*
+_cursiva_
+Aquí_no_es_canvia
+_Aquí_sí_
+**negreta**
+__negreta__
+Aquí__no__es__canvia
+__Aquí__sí__
+
+\*Entre asteriscs\* (i una barra inclinada: \\)
+{% endmarkdown %}
+</div>
+<h3>Subratllat i ratllat</h3>
+<p>Tot i que Markdown no té una sintaxi per al subratllat i el ratllat, pots utilitzar
+les etiquetes HTML corresponents, i combinarles amb sintaxi Markdown:</p>
+<pre><code>
+  &lt;u&gt;Subratllat&lt;/u&gt;
+  &lt;s&gt;Ratllat&lt;/s&gt;
+  *&lt;u&gt;Cursiva subratllat&lt;/u&gt;*
+  &lt;s&gt;**Negreta ratllat**&lt;/s&gt;
+  &lt;s&gt;&lt;u&gt;Subratllat i ratllat&lt;/u&gt;&lt;/s&gt;
+</code></pre>
+<div class="well">
+{% markdown %}
+<u>Subratllat</u>
+<s>Ratllat</s>
+*<u>Cursiva subratllat</u>*
+<s>**Negreta ratllat**</s>
+<s><u>Subratllat i ratllat</u></s>
+{% endmarkdown %}
+</div>
+
+<h2>Capçaleres</h2>
+<p>Es poden fer capçaleres afegint d'un a sis coixinets (#), opcionalment
+  tancades al final del títol. Cada coixinet indica un nivell menor. Els
+  dos primers nivells també tenen una sintaxi alternativa.
+  Com que les capçaleres de Markdown (<code>#</code>-<code>######</code>) són
+  idéntiques a les utilitzades pel lloc, els nivell 1 i 2 poden confondre
+  segons la pàgina on es mostrarà el text.</p>
+<pre><code>
+  # Una capçalera #
+  # 1
+  1 (alt)
+  =======
+  ## 2
+  2 (alt)
+  -------
+  ### 3
+  #### 4
+  ##### 5
+  ###### 6
+  ####### 7 (invàlida, nivell 6 i es mostrarà un coixinet)
+</code></pre>
+<div class="well">
+{% markdown %}
+# Una capçalera #
+# 1
+1 (alt)
+=======
+## 2
+2 (alt)
+-------
+### 3
+#### 4
+##### 5
+###### 6
+####### 7 (invàlida, nivell 6 i es mostrarà un coixinet)
+{% endmarkdown %}
+</div>
+
+<h2>Llistes</h2>
+<p>Pots fer llistes numerades amb n. (Només importa el primer número). Per a
+  llistes amb punts, utilitza l'asterisc (*), el guió (-) o el símbol més (+).
+  Dues o més llistes consecutives es juntaràn en una (per això hi ha un
+  separador entre elles).</p>
+<pre>
+  4. Un element
+  2. Un altre
+  7. ...
+
+  ---
+
+  * A
+  * B
+      * B'
+      * B''
+  - C
+      1. C1
+      2. C2
+  + D
+
+  ---
+
+  1. Un
+  2. Dos
+  3. Tres
+</pre>
+<div class="well">
+{% markdown %}
+4. Un element
+2. Un altre
+7. ...
+
+---
+
+* A
+* B
+    * B'
+    * B''
+- C
+    1. C1
+    2. C2
++ D
+
+---
+
+1. Un
+2. Dos
+3. Tres
+{% endmarkdown %}
+</div>
+
+<h2>Separadors</h2>
+<p>Pots insertar una línia horitzontal amb tres o més símbols (*-_) en una línia
+  (opcionalment, amb espais entre ells).</p>
+<pre><code>
+  ### Vàlids
+  ---
+  - - -
+  ***********
+
+  ### Invàlids
+  _*+
+
+  +++
+
+  a ---
+
+  --- a
+</code></pre>
+<div class="well">
+{% markdown %}
+### Vàlids
+---
+- - -
+***********
+
+### Invàlids
+_*+
+
++++
+
+a ---
+
+--- a
+{% endmarkdown %}
+</div>
+
+<h2>Enllaços</h2>
+<p>Els enllaços es poden fer de dues formes: en la línea (<i>inline</i>) o per
+  referència, i admeten un títol opcional mostrat
+  al mantenir el ratolí sobre l'enllaç. Si es posa un títol, separat amb un espai
+  de la direcció i com <code>"Títol"</code>, <code>'Títol'</code> o
+  <code>(Títol)</code>.</p>
+<pre><code>
+  [Exemple](http://exemple.com "Títol")
+
+  [Exemple][1]  (La referència pot ser qualsevol valor)
+  [1]: http://exemple.com
+
+  [Exemple][]  (Referència implícita)
+  [Exemple]: http://exemple.com
+</code></pre>
+<div class="well">
+{% markdown %}
+[Exemple](http://exemple.com "Títol")
+
+[Exemple][1]  (La referència pot ser qualsevol valor)
+[1]: http://exemple.com
+
+[Exemple][]  (Referència implícita)
+[Exemple]: http://exemple.com
+{% endmarkdown %}
+</div>
+
+<h2>Imatges</h2>
+<p>Per a utilitzar una imatge penjada a internet, la sintaxi és la mateixa que
+  als enllaços però amb una exclamació davant:</p>
+<pre><code>
+  ![Imatge](https://placehold.it/350x150?text=Imatge)
+</code></pre>
+<div class="well">
+{% markdown %}
+![Imatge](https://placehold.it/350x150?text=Imatge 'Títol')
+{% endmarkdown %}
+</div>
+
+<h2>Cites</h2>
+<p>Per a afegir una cita, afegeix <code>&gt;</code> al començament de la línia:</p>
+<pre><code>
+  &gt; Cita
+  &gt; &gt; Cita dins d'una cita
+  &gt;
+  &gt; **Admet altres elements**
+</code></pre>
+<div class="well">
+{% markdown %}
+> Cita
+> > Cita dins d'una cita
+>
+> **Admet altres elements**
+{% endmarkdown %}
+</div>
+
+<h2>Taules</h2>
+<p>Extenent el Markdown "estàndard", pots fer taules, amb una capçalera opcional.
+  També pots decidir si alinear els continguts a l'esquerra (<code>----</code> o
+  <code>:---</code>) a la dreta (<code>---:</code>) o al centre (<code>:--:</code>).
+  Que encaixin les barres (|) és opcional.
+  Es poden afegir <code>|</code> al principi i al final, pel que
+  aquests exemples són equivalents:</p>
+<pre><code>
+  | Capçalera    | Capçalera |  Capçalera |
+  |:-------------|:---------:|-----------:|
+  | A l'esquerra | Al centre | A la dreta |
+
+  Capçalera    | Capçalera |  Capçalera
+  :------------|:---------:|----------:
+  A l'esquerra | Al centre | A la dreta
+</code></pre>
+<div class="well">
+{% markdown %}
+| Capçalera    | Capçalera |  Capçalera |
+|:-------------|:---------:|-----------:|
+| A l'esquerra | Al centre | A la dreta |
+{% endmarkdown %}
+</div>
+
+<h2>Codi</h2>
+<p>Pots escriure codi o text sense format de forma que no sigui interpretat per
+  Markdown.</p>
+<pre><code>
+  *Markdown* / `Sense *Markdown*`
+
+  *Markdown* / ``Sense `Markdown` ``
+
+  ```
+  Sense *Markdown*
+  ```
+
+      Sense *Markdown*
+</code></pre>
+<div class="well">
+{% markdown %}
+*Markdown* / `Sense *Markdown*`
+
+*Markdown* / ``Sense `Markdown` ``
+
+```
+Sense *Markdown*
+```
+
+    Sense *Markdown* (mín. 4 espais)
+{% endmarkdown %}
+</div>
+
+<h2>Avançat</h2>
+<h3>Comentaris</h3>
+<p>Per afegir text no visible, utilitza un comentari HTML. El comentari s'eliminarà
+del contingut generat.</p>
+<pre><code>
+  Text &lt;!-- Comentari --&gt;
+</code></pre>
+<div class="well">
+{% markdown %}
+  Text <!-- Comentari -->
+{% endmarkdown %}
+</div>
+
+<h3>HTML</h3>
+<p>Per motius de seguretat, la major part de les etiquetes es bloquejen, tret
+  de les que es poden generar amb Markdown o excepcions com <code>&lt;u&gt;</code>
+  i <code>&lt;s&gt;</code>. També es poden eliminar atributs o afegir-ne d'altres
+  a les etiquetes admeses. Recomanem no utilitzar HTML fora dels casos senyalats
+</p>
+<pre><code>
+  &lt;script src="..."&gt;&lt;/script&gt;
+</pre></code>
+<div class="well">
+{% markdown %}
+<script src="..."></script>
+{% endmarkdown %}
+</div>
+{% endblock content %}

@@ -1,14 +1,13 @@
 from django.conf.urls import url, include
-from django.contrib.auth import views as auth_views
 from .apps import UsermanagerConfig
 from . import views
 
-#app_name = UsermanagerConfig.name
 adminpatterns = [
     url(r'^new$', views.new_admin, name='new-admin'),
     url(r'^new/(?P<alumne_pk>[0-9]{1,30})', views.new_user, name='new-user'),
     url(r'^delete/(?P<username>[\w.@+-]{1,30})', views.delete_user, name='delete'),
     url(r'^cancel/(?P<username>[\w.@+-]{1,30})', views.cancel_user, name='cancel'),
+    url(r'^export_uu$', views.export_uu, name='export-uu'),
     url(r'^changepassword/(?P<username>[\w.@+-]{1,30})', views.admin_changepassword,
         name='admin-changepassword'),
     url(r'^changecode/(?P<username>[\w.@+-]{1,30})/auto',

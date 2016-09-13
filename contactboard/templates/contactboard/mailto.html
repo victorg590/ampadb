@@ -1,17 +1,13 @@
 {% extends "menu.html" %}
+{% load bootstrap3 %}
 
 {% block content %}
 <h1>Enviar correus</h1>
+{% if classe %}
+{% endif%}
 <form method="post">
   {% csrf_token %}
-  <table>
-    {{ form }}
-
-    {% if classe %}
-    <tr><td>Enviant a classe: {{ classe }}</td></tr>
-    {% endif %}
-
-    <tr><td><input type="submit" value="Redactar"/></td></tr>
-  </table>
+  {% bootstrap_form form %}
+  {% buttons submit='Redactar' %}{% endbuttons %}
 </form>
 {% endblock content %}

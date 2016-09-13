@@ -1,70 +1,122 @@
 {% extends "menu.html" %}
 {% load userdata %}
 {% load pytr %}
+{% load cusername %}
 {% load urllink %}
 
 {% block content %}
 <h1>Llista de contactes de {{ classe }}</h1>
 {% if admin %}
-<table table style="float: right"><tr>
-  <td>{% urllink 'Nou alumne' 'contactboard:add-alumne' classe.id_interna %}</td>
-  <td>{% urllink 'Exportar' 'importexport:export' classe.id_interna %}</td>
-  <td>{% urllink 'Enviar correu massiu' 'contactboard:mailto' classe.id_interna %}
-</tr></table>
-<p style="color: grey">En gris si no han compartit les dades</p>
+<div>
+  <a class="btn btn-primary" href="{% url 'contactboard:add-alumne' classe.id_interna %}">
+    Nou alumne
+  </a>
+  <a class="btn btn-default" href="{% url 'importexport:export' classe.id_interna %}">
+    Exportar
+  </a>
+  <a class="btn btn-default" href="{% url 'contactboard:mailto' classe.id_interna %}">
+    Enviar correu massiu
+  </a>
+<p style="color:grey;float:right">En gris si no han compartit les dades</p>
 {% else %}
-<p style="color: grey">
+<p style="color:grey">
   Només es mostren les dades d'aquells que han decidit compartir-les
 </p>
 {% endif %}
-<table style="width: 100%">
-  <tr>
-    <th>Nom</th>
-    <th>E-mail pare</th>
-    <th>E-mail mare</th>
-    <th>Telf. pare</th>
-    <th>Telf. mare</th>
-    {% if admin %}
-    <th>Usuari</th>
-    <th>Eliminar</th>
-    {% endif %}
-  </tr>
-  {% get_alumne user as me %}
-  {% for a in alumnes %}
-  {% if a.compartir or admin %}
-  {% if not a.compartir %}
-  <tr class="secret">
-  {% elif a == me %}
-  <tr class="self_record">
-  {% else %}
-  <tr>
-  {% endif %}
-    <td style="text-align: center">
+<div class="table-responsive"><table class="table table-hover text-center">
+  <thead>
+    <tr>
+      <th>Nom</th>
+      <th>E-mail alumne</th>
+      <th>E-mail pare</th>
+      <th>E-mail mare</th>
+      <th>Tèlf. alumne</th>
+      <th>Tèlf. pare</th>
+      <th>Tèlf. mare</th>
       {% if admin %}
-      {% urllink a 'contactboard:edit-alumne' a.pk %}
-      {% else %}
-      {{ a }}
+      <th>Usuari</th>
+      <th>Eliminar</th>
       {% endif %}
-    </td>
-    <td style="text-align: center">{{ a.correu_pare|urlize }}</td>
-    <td style="text-align: center">{{ a.correu_mare|urlize }}</td>
-    <td style="text-align: center">{{ a.telefon_pare }}</td>
-    <td style="text-align: center">{{ a.telefon_mare }}</td>
-    {% if admin %}
-    {% get_user a.pk as user %}
-    <td style="text-align:center">
-      {% if user %}
-      {{ user }}
-      {% else %}
-      {% urllink 'Crear' 'usermanager:new-user' a.pk %}
-      {% endif %}
-    </td>
-    <td style="text-align: center">
-      {% urllink 'Eliminar' 'contactboard:delete-alumne' a.pk %}
-    </td>
+    </tr>
+  </thead>
+  <tbody>
+    {% get_alumne user as me %}
+    {% for a in alumnes %}
+    {% if a == me %}
+    <tr class="self-record">
+    {% else %}
+    <tr>
     {% endif %}
-  </tr>
-  {% endif %}
-  {% endfor %}
+      <td><a href="{{ a.get_absolute_url }}">{{ a.nom }} {{ a.cognoms }}</a></td>
+      {% if a.compartir_correu_alumne %}
+      <td>{{ a.correu_alumne|urlize }}</td>
+      {% elif admin %}
+      <td class="secret">{{ a.correu_alumne|urlize }}</td>
+      {% else %}
+      <td></td>
+      {% endif %}
+
+      {% if a.compartir_correu_pare %}
+      <td>{{ a.correu_pare|urlize }}</td>
+      {% elif admin %}
+      <td class="secret">{{ a.correu_pare|urlize }}</td>
+      {% else %}
+      <td></td>
+      {% endif %}
+
+      {% if a.compartir_correu_mare %}
+      <td>{{ a.correu_mare|urlize }}</td>
+      {% elif admin %}
+      <td class="secret">{{ a.correu_mare|urlize }}</td>
+      {% else %}
+      <td></td>
+      {% endif %}
+
+      {% if a.compartir_telefon_alumne %}
+      <td class="data">{{ a.telefon_alumne }}</td>
+      {% elif admin %}
+      <td class="secret data">{{ a.telefon_alumne }}</td>
+      {% else %}
+      <td></td>
+      {% endif %}
+
+      {% if a.compartir_telefon_pare %}
+      <td class="data">{{ a.telefon_pare }}</td>
+      {% elif admin %}
+      <td class="secret data">{{ a.telefon_pare }}</td>
+      {% else %}
+      <td></td>
+      {% endif %}
+
+      {% if a.compartir_telefon_mare %}
+      <td class="data">{{ a.telefon_mare }}</td>
+      {% elif admin %}
+      <td class="secret data">{{ a.telefon_mare }}</td>
+      {% else %}
+      <td></td>
+      {% endif %}
+
+      {% if admin %}
+      {% get_user a.pk as user %}
+      <td class="data">
+        {% if user %}
+        <span class="username">{{ user }}</span>
+        {% else %}
+        <a class="btn btn-link" href="{% url 'usermanager:new-user' a.pk %}">
+          Crear
+        </a>
+        {% endif %}
+      </td>
+      <td>
+        <a class="btn btn-danger"
+          href="{% url 'contactboard:delete-alumne' a.pk %}">Eliminar</a>
+      </td>
+      {% endif %}
+    </tr>
+    {% endfor %}
+  </tbody>
+</table></div>
+
+  </tbody>
 </table>
 {% endblock content %}

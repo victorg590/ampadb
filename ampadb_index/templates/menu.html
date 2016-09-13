@@ -3,17 +3,26 @@
 {% block title %}AMPA IES Forat Del Vent{% endblock %}
 
 {% block body %}
-<div style="height: 100%; width: 20%; float: left">
-  {% block menu %}
-  {% if admin %}
-  {% include "ampadb/admin_menu.html" %}
-  {% else %}
-  {% include "ampadb/user_menu.html" %}
-  {% endif %}
-  {% endblock menu %}
-</div>
-<div style="height: 100%; width: 80%; float: right">
-  {% block content %}
-  {% endblock %}
-</div>
+<nav class="navbar navbar-default navbar-fixed-top">
+  <div class="navbar-header">
+    <button type="button" class="navbar-toggle collapsed" data-toggle="collapse"
+      data-target="#main-navbar">
+      <span class="icon-bar"></span>
+      <span class="icon-bar"></span>
+      <span class="icon-bar"></span>
+    </button>
+    <span class="navbar-brand">AMPA Forat del Vent</span>
+  </div>
+
+  <div class="collapse navbar-collapse" id="main-navbar">
+    {% if admin %}
+    {% include "ampadb/admin_menu.html" %}
+    {% elif anonymous %}
+    {% include "ampadb/anonymous_menu.html" %}
+    {% else %}
+    {% include "ampadb/user_menu.html" %}
+    {% endif %}
+  </div>
+</nav>
+{% block content %}{% endblock %}
 {% endblock body %}

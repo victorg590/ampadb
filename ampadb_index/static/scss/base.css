@@ -1,0 +1,25 @@
+@charset "UTF-8";
+body {
+  padding-top: 70px;
+  /* La barra és de 50px */ }
+
+table.table > tbody th, table.table > tbody td {
+  vertical-align: middle; }
+
+table.table.text-center th, table.table.text-center td {
+  text-align: center; }
+
+.username {
+  font-family: monospace; }
+
+.secret, .self-record {
+  background-color: #D3D3D3; }
+
+table.table-hover tr:hover .secret, table.table-hover tr:hover .self-record {
+  background-color: #808080; }
+  table.table-hover tr:hover .secret a, table.table-hover tr:hover .self-record a {
+    color: #ADD8E6; }
+table.table-hover tr:hover .secret.data {
+  color: #FFFFFF; }
+
+/*# sourceMappingURL=base.css.map */

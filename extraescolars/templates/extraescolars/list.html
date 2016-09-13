@@ -1,0 +1,46 @@
+{% extends "menu.html" %}
+{% load is_inscrit %}
+
+{% block content %}
+<div>
+  {% if inscripcions %}
+  <a class="btn btn-primary" href="{% url 'extraescolars:genfull' %}">
+    Generar full d'inscripció</a>
+  {% else %}
+  <button class="btn btn-primary" disabled>Generar full d'inscripció</button>
+  {% endif %}
+</div>
+<p>Fes clic a una activitat per veure una descripció i inscriure't</p>
+<div class="table-responsive"><table class="table table-stripped">
+  <thead>
+    <tr>
+      <th>Activitat</th>
+      <th>Descripció</th>
+      <th>Inscripció oberta</th>
+    </tr>
+  </thead>
+  <tbody>
+    {% for a in activitats %}
+    <tr>
+      <td><a href="{{ a.obj.get_absolute_url }}">{{ a.obj }}</a></td>
+      <td>{{ a.obj.descripcio_curta }}</td>
+      <td>
+        {% if a.inscripcio_oberta %}
+        <span class="glyphicon glyphicon-ok" style="color:green"></span>
+        {% else %}
+        <span class="glyphicon glyphicon-remove" style="color:red"></span>
+        {% endif %}
+        {% is_inscrit alumne a.obj as inscrit %}
+        {% if inscrit %}
+        [INSCRIT]
+        {% endif %}
+      </td>
+    </tr>
+    {% empty %}
+    <tr>
+      <td colspan="3"><em>No hi ha activitats extraescolars disponibles</em></td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table></div>
+{% endblock content %}

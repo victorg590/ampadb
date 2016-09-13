@@ -1,16 +1,31 @@
 from django import template
-from django.utils.html import mark_safe
+from django.utils.html import mark_safe, format_html
 
 register = template.Library()
 
 @register.filter
-def pytr(value):
-    if value is True:
+def pytricon(value):
+    if value:
+        color = '#008000'
+        ret = 'ok'
+    elif value is None:
+        color = 'black'
+        ret = 'minus'
+    else:
+        ret = 'remove'
+        color = '#FF0000'
+    return format_html(
+        '<span class="glyphicon glyphicon-{}" style="color:{}"></span>',
+        ret, color)
+
+@register.filter
+def pytr(value, icons=True):
+    if icons:
+        return pytricon(value)
+    if value:
         ret = '<span style="color:green">Sí</span>'
-    elif value is False:
-        ret = '<span style="color:red">No</span>'
     elif value is None:
         ret = '-'
     else:
-        return value
+        ret = '<span style="color:red">No</span>'
     return mark_safe(ret)

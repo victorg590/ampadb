@@ -1,11 +1,15 @@
 {% extends "base.html" %}
 {% load urllink %}
+{% load static %}
+{% load bootstrap3 %}
 {% block title %}Entrar :: AMPA IES Forat Del Vent{% endblock %}
 
+{% block head %}
+{{ block.super }}
+<link rel="stylesheet" href="{% static 'scss/login.css' %}"/>
+{% endblock head %}
+
 {% block body %}
-{% if form.errors %}
-<p>Usuari o contrasenya incorrectes.</p>
-{% endif %}
 
 {% if next %}
 {% if user.is_authenticated %}
@@ -15,22 +19,14 @@
 {% endif %}
 {% endif %}
 
-<form method="post" action="{% url 'login' %}">
-  {% csrf_token %}
-  <table>
-    <tr>
-      <td>Nom d'usuari</td>
-      <td>{{ form.username }}</td>
-    </tr>
-    <tr>
-      <td>Contrasenya</td>
-      <td>{{ form.password }}</td>
-    </tr>
-  </table>
-  <input type="submit" value="Entrar"/>
-  <input type="hidden" name="next" value="{{ next }}"/>
-</form>
-<table><tr>
-  <td>Tens un codi? {% urllink "Registra't" 'register' %}</td>
-</tr></table>
+<div class="login">
+  <h1>Entrar</h1>
+  <form method="post">
+    {% csrf_token %}
+    {% bootstrap_form form %}
+    {% buttons submit='Entrar' %}{% endbuttons %}
+  </form>
+  <p>Tens un codi? {% urllink "Registra't" 'register' %}</p>
+  <p>Has perdut la contrasenya? {% urllink "Recupera-la" 'password_reset' %}</p>
+</div>
 {% endblock body %}

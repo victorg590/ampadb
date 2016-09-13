@@ -1,30 +1,13 @@
 {% extends "menu.html" %}
 {% load urllink %}
+{% load bootstrap3 %}
 
 {% block content %}
 <h1>Importar</h1>
-<p>Els següents formats permeten importar dades
-  {% urllink 'exportades' 'importexport:export' %}:</p>
-<ul>
-  <li>JSON</li>
-  <li>Pickle</li>
-</ul>
-<p>També es pot importar el següent format:</p>
-<table>
-  <tr>
-    <th>Format</th>
-    <th>Extensió</th>
-    <th>Informació</th>
-  </tr>
-  <tr>
-    <td>CSV (DB)</td>
-    <td><code>.csv</code></td>
-    <td>
-      {% urllink 'Veure informació i plantilles' 'importexport:format' %}
-    </td>
-  </tr>
-</table>
-<p><strong>ATENCIÓ:</strong> és perillós importar arxius de font desconegudes,
+<p>Pots trobar una descripció dels formats a
+  {% urllink 'Exportar' 'importexport:export' %}</p>
+<p class="alert alert-danger">
+  <strong>ATENCIÓ:</strong> és perillós importar arxius de font desconegudes,
   ja que poden modificar les dades (fins i tot usuaris). Si s'importa un arxiu
   de Pickle, a més a més, aquest pot executar codi arbitrari al servidor.</p>
 {% if error_text %}
@@ -35,12 +18,10 @@
 <form enctype="multipart/form-data" method="post"
   action="{% url 'importexport:processimport' %}">
   {% csrf_token %}
-  <table>
-    {{ form }}
-
-    <tr><td><input type="submit" value="Importar"/></td></tr>
-  </table>
+  {% bootstrap_form form %}
+  {% buttons submit='Importar' %}{% endbuttons %}
 </form>
-<p>Segons la quantitat de dades a importar i el format escollit, la operació
+<p class="alert alert-info">
+  Segons la quantitat de dades a importar i el format escollit, la operació
   <strong>pot trigar una estona.</strong></p>
 {% endblock content %}

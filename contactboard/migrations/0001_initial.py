@@ -36,7 +36,7 @@ class Migration(migrations.Migration):
             name='Classe',
             fields=[
                 ('nom', models.CharField(max_length=50)),
-                ('id_interna', models.SlugField(max_length=20, primary_key=True, serialize=False, validators=[contactboard.models.validate_valid_id])),
+                ('id_interna', models.SlugField(max_length=20, primary_key=True, serialize=False, validators=[contactboard.models.validate_non_reserved_id])),
             ],
         ),
         migrations.CreateModel(

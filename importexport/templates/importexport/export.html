@@ -1,18 +1,22 @@
 {% extends "menu.html" %}
+{% load pytr %}
 {% load urllink %}
+{% load bootstrap3 %}
 
 {% block content %}
 <h1>Exportar</h1>
 <p>Es poden exportar les dades als següents formats:</p>
-<table>
+<div class="table-responsive"><table class="table table-bordered">
   <tr>
     <th>Format</th>
+    <th>Es pot importar</th>
     <th>Arxiu resultant</th>
     <th>Informació</th>
   </tr>
   <tr>
     <td><a href="https://ca.wikipedia.org/wiki/CSV" rel="nofollow">CSV</a>
       (E-mail)</td>
+    <td>{{ False|pytr }}</td>
     {% if classe %}
     <td><code>{{ classe.id_interna }}.csv</code></td>
     {% else %}
@@ -25,6 +29,7 @@
   </tr>
   <tr>
     <td>{% urllink 'CSV (Importació)' 'importexport:format' %}</td>
+    <td>{{ True|pytr }}</td>
     {% if classe %}
     <td><code>{{ classe.id_interna }}.csv</code></td>
     {% else %}
@@ -35,22 +40,31 @@
   </tr>
   <tr>
     <td><a href="https://ca.wikipedia.org/wiki/JSON" rel="nofollow">JSON</a></td>
+    <td>{{ True|pytr }}</td>
+    {% if classe %}
+    <td><code>{{ classe.id_interna }}.json</code></td>
+    {% else %}
     <td><code>{% now 'Y-m-d' %}.json</code></td>
+    {% endif %}
     <td>Aquest format permet exportar la base de dades a un format llegible.
       Per fer la transferència més ràpida, l'arxiu resultant està minimitzat;
       utilitzi una eina com
       <a href="https://docs.python.org/3.5/library/json.html#module-json.tool" rel="nofollow">
-      <code>json.tool</code></a> o un altre "<i>prettifier</i>" de JSON.
-      <em>Aquest format no permet l'exportació parcial.</em></td>
+      <code>json.tool</code></a> o un altre "<i>prettifier</i>" de JSON.</td>
   </tr>
   <tr>
     <td><a href="https://docs.python.org/3.5/library/pickle.html" rel="nofollow">
       Pickle</a></td>
-    <td><code>{% now 'Y-m-d' %}.pklz</code></td>
+    <td>{{ True|pytr }}</td>
+    {% if classe %}
+    <td><code>{{ classe.id_interna }}.pkl.gz</code></td>
+    {% else %}
+    <td><code>{% now 'Y-m-d' %}.pkl.gz</code></td>
+    {% endif %}
     <td>Aquest format està pensat per a còpies de seguretat.
       Dóna un arxiu binari comprés (no llegible per humans)
-      més petit que el JSON equivalent. Requereix Python 3.4 o superior.</td>
-</table>
+      més petit que el JSON equivalent.</td>
+</table></div>
 <p><strong>Exportant {{ classe|default_if_none:"TOT"}}</strong></p>
 {% if error_text %}
 <ul class="errorlist">
@@ -58,12 +72,10 @@
 </ul>
 {% endif %}
 <form method="get" action="{% url 'importexport:genexport' %}">
-  <table>
-    {{ form }}
-
-    <tr><td><input type="submit" value="Exportar"/></td></tr>
-  </table>
+  {% bootstrap_form form %}
+  {% buttons submit='Exportar' %}{% endbuttons %}
 </form>
-<p>Segons la quantitat de dades a exportar i el format escollit, la operació
+<p class="alert alert-info">
+  Segons la quantitat de dades a exportar i el format escollit, la operació
   <strong>pot trigar una estona.</strong></p>
 {% endblock content %}

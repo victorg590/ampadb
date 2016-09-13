@@ -1,28 +1,26 @@
+{% load static %}
+{% load bootstrap3 %}
+
 <!DOCTYPE html>
 <html>
 <head>
-  {% block basestyle %}
-  <style>
-  head, body {
-    height: 95vh;
-    width: 95vw;
-  }
-
-  .username {
-    font-family: monospace;
-  }
-
-  .secret, .self_record {
-    background-color: lightgrey;
-  }
-  </style>
-  {% endblock basestyle %}
   {% block head %}
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  {# <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/css/bootstrap-theme.min.css"> #}
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+  {% bootstrap_css %}
+  {% bootstrap_javascript %}
+  {% bootstrap_messages %} {# Actualment no utilitzat #}
+  <link rel="stylesheet" href="{% static 'scss/base.css' %}" />
   {% endblock %}
   <title>{% block title %}{% endblock %}</title>
 </head>
 <body>
-  {% block body %}
-  {% endblock %}
+  <div class="container">
+    {% block body %}
+    {% endblock %}
+  </div>
 </body>
 </head>

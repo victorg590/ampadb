@@ -1,0 +1,16 @@
+{% extends "menu.html" %}
+{% load bootstrap3 %}
+
+{% block content %}
+<h1>Canviar codi de <span class="username">{{ tuser.username }}</span></h1>
+<form method="post">
+  {% csrf_token %}
+  {% bootstrap_form form %}
+  {% buttons submit='Canviar codi' %}{% endbuttons %}
+  <!--<table>
+    {{ form }}
+
+    <tr><td><input type="submit" value="Canviar codi"/></td></tr>
+  </table>-->
+</form>
+{% endblock content %}

@@ -42,7 +42,7 @@ class UsersForms:
         password_confirm = forms.CharField(label='Confirmar contrasenya',
             widget=forms.PasswordInput, required=True)
         def clean(self):
-            cleaned_data = super(UsersForms.NewAdminForm, self).clean()
+            cleaned_data = super().clean()
             password = cleaned_data.get('password')
             passwordConfirm = cleaned_data.get('password_confirm')
             if password:
@@ -75,7 +75,7 @@ class RegisterForm(forms.Form):
         widget=forms.PasswordInput, required=True)
 
     def clean(self):
-        cleaned_data = super(RegisterForm, self).clean()
+        cleaned_data = super().clean()
         username = cleaned_data.get('username')
         codi = cleaned_data.get('codi')
         password = cleaned_data.get('password')
@@ -98,7 +98,7 @@ class AdminChangePasswordForm(forms.Form):
         widget=forms.PasswordInput, required=True)
 
     def clean(self):
-        cleaned_data = super(AdminChangePasswordForm, self).clean()
+        cleaned_data = super().clean()
         password = cleaned_data.get('password')
         passwordConfirm = cleaned_data.get('password_confirm')
         if password:

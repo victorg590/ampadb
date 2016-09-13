@@ -1,15 +1,17 @@
-from django.shortcuts import render, redirect, get_object_or_404
 from django.http import HttpResponse
+from django.shortcuts import render, redirect, get_object_or_404
 from .forms import *
 from .models import *
-from django.contrib.auth import logout
 from django.contrib.auth.models import User
-import random
 from contactboard.models import Alumne
-from ampadb import settings
 from ampadb.support import is_admin, gen_username, gen_codi
 from django.contrib.auth.decorators import login_required, user_passes_test
+import csv
+from django.views.decorators.debug import (sensitive_variables,
+    sensitive_post_parameters)
 
+@sensitive_post_parameters('password', 'password_confirm')
+@sensitive_variables('form', 'cdata')
 def register(request):
     if request.method == 'POST':
         form = RegisterForm(request.POST)
@@ -20,8 +22,8 @@ def register(request):
             user = User.objects.create_user(uu.username,
                 password=cdata['password'])
             user.save()
+            profile.unregisteredUser = None
             profile.user = user
-            profile.uu = None
             profile.save()
             uu.delete()
             return redirect('login')
@@ -32,6 +34,8 @@ def register(request):
     }
     return render(request, 'registration/register.html', context)
 
+@sensitive_post_parameters('password', 'password_confirm')
+@sensitive_variables('form', 'cdata')
 @login_required
 @user_passes_test(is_admin)
 def new_admin(request):
@@ -50,7 +54,7 @@ def new_admin(request):
     context = {
         'form': form
     }
-    return render(request, 'usermanager/users/new_admin.html', context)
+    return render(request, 'usermanager/new_admin.html', context)
 
 @login_required
 @user_passes_test(is_admin)
@@ -65,7 +69,11 @@ def new_user(request, alumne_pk):
             uu = UnregisteredUser(username=cdata['username'],
                 codi=cdata['codi'])
             uu.save()
-            p = Profile(alumne=alumne, unregisteredUser=uu)
+            try:
+                p = Profile.objects.get(alumne=alumne)
+                p.unregisteredUser = uu
+            except Profile.DoesNotExist:
+                p = Profile(alumne=alumne, unregisteredUser=uu)
             p.save()
             return redirect('contactboard:list', alumne.classe.id_interna)
     else:
@@ -74,7 +82,7 @@ def new_user(request, alumne_pk):
     context = {
         'form': form
     }
-    return render(request, 'usermanager/users/new.html', context)
+    return render(request, 'usermanager/new.html', context)
 
 @login_required
 @user_passes_test(is_admin)
@@ -85,7 +93,7 @@ def list_users(request):
         'unregistered': uu,
         'registered': users
     }
-    return render(request, 'usermanager/users/list.html', context)
+    return render(request, 'usermanager/list.html', context)
 
 @login_required
 @user_passes_test(is_admin)
@@ -102,7 +110,7 @@ def delete_user(request, username):
     context = {
         'tuser': user
     }
-    return render(request, 'usermanager/users/delete.html', context)
+    return render(request, 'usermanager/delete.html', context)
 
 @login_required
 @user_passes_test(is_admin)
@@ -117,10 +125,12 @@ def cancel_user(request, username):
         uu.delete()
         return redirect('usermanager:list')
     context = {
-        'uu': uu
+        'tuser': uu
     }
-    return render(request, 'usermanager/users/cancel.html', context)
+    return render(request, 'usermanager/cancel.html', context)
 
+@sensitive_post_parameters()
+@sensitive_variables('form', 'cdata')
 @login_required
 @user_passes_test(is_admin)
 def admin_changepassword(request, username):
@@ -134,7 +144,7 @@ def admin_changepassword(request, username):
     else:
         form = AdminChangePasswordForm()
     context = {
-        'user': user,
+        'tuser': user,
         'form': form
     }
     return render(request, 'usermanager/changepassword.html', context)
@@ -161,6 +171,31 @@ def change_code(request, username):
         form = ChangeCodeForm()
     context = {
         'form': form,
-        'user': uu
+        'tuser': uu
     }
-    return render(request, 'usermanager/users/change_code.html', context)
+    return render(request, 'usermanager/change_code.html', context)
+
+class _MockAlumne:
+    def __init__(self):
+        self.nom = ''
+        self.cognoms = ''
+
+    def __str__(self):
+        return self.nom + self.cognoms
+
+@login_required
+@user_passes_test(is_admin)
+def export_uu(request):
+    uu = UnregisteredUser.objects.all()
+    response = HttpResponse(content_type="text/csv")
+    response['Content-Disposition'] = 'attachment; filename="users.csv"'
+    writer = csv.DictWriter(response, ['Nom', 'Usuari', 'Codi'])
+    writer.writeheader()
+    for u in uu:
+        try:
+            alumne = Profile.objects.get(unregisteredUser=u).alumne
+        except Profile.DoesNotExist:
+            alumne = _MockAlumne()
+        writer.writerow({'Nom': str(alumne), 'Usuari': u.username,
+            'Codi': u.codi})
+    return response

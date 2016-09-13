@@ -1,0 +1,16 @@
+{% extends "menu.html" %}
+{% load urllink %}
+
+{% block content %}
+<h1>Eliminar {{ alumne }}</h1>
+<p>Estàs segur de que vols eliminar a {{ alumne }} de la base de dades?</p>
+<form method="post">
+  {% csrf_token %}
+  <div class="form-group">
+    <button class="btn btn-danger" type="submit">Eliminar</button>
+    <a class="btn btn-link"
+      href="{% url 'contactboard:list' alumne.classe.id_interna %}">
+      Tornar</a>
+  </div>
+</form>
+{% endblock content %}
