@@ -100,7 +100,7 @@
       {% get_user a.pk as user %}
       <td class="data">
         {% if user %}
-        {{ user|cuser }}
+        <span class="username">{{ user }}</span>
         {% else %}
         <a class="btn btn-link" href="{% url 'usermanager:new-user' a.pk %}">
           Crear

@@ -24,7 +24,7 @@ _settings = AmpaDbSettings()
 # See https://docs.djangoproject.com/en/1.10/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = _settings.get('secret_key', raw=True)
+SECRET_KEY = _settings.get('secret_key')
 if not SECRET_KEY:
     from django.utils.crypto import get_random_string
     chars = 'abcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*(-_=+)'
@@ -207,7 +207,7 @@ EMAIL_USE_TLS = _settings.getboolean('email_tls', False)
 EMAIL_USE_SSL = _settings.getboolean('email_ssl', False)
 DEFAULT_FROM_EMAIL = _settings.get('from_email', EMAIL_HOST_USER)
 SERVER_EMAIL = _settings.get('server_email', DEFAULT_FROM_EMAIL)
-_ADMINS_raw = _settings.getjson('admins', '{}')
+_ADMINS_raw = _settings.getjson('admins', {})
 ADMINS = list(_ADMINS_raw.items())
-_MANAGERS_raw = _settings.getjson('managers', '{}')
+_MANAGERS_raw = _settings.getjson('managers', {})
 MANAGERS = list(_MANAGERS_raw.items())

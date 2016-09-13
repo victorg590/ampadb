@@ -62,7 +62,6 @@ class Missatge(models.Model):
         if not self.per in self.destinataris.all():
             EstatMissatge.objects.create(destinatari=self.per, missatge=self,
                 vist=True)
-        en_grup = self.conversacio.a
         for u in (u for u in self.conversacio.a.usuaris.all()
             if u not in self.destinataris.all()):
             EstatMissatge.objects.create(destinatari=u, missatge=self,

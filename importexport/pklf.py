@@ -3,7 +3,6 @@ from usermanager.models import *
 from extraescolars.models import *
 from missatges.models import *
 from django.contrib.auth.models import User
-import inspect
 from decimal import Decimal
 import datetime
 

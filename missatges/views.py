@@ -1,5 +1,5 @@
 from django.shortcuts import render, redirect, get_object_or_404
-from .models import GrupDeMissatgeria, Conversacio, Missatge, EstatMissatge
+from .models import GrupDeMissatgeria, Conversacio, Missatge
 from .forms import ComposeForm, ReplyForm
 from django.contrib.auth.decorators import login_required
 
