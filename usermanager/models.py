@@ -15,6 +15,12 @@ class Profile(models.Model):
     alumne = models.OneToOneField(Alumne, primary_key=True,
         on_delete=models.CASCADE)
 
+    @classmethod
+    def cleanup(cls):
+        """Elimina tots els registres sense `user` ni `unregisteredUser`"""
+        return cls.objects.filter(user__isnull=True,
+            unregisteredUser__isnull=True).delete()
+
     def clean(self):
         super().clean()
         if self.user and self.unregisteredUser:

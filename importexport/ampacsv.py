@@ -1,6 +1,6 @@
 import csv
 
-fieldnames = [
+FIELDNAMES = [
     'pk',
     'Nom',
     'Cognoms',
@@ -35,5 +35,5 @@ class AmpaDialect(csv.Dialect):
     skipinitialspace = True
 
 def get_template(outfile):
-    writer = csv.DictWriter(outfile, fieldnames)
+    writer = csv.DictWriter(outfile, FIELDNAMES)
     writer.writeheader()

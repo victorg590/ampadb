@@ -3,6 +3,7 @@ from usermanager.models import *
 from extraescolars.models import *
 from missatges.models import *
 from django.contrib.auth.models import User
+from django.db import transaction
 from decimal import Decimal
 import datetime
 
@@ -52,9 +53,10 @@ class PickledAlumne:
         return cls(pk=alumne.pk, **kwargs)
 
     def unpickle(self, classe):
+        ddict = {'classe': classe}
+        ddict.update({k: getattr(self, k) for k in self.data})
         return Alumne.objects.update_or_create(pk=self.pk,
-            defaults={'classe': classe}.update(
-            {k: getattr(self, k) for k in self.data}))[0]
+            defaults=ddict)[0].pk
 
     def to_json(self):
         dest = {k: getattr(self, k) for k in self.data
@@ -66,10 +68,11 @@ class PickledAlumne:
     @classmethod
     def from_json(cls, orig):
         corig = {k: v for k, v in orig.items() if k != 'data_de_naixement'}
-        corig['data_de_naixement'] = datetime.date.strptime(
-            orig['data_de_naixement'], DATE_FMT)
-        return cls(data_de_naixement=date.date.strptime(
-            orig['data_de_naixement'], DATE_FMT), **corig)
+        try:
+            return cls(data_de_naixement=datetime.datetime.strptime(
+                orig['data_de_naixement'], DATE_FMT), **corig)
+        except TypeError:
+            return cls(data_de_naixement=None, **corig)
 
 class PickledClasse:
     data = ('nom',)
@@ -88,12 +91,15 @@ class PickledClasse:
         return cls(id_interna=classe.id_interna, alumnes=alumnes, **kwargs)
 
     def unpickle(self, curs):
+        ddict = {'curs': curs}
+        ddict.update({k: getattr(self, k)
+            for k in self.data})
         classe = Classe.objects.update_or_create(id_interna=self.id_interna,
-            defaults={'curs': curs}.update(
-            {k: getattr(self, k) for k in self.data}))[0]
+            defaults=ddict)[0]
+        ret = {'classe': classe.pk, 'alumnes': []}
         for a in self.alumnes:
-            a.unpickle(classe)
-        return classe
+            ret['alumnes'].append(a.unpickle(classe))
+        return ret
 
     def to_json(self):
         dest = {k: getattr(self, k) for k in self.data}
@@ -131,9 +137,10 @@ class PickledCurs:
             curs = Curs(id_interna=self.id_interna)
         curs = Curs.objects.update_or_create(id_interna=self.id_interna,
             defaults={k: getattr(self, k) for k in self.data})[0]
+        ret = {'curs': curs.pk, 'classes': []}
         for c in self.classes:
-            c.unpickle(curs)
-        return curs
+            ret['classes'].append(c.unpickle(curs))
+        return ret
 
     def to_json(self):
         dest = {k: getattr(self, k) for k in self.data}
@@ -176,7 +183,7 @@ class PickledUser:
         if self.alumne:
             Profile.objects.update_or_create(alumne=Alumne.objects.get(
                 pk=alumne), defaults={'user': user, 'unregisteredUser': None})
-        return user
+        return user.pk
 
     def to_json(self):
         dest = {k: getattr(self, k) for k in self.data}
@@ -217,7 +224,7 @@ class PickledUnregisteredUser:
             Profile.objects.update_or_create(alumne=Alumne.objects.get(
                 pk=self.alumne), defaults={'user': None,
                 'unregisteredUser': uu})
-        return uu
+        return uu.pk
 
     def to_json(self):
         dest = {k: getattr(self, k) for k in self.data}
@@ -244,7 +251,7 @@ class PickledInscripcio:
     def unpickle(self, activitat):
         return Inscripcio.objects.update_or_create(activitat=activitat,
             alumne=Alumne.objects.get(pk=self.alumne),
-            defaults={k: getattr(self, k) for k in self.data})[0]
+            defaults={k: getattr(self, k) for k in self.data})[0].pk
 
     def to_json(self):
         dest = {k: getattr(self, k) for k in self.data}
@@ -277,9 +284,10 @@ class PickledExtraescolar:
             defaults={k: getattr(self, k) for k in self.data})[0]
         for c in self.cursos:
             obj.cursos.add(Curs.objects.get(pk=c))
+        ret = {'extraescolar': obj.pk, 'inscripcions': []}
         for i in self.inscripcions:
-            i.unpickle(obj)
-        return obj
+            ret['inscripcions'].append(i.unpickle(obj))
+        return ret
 
     def to_json(self):
         dest = {k: getattr(self, k) for k in self.data if k not in ['preu',
@@ -338,7 +346,7 @@ class PickledGrupDeMissatgeria:
             defaults={k: getattr(self, k) for k in self.data})[0]
         usuaris = [User.objects.get(username=u) for u in self.usuaris]
         obj.usuaris.add(*usuaris)
-        return obj
+        return obj.pk
 
     def to_json(self):
         dest = {k: getattr(self, k) for k in self.data}
@@ -369,7 +377,7 @@ class PickledMissatge:
             'per': User.objects.get(username=self.per)}.update(
             {k: getattr(self, k) for k in self.data}))[0]
         msg.calcular_destinataris(True)
-        return msg
+        return msg.pk
 
     def to_json(self):
         dest = {k: getattr(self, k) for k in self.data if k not in ['enviat',
@@ -383,10 +391,17 @@ class PickledMissatge:
     @classmethod
     def from_json(cls, orig):
         corig = {k: v for k, v in orig.items() if k not in ['enviat', 'editat']}
-        return cls(
-            enviat=datetime.datetime.strptime(orig['enviat'], DATETIME_FMT),
-            editat=datetime.datetime.strptime(orig['editat'], DATETIME_FMT),
-            **corig)
+        if orig['enviat'] is not None:
+            corig['enviat'] = datetime.datetime.strptime(orig['enviat'],
+                DATETIME_FMT)
+        else:
+            corig['enviat'] = None
+        if corig['editat'] is not None:
+            corig['editat'] = editat=datetime.datetime.strptime(orig['editat'],
+                DATETIME_FMT)
+        else:
+            corig['editat'] = None
+        return cls(**corig)
 
 class PickledConversacio:
     data = ('assumpte', 'tancat')
@@ -410,9 +425,10 @@ class PickledConversacio:
             default={'de': User.objects.get(pk=self.de),
             'a': GrupDeMissatgeria.objects.get(pk=self.a)}.update(
             {k: getattr(self, k) for k in self.data}))
+        ret = {'conversacio': obj.pk, 'missatges': []}
         for m in self.missatges:
-            m.unpickle(obj)
-        return obj
+            ret['missatges'].append(m.unpickle(obj))
+        return ret
 
     def to_json(self):
         dest = {k: getattr(self, k) for k in self.data}
@@ -474,19 +490,74 @@ class PickledInfo:
         return cls(cursos, users, uu, grups_de_missatgeria, extraescolars,
             conversacions)
 
-    def unpickle(self):
-        for c in self.cursos:
-            c.unpickle()
-        for u in self.users:
-            u.unpickle()
-        for u in self.uu:
-            u.unpickle()
-        for gdm in self.grups_de_missatgeria:
-            gdm.unpickle()
-        for act in self.extraescolars:
-            act.unpickle()
-        for conv in self.conversacions:
-            conv.unpickle()
+    @staticmethod
+    def del_all():
+        Alumne.objects.all().delete()
+        Classe.objects.all().delete()
+        Curs.objects.all().delete()
+        User.objects.all().delete()
+        UnregisteredUser.objects.all().delete()
+        Profile.objects.all().delete()
+        GrupDeMissatgeria.objects.all().delete()
+        Extraescolar.objects.all().delete()
+        Missatge.objects.all().delete()
+        Conversacio.objects.all().delete()
+
+    @staticmethod
+    def del_not_added(afegits):
+        alumnes = set()
+        classes = set()
+        cursos = set()
+        for c in afegits['cursos']:
+            for cl in c['classes']:
+                for u in cl['usuaris']:
+                    alumnes |= {u}
+                classes |= {cl}
+            cursos |= {c}
+        classes |= {Alumne.objects.only('classe').get(pk=a).classe.pk
+            for a in alumnes}
+        cursos |= {Classe.objects.only('curs').get(pk=c).curs.pk
+            for c in classes}
+        usuaris = set(afegits['users'])
+        uu = set(afegits['uu'])
+        gdm = set(afegits['gdm'])
+        extraescolars = set(afegits['extraescolar'])
+        missatges = set()
+        conversacions = set()
+        for c in afegits['conversacions']:
+            for m in c['missatges']:
+                missatges |= {m}
+            conversacions |= {c}
+        Alumne.objects.exclude(pk__in=alumnes).delete()
+        Classe.objects.exclude(pk__in=classes).delete()
+        Curs.objects.exclude(pk__in=cursos).delete()
+        User.objects.exclude(pk__in=usuaris).delete()
+        UnregisteredUser.objects.exclude(pk__in=uu).delete()
+        GrupDeMissatgeria.objects.exclude(pk__in=gdm).delete()
+        Extraescolar.objects.exclude(pk__in=extraescolar).delete()
+        Missatge.objects.exclude(pk__in=missatges).delete()
+        Conversacio.objects.exclude(pk__in=conversacions).delete()
+
+    def unpickle(self, preexistents=''):
+        afegits = {'cursos': [], 'users': [], 'uu': [], 'gdm': [],
+            'extraescolars': [], 'conversacions': []}
+        with transaction.atomic():
+            if preexistents == 'DEL_ALL':
+                self.del_all()
+            for c in self.cursos:
+                afegits['cursos'].append(c.unpickle())
+            for u in self.users:
+                afegits['users'].append(u.unpickle())
+            for u in self.uu:
+                afegits['uu'].append(u.unpickle())
+            for gdm in self.grups_de_missatgeria:
+                afegits['gdm'].append(gdm.unpickle())
+            for act in self.extraescolars:
+                afegits['extraescolars'].append(act.unpickle())
+            for conv in self.conversacions:
+                afegits['conversacions'].append(conv.unpickle())
+            if preexistents == 'DEL':
+                self.del_not_added(afegits)
 
     def to_json(self):
         dest = {'_metadata': {}}

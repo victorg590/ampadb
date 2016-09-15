@@ -104,18 +104,21 @@ def processimport(request):
                 'No es pot detectar el format')])
     else:
         dformat = fformat
+    preexistents = form.cleaned_data['preexistents']
     try:
         if dformat == IEFormats.AMPACSV:
-            text = imf.bytestream_to_text(request.FILES['ifile'], encoding=(request.encoding or 'utf-8'))
-            imf.import_ampacsv(text)
+            text = imf.bytestream_to_text(request.FILES['ifile'],
+                encoding=(request.encoding or 'utf-8'))
+            imf.import_ampacsv(text, preexistents)
         elif dformat == IEFormats.EXCELCSV:
-            text = imf.bytestream_to_text(request.FILES['ifile'], encoding=(request.encoding or 'utf-8'))
-            imf.import_excel(text)
+            text = imf.bytestream_to_text(request.FILES['ifile'],
+                encoding=(request.encoding or 'cp1252'))  # Codificació de MS Excel
+            imf.import_excel(text, preexistents)
         elif dformat == IEFormats.PICKLE:
-            imf.import_pickle(request.FILES['ifile'])
+            imf.import_pickle(request.FILES['ifile'], preexistents)
         elif dformat == IEFormats.JSON:
             text = imf.bytestream_to_text(request.FILES['ifile'], encoding=(request.encoding or 'utf-8'))
-            imf.import_json(text)
+            imf.import_json(text, preexistents)
         return redirect('contactboard:adminlist')
     except imf.InvalidFormat as ex:
         return redirect_with_get('importexport:import', [('error_text',
