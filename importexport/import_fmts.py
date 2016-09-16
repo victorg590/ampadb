@@ -24,11 +24,13 @@ class InvalidFormat(Exception):
 
     @classmethod
     def falta_a_fila(cls, columna, fila):
-        return cls('Falta columna {} a la fila {}'.format(columna, fila))
+        return cls('Falta columna {} a la fila {}'.format(columna,
+            str(fila)))
 
     @classmethod
     def invalid(cls, columna, fila, rao):
-        return cls('{} invàlid a la fila {}: {}'.format(columna, fila, rao))
+        return cls('{} invàlid a la fila {}: {}'.format(columna, str(fila),
+            rao))
 
 def bytestream_to_text(bytestream, encoding='utf-8'):
     textstream = tempfile.TemporaryFile(mode='w+t')
@@ -127,10 +129,10 @@ def _importar_fila(fila):
 
     try:
         ddn_temp = fila['Data de naixement']
-        if not ddn_temp and usuari_existia:
-            data_de_naixement = None
-        else:
+        if ddn_temp:
             data_de_naixement = datetime.strptime(ddn_temp, '%Y-%m-%d')
+        else:
+            data_de_naixement = None
     except KeyError:
         if usuari_existia:
             data_de_naixement = None
@@ -138,7 +140,7 @@ def _importar_fila(fila):
             raise InvalidFormat.falta_columna('Data de naixement')
     except ValueError:
         raise InvalidFormat.invalid('Data de naixement', fila,
-            ". S'espera el format 'YYYY-MM-DD'.")
+            "S'espera el format 'YYYY-MM-DD'.")
     if data_de_naixement:
         alumne.data_de_naixement = data_de_naixement
 

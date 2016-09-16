@@ -46,11 +46,11 @@ def export_ampacsv(outfile, alumnes):
                 username = '-'
         except Profile.DoesNotExist:
             username = '-'
-        writer.writerow({
+        d = {
             'pk': a.pk,
             'Nom': a.nom,
             'Cognoms': a.cognoms,
-            'Data de naixement': a.data_de_naixement.strftime('%Y-%m-%d'),
+            'Data de naixement': '',
             'Nom pare': a.nom_pare,
             'Cognoms pare': a.cognoms_pare,
             'Nom mare': a.nom_mare,
@@ -71,7 +71,10 @@ def export_ampacsv(outfile, alumnes):
             'Curs': a.classe.curs.id_interna,
             'Usuari': username,
             'Eliminar': 0
-        })
+        }
+        if a.data_de_naixement:
+            d['Data de naixement'] = a.data_de_naixement.strftime('%Y-%m-%d')
+        writer.writerow(d)
 
 def optimize_pickle(nopkl, protocol=4):
     pkl = pickle.dumps(nopkl, protocol=protocol)

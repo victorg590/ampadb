@@ -19,7 +19,7 @@ class Alumne(models.Model):
     nom = models.CharField(max_length=255, blank=False)
     cognoms = models.CharField(max_length=255, blank=False)
     classe = models.ForeignKey('Classe', on_delete=models.CASCADE)
-    data_de_naixement = models.DateField(blank=False)
+    data_de_naixement = models.DateField(blank=True, null=True)
     nom_pare = models.CharField('nom del pare', max_length=255, blank=True)
     cognoms_pare = models.CharField('cognoms del pare', max_length=255,
         blank=True)
