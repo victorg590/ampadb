@@ -9,13 +9,19 @@
 {% endblock head %}
 
 {% block content %}
-{% if grups %}
+{% if admin or grups %}
 <h1>Missatges</h1>
 <h2>Grups de missatgeria</h2>
+{% if admin %}
+Afegeix grups de missatgeria a "<a
+  href="{% url 'admin:missatges_grupdemissatgeria_add' %}">Gestió tècnica</a>".
+{% endif %}
 <p>Reps els missatges dels següents grups de missatgeria:</p>
 <ul>
   {% for g in grups %}
   <li>{{ g }}</li>
+  {% empty %}
+  <li><em>Cap</em></li>
   {% endfor %}
 </ul>
 
@@ -51,6 +57,7 @@
     {% endfor %}
   </tbody>
 </table>
+
 
 <h2>Missatges enviats</h2>
 {% else %}

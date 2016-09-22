@@ -47,7 +47,12 @@
     {% else %}
     <tr>
     {% endif %}
+      {% if admin or a == me %}
       <td><a href="{{ a.get_absolute_url }}">{{ a.nom }} {{ a.cognoms }}</a></td>
+      {% else %}
+      <td>{{ a.nom }}{{ a.cognoms }}</td>
+      {% endif %}
+
       {% if a.compartir_correu_alumne %}
       <td>{{ a.correu_alumne|urlize }}</td>
       {% elif admin %}
