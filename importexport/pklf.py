@@ -88,6 +88,8 @@ class PickledClasse:
         if recursive:
             alumnes = [PickledAlumne.transform(a)
                 for a in Alumne.objects.filter(classe=classe)]
+        else:
+            alumnes = []
         return cls(id_interna=classe.id_interna, alumnes=alumnes, **kwargs)
 
     def unpickle(self, curs):
@@ -128,6 +130,8 @@ class PickledCurs:
         if recursive:
             classes = [PickledClasse.transform(c)
                 for c in Classe.objects.filter(curs=curs)]
+        else:
+            classes = []
         return cls(id_interna=curs.id_interna, classes=classes, **kwargs)
 
     def unpickle(self):
@@ -460,12 +464,6 @@ class PickledInfo:
         (self.cursos, self.users, self.uu, self.grups_de_missatgeria,
         self.extraescolars, self.conversacions) = _def_list(cursos, users,
                 uu, grups_de_missatgeria, extraescolars, conversacions)
-        self.cursos = cursos
-        self.users = users
-        self.uu = uu
-        self.grups_de_missatgeria = grups_de_missatgeria
-        self.extraescolars = extraescolars
-        self.conversacions = conversacions
 
     @classmethod
     def transform(cls):

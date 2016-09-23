@@ -60,7 +60,7 @@ def genexport(request):
         return response
     elif dformat == IEFormats.JSON:
         if classe:
-            filename = classe.id_interna + '.csv'
+            filename = classe.id_interna + '.json'
         else:
             filename = datetime.datetime.today().strftime('%Y-%m-%d') + '.json'
         response = HttpResponse(content_type="application/json")
@@ -69,7 +69,7 @@ def genexport(request):
         return response
     elif dformat == IEFormats.PICKLE:
         if classe:
-            filename = classe.id_interna + '.csv'
+            filename = classe.id_interna + '.pkl.gz'
         else:
             filename = datetime.datetime.today().strftime('%Y-%m-%d') + \
                 '.pkl.gz'
