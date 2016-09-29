@@ -15,6 +15,7 @@ telfRegex = re.compile(r'''
 class Alumne(models.Model):
     class Meta:
         ordering = ['cognoms', 'nom']
+        unique_together = ('nom', 'cognoms')
 
     nom = models.CharField(max_length=255, blank=False)
     cognoms = models.CharField(max_length=255, blank=False)
@@ -50,22 +51,6 @@ class Alumne(models.Model):
         blank=True, validators=[RegexValidator(regex=telfRegex)])
     compartir_telefon_mare = models.BooleanField("compartir telèfon de la mare",
         default=False)
-
-    @property
-    def compartir(self):
-        fields = [self.compartir_correu_alumne, self.compartir_correu_pare,
-            self.compartir_correu_mare, self.compartir_telefon_alumne,
-            self.compartir_telefon_pare, self.compartir_telefon_mare]
-        return all(fields)
-
-    @compartir.setter
-    def compartir(self, value):
-        self.compartir_correu_alumne = value
-        self.compartir_correu_pare = value
-        self.compartir_correu_mare = value
-        self.compartir_telefon_alumne = value
-        self.compartir_telefon_pare = value
-        self.compartir_telefon_mare = value
 
     def get_absolute_url(self):
         url = reverse('contactboard:edit-alumne', args=[self.pk])
