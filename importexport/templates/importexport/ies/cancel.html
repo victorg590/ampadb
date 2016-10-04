@@ -1,0 +1,16 @@
+{% extends "menu.html" %}
+
+{% block content %}
+<h1>Cancel·lar importació</h1>
+<p>S'esborrarà l'arxiu d'importació i el mapa de classes.</p>
+
+<form method="post">
+  {% csrf_token %}
+  <div class="form-group">
+    <button class="btn btn-danger" type="submit">Cancel·lar</button>
+    <a class="btn btn-link"
+      href="{% url 'importexport:ies:classnames' imp.pk %}">
+      Tornar</a>
+  </div>
+</form>
+{% endblock content %}

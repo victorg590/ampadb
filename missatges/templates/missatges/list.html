@@ -3,10 +3,9 @@
 {% load printuser %}
 {% load static %}
 
-{% block head %}
-{{ block.super }}
+{% block styles %}
 <link rel="stylesheet" href="{% static 'scss/missatges.css' %}" />
-{% endblock head %}
+{% endblock styles %}
 
 {% block content %}
 {% if admin or grups %}

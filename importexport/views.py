@@ -128,7 +128,7 @@ def processimport(request):
 def format_view(request):
     return render(request, 'importexport/format.html')
 
-def download_template(request):
+def download_template(_):  # No importa l'argument `request`
     response = HttpResponse(content_type="text/csv")
     response['Content-Disposition'] = 'attachment; filename="template.csv"'
     ampacsv.get_template(response)

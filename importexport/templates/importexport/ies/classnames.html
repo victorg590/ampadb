@@ -1,0 +1,71 @@
+{% extends "menu.html" %}
+{% load static %}
+
+{% block content %}
+<h1>Mapa de classes</h1>
+{% if not current_valid %}
+<div class="alert alert-warning">
+  <p>Encara no s'ha fet el mapa de classes, i, per tant, no es pot importar</p>
+</div>
+{% endif %}
+<div>
+  {% if current_valid %}
+  <a class="btn btn-primary" href="{% url 'importexport:ies:confirm' imp.pk %}">
+    Importar</a>
+  {% else %}
+  <button class="btn btn-primary" disabled>Importar</button>
+  {% endif %}
+  <a class="btn btn-danger" href="{% url 'importexport:ies:cancel' imp.pk %}">
+    Cancel·lar</a>
+</div>
+
+<p>Per a importar l'arxiu cal relacionar cada classe mencionada amb una classe
+existent. Si us plau, omple el quadre següent:</p>
+
+{% if errors %}
+<div class="alert alert-danger">
+  {% with len=errors|length %}
+  {% if len == 1 %}
+  <p>{{ errors.0 }}</p>
+  {% else %}
+  <ul>
+    {% for e in errors %}
+    <li>{{ e }}</li>
+    {% endfor %}
+  </ul>
+  {% endif %}
+  {% endwith %}
+</div>
+{% endif %}
+
+<form id="map_form" method="post">
+  {% csrf_token %}
+  {% for i in imp_classes %}
+  <div class="form-group classe-def">
+    <label class="control-label" for="classe_{{ forloop.counter }}">{{ i }}</label>
+    <select class="form-control" id="classe_{{ forloop.counter }}" required>
+      {% for c in classes %}
+      <option value="{{ c.id_interna }}">{{ c }}</option>
+      {% endfor %}
+    </select>
+  </div>
+  {% endfor %}
+  <div class="form-group"><div class="checkbox">
+    <label for="delete_missing">
+      <input id="delete_missing" type="checkbox" />
+      Eliminar classes no mencionades
+    </label>
+  </div></div>
+  <div class="form-group">
+    <button class="btn btn-primary" id="submit_map" type="button">Enviar</button>
+  </div>
+</form>
+{% endblock content %}
+
+{% block scripts %}
+<script>
+var classes = {{ classes_json }};
+var pre_data = {{ pre_data|default:'null' }};
+</script>
+<script src="{% static 'coffee/classnames.js' %}"></script>
+{% endblock scripts %}

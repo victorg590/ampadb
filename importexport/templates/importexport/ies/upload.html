@@ -1,0 +1,39 @@
+{% extends "menu.html" %}
+{% load bootstrap3 %}
+
+{% block content %}
+<h1>Importar format del centre</h1>
+A diferència dels altres formats, aquest reconeix els alumnes pel nom i cognoms,
+no per la clau primària (PK). Per tant, asumeix que la combinació de nom +
+cognoms és única.
+El format ha de ser un CSV (exportat des d'Excel o LibreOffice) amb els següents
+camps:
+<code>NOM,COGNOM 1,COGNOM 2,CLASSE</code>
+Per exemple:
+<code>Joan,Pérez,Gómez,1 A ESO</code>
+Si calgués, un dels cognoms es pot deixar en blanc. Així, aquesta entrada és
+equivalent:
+<code>Joan,Pérez Gómez,,1 A ESO</code>
+A l'importar l'arxiu, la primera fila <strong>ha de ser</strong> la capçalera
+anterior. En cas contrari, la importació fallarà.
+
+{% if pending %}
+<h2>Importacions en curs</h2>
+<p>Aquestes importacions han sigut creades, pero encara falten dades o no s'han
+  aplicat.</p>
+<p>Tingues en compte que les importacions amb més d'una setmana d'inactivitat
+  seran esborrades.</p>
+<ul>
+  {% for i in pending %}
+  <li><a href="{% url 'importexport:ies:classnames' i.pk %}">{{ i }}</a></li>
+  {% endfor %}
+</ul>
+{% endif %}
+
+<h2>Nova importació</h2>
+<form method="post" enctype="multipart/form-data">
+  {% csrf_token %}
+  {% bootstrap_form form %}
+  {% buttons submit="Enviar" %}{% endbuttons %}
+</form>
+{% endblock content %}

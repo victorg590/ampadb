@@ -3,11 +3,12 @@
 {% load printuser %}
 {% load static %}
 
-{% block head %}
-{{ block.super }}
+{% block styles %}
 <link rel="stylesheet" href="{% static 'scss/missatges.css' %}" />
+{% endblock styles %}
+{% block scripts %}
 <script src="{% static 'js/tooltip.js' %}"></script>
-{% endblock head %}
+{% endblock scripts %}
 
 {% block content %}
 <h1>{{ conversacio }}</h1>

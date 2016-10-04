@@ -15,6 +15,10 @@
   {% bootstrap_messages %} {# Actualment no utilitzat #}
   <link rel="stylesheet" href="{% static 'scss/base.css' %}" />
   {% endblock %}
+  {% block headscripts %}
+  {% endblock %}
+  {% block styles %}
+  {% endblock %}
   <title>{% block title %}{% endblock %}</title>
 </head>
 <body>
@@ -22,5 +26,7 @@
     {% block body %}
     {% endblock %}
   </div>
+  {% block scripts %}
+  {% endblock %}
 </body>
-</head>
+</html>
