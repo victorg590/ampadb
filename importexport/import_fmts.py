@@ -6,7 +6,6 @@ import pathlib
 import tempfile
 from datetime import datetime
 from django.core.exceptions import ValidationError
-from .forms import IEFormats
 from contactboard.models import *
 from usermanager.models import *
 from extraescolars.models import *
@@ -39,6 +38,8 @@ def bytestream_to_text(bytestream, encoding='utf-8'):
         textstream.write(decoded_chunk)
     textstream.seek(0)
     return textstream
+
+from .forms import IEFormats  # Aquí per a evitar dependències circulars
 
 def detect_format(filename):
     """Detecta un format a partir la extensió.
