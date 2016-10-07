@@ -7,14 +7,18 @@
 {% if unregistered %}
 <h1>No registrats
 <small>Els usuaris no registrats sempre apareixen com a "&lt;usuari&gt; (*)".</small></h1>
-<div>
+<div class="btn-group" role="group">
   <a class="btn btn-default" href="{% url 'usermanager:export-uu' %}">
-    Exportar llista d'usuaris no registrats
+    Exportar a CSV (Excel)
+  </a>
+  <a class="btn btn-default" href="{% url 'usermanager:print-uu' %}">
+    Imprimir (exportar a PDF)
   </a>
 </div>
 <div class="responsive"><table class="table table-hover text-center">
   <thead>
     <tr>
+      <th>Alumne</th>
       <th>Nom d'usuari</th>
       <th>Codi</th>
       <th>Canviar codi</th>
@@ -24,6 +28,9 @@
   <tbody>
     {% for u in unregistered %}
     <tr>
+      {% with a=u.profile.alumne %}
+      <td><a href="{{ a.get_absolute_url }}">{{ a }}</a></td>
+      {% endwith %}
       <td>{{ u }}</td>
       <td>{{ u.codi }}</td>
       <td><div class="btn-group" role="group">
@@ -50,6 +57,7 @@
 <table class="table table-hover text-center">
   <thead>
     <tr>
+      <th>Alumne</th>
       <th>Nom d'usuari</th>
       <th>Administrador</th>
       <th>Canviar contrasenya</th>
@@ -60,6 +68,13 @@
     {% for u in registered %}
     <tr>
       {% is_admin u as adm %}
+      {% if adm %}
+      <th></th>
+      {% else %}
+      {% with a=u.profile.alumne %}
+      <th><a href="{{ a.get_absolute_url }}">{{ a }}</a></th>
+      {% endwith %}
+      {% endif %}
       <td><span class="username">{{ u }}</span></td>
       <td>{{ adm|pytr }}</td>
       <td><a class="btn btn-default"

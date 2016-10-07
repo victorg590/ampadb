@@ -279,5 +279,4 @@ def mailtoclasse(request, id_classe):
         'form': form,
         'classe': classe
     }
-    print(context)
     return render(request, 'contactboard/mailto.html', context)

@@ -54,7 +54,6 @@ class Alumne(models.Model):
 
     def get_absolute_url(self):
         url = reverse('contactboard:edit-alumne', args=[self.pk])
-        print(url)
         return url
 
     def __str__(self):

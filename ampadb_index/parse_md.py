@@ -26,7 +26,6 @@ def parse_md(md):
     except TypeError:
         # S'ha de "desescapar" perque E.P també escapa l'HTML
         tree.append(E.P(html.unescape(clean_html)))
-        print(tree[0].text)
     for table in tree.iter('table'):
         # Un set, no un diccionari:
         table.classes &= {'table', 'table-striped', 'table-bordered',

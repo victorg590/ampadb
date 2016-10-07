@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<!-- HTML per a generar un PDF -->
+<html>
+<head>
+  <meta charset="utf-8">
+  <style>
+  table {
+    width: 100%;
+    border: 1px solid black;
+  }
+  table th, table td {
+    text-align: left;
+    border-bottom: 1px solid #ddd;
+  }
+  .classe {
+    page-break-after: always;
+  }
+  </style>
+</head>
+<body>
+  {% for c in classes %}
+  <div class="classe">
+    <h1>{{ c.0 }}</h1>
+    <table>
+      <thead>
+        <tr>
+          <th>Alumne</th>
+          <th>Usuari</th>
+          <th>Codi</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for a in c.1 %}
+        <tr>
+          <td>{{ a.profile.alumne }}</td>
+          <td>{{ a.username }}</td>
+          <td>{{ a.codi }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% endfor %}
+</body>
+</html>

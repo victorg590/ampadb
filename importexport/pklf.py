@@ -401,7 +401,7 @@ class PickledMissatge:
         else:
             corig['enviat'] = None
         if corig['editat'] is not None:
-            corig['editat'] = editat=datetime.datetime.strptime(orig['editat'],
+            corig['editat'] = datetime.datetime.strptime(orig['editat'],
                 DATETIME_FMT)
         else:
             corig['editat'] = None
@@ -532,7 +532,7 @@ class PickledInfo:
         User.objects.exclude(pk__in=usuaris).delete()
         UnregisteredUser.objects.exclude(pk__in=uu).delete()
         GrupDeMissatgeria.objects.exclude(pk__in=gdm).delete()
-        Extraescolar.objects.exclude(pk__in=extraescolar).delete()
+        Extraescolar.objects.exclude(pk__in=extraescolars).delete()
         Missatge.objects.exclude(pk__in=missatges).delete()
         Conversacio.objects.exclude(pk__in=conversacions).delete()
 

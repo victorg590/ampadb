@@ -5,7 +5,7 @@ from io import StringIO
 from pathlib import PurePath
 
 class IesImport(models.Model):
-    ifile = models.FileField("Arxiu d'importació", upload_to='import',
+    ifile = models.FileField("Arxiu d'importació", upload_to='uploads/import',
         blank=False, null=False)
     class_dict = models.TextField('Mapa de classes', default='{}',
         help_text="Un text en format JSON que descriu com associar les classes "

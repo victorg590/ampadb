@@ -1,5 +1,4 @@
 from django.shortcuts import render, redirect, get_object_or_404
-from django.http import HttpResponse
 from ampadb.support import is_admin
 from django.contrib.auth.decorators import login_required, user_passes_test
 from .forms import Ies as Forms
@@ -17,7 +16,6 @@ def upload(request):
     if request.method == 'POST':
         form = Forms.UploadForm(request.POST, request.FILES)
         if form.is_valid():
-            print('Valid')
             ins = IesImport(ifile=request.FILES['ifile'])
             ins.save()
             return redirect('importexport:ies:classnames', ins.pk)
@@ -70,6 +68,7 @@ def classnames(request, upload_id):
         'classes_json': mark_safe(json.dumps([c.pk for c in all_classes])),
         'imp_classes': imp_classes,
         'pre_data': mark_safe(ies_format.rev_json(data)),
+        'pre_delete': mark_safe(json.dumps(imp.delete_other)),
         'current_valid': current_valid,
         'imp': imp
     }

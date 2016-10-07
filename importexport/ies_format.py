@@ -3,6 +3,8 @@ import json
 from collections import namedtuple
 from .import_fmts import InvalidFormat, bytestream_to_text
 from contactboard.models import Classe, Alumne
+from usermanager.models import Profile, UnregisteredUser
+from ampadb.support import gen_username, gen_codi
 from django.db import transaction
 
 ImportedAlumne = namedtuple('ImportedAlumne', ['nom', 'cognoms', 'classe'])
@@ -123,8 +125,13 @@ class Changes:
     def apply(self):
         with transaction.atomic():
             for a in self.add:
-                Alumne.objects.create(nom=a.nom, cognoms=a.cognoms,
+                alumne = Alumne.objects.create(nom=a.nom, cognoms=a.cognoms,
                     classe=a.classe)
+                uu =UnregisteredUser.objects.create(
+                    username=gen_username(alumne),
+                    codi=gen_codi()
+                )
+                Profile.objects.create(alumne=alumne, unregisteredUser=uu)
             for m in self.move:
                 m.alumne.classe = m.a_classe
                 m.alumne.save()
@@ -136,6 +143,8 @@ class Changes:
     @staticmethod
     def _get_classe(cmap, icls):
         for c in cmap:
+            if cmap[c] is None:
+                continue
             if icls in cmap[c]:
                 return c
         raise KeyError("Entrada invàlida: {}. S'esperava la classe: {}".format(
@@ -147,7 +156,7 @@ class Changes:
         pdata = parse(validate(imp))
 
         for c in cmap:
-            if c is None:
+            if cmap[c] is None:
                 classe = Classe.objects.get(id_interna=c)
                 ins.delete_classe.append(cls.DeleteClasse(classe))
 

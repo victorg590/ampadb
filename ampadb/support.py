@@ -5,6 +5,7 @@ from usermanager.models import User, UnregisteredUser
 from usermanager.models import Profile
 import logging
 import random
+import unicodedata
 
 def is_admin(user):
     return user.is_staff and user.is_superuser
@@ -45,27 +46,6 @@ def get_user(username):
             user = UnregisteredUser.objects.get(username=username)
     return user
 
-def gen_username(alumne):
-    try:
-        un = alumne.nom.replace(' ', '')[0]
-    except IndexError:
-        return ''
-    un += '.'
-    un += alumne.cognoms
-    un = un.replace(' ', '')
-    un = un.lower()
-    next_try = 1
-    while True:
-        if not username_exists(un):
-            break
-        next_try_str = str(next_try)
-        un = un[:(30 - len(next_try_str))] + next_try_str
-        next_try += 1
-        if next_try > 50:
-            logging.warning('Unable to find a new username')
-            return None
-    return un[:30]
-
 def gen_codi():
     try:
         ransrc = random.SystemRandom()
@@ -73,6 +53,36 @@ def gen_codi():
         ransrc = random
     num = ransrc.randint(000000, 999999)
     return str(num).zfill(6)
+
+def desaccentuar(text):
+    return ''.join([c for c in
+        unicodedata.normalize('NFKD', text)  # Descomposar: 'à' -> 'a`'
+        if not unicodedata.combining(c)  # Eliminar caràcters de combinació
+                                         # (ex. '`')
+    ])
+
+def gen_username(alumne):
+    try:
+        un = alumne.nom.replace(' ', '')[0]
+    except IndexError:
+        un = ''
+    un += '.'
+    un += alumne.cognoms
+    un = un.replace(' ', '')
+    un = un.lower()
+    un = desaccentuar(un[:30])
+    next_try = 1
+    while True:
+        if not username_exists(un):
+            break
+        next_try_str = str(next_try)
+        un = un[:(30 - len(next_try_str))] + next_try_str
+        next_try += 1
+        if next_try > 20:
+            logging.warning("No s'ha pogut trobar un nom d'usuari per a {}. "
+                "Crean't-ne un aleatori".format(alumne))
+            return gen_codi()
+    return un
 
 def signal_clean(sender, **kwargs):
     instance = kwargs['instance']

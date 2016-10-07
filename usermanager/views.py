@@ -1,5 +1,7 @@
 from django.http import HttpResponse
 from django.shortcuts import render, redirect, get_object_or_404
+from django.http import HttpResponse
+from django.template import loader
 from .forms import *
 from .models import *
 from django.contrib.auth.models import User
@@ -7,6 +9,7 @@ from contactboard.models import Alumne
 from ampadb.support import is_admin, gen_username, gen_codi
 from django.contrib.auth.decorators import login_required, user_passes_test
 import csv
+import weasyprint
 from django.views.decorators.debug import (sensitive_variables,
     sensitive_post_parameters)
 
@@ -198,4 +201,21 @@ def export_uu(request):
             alumne = _MockAlumne()
         writer.writerow({'Nom': str(alumne), 'Usuari': u.username,
             'Codi': u.codi})
+    return response
+
+@login_required
+@user_passes_test(is_admin)
+def print_uu(_):
+    classes = {}
+    for uu in UnregisteredUser.objects.all():
+        classe = Profile.objects.get(unregisteredUser=uu).alumne.classe
+        try:
+            classes[classe].append(uu)
+        except KeyError:
+            classes[classe] = [uu]
+    response = HttpResponse(content_type='application/pdf')
+    response['Content-Disposition'] = 'filename="codis_ampa.pdf"'
+    template = loader.get_template('usermanager/pdf_codis.html')
+    html = template.render({'classes': [(k, classes[k]) for k in classes]})
+    weasyprint.HTML(string=html).write_pdf(response)
     return response

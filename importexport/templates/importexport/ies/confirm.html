@@ -66,13 +66,13 @@
 {% if dclassen == 1 %}
 <p>S'eliminarà una classe.</p>
 {% else %}
-<p>S'eliminaràn {{ dclassen }} alumnes.</p>
+<p>S'eliminaràn {{ dclassen }} classes ara buides.</p>
 {% endif %}
 {% endwith %}
 <button class="btn btn-link" id="view_delclasse">{# Emplenat per l'script #}</button>
 <ul id="list_delclasse">
   {% for dc in chg.delete_classe %}
-  <li><a href="{{ dc.get_abslute_url }}">{{ dc }}</a></li>
+  <li><a href="{{ dc.get_abslute_url }}">{{ dc.classe }}</a></li>
   {% endfor %}
 </ul>
 {% endif %}

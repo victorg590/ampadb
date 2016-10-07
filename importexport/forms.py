@@ -57,12 +57,8 @@ class Ies:
             self.clean_file()
 
         def clean_file(self):
-            print('Cleaned')
             ifile = self.cleaned_data['ifile']
             try:
                 ies_format.validate(ifile)
             except InvalidFormat as e:
-                print(e)
                 raise ValidationError(e)
-            else:
-                print('OK')

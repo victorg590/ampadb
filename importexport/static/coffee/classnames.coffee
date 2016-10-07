@@ -8,7 +8,6 @@ $(document).ready ->
       class_dict[to].push imf
     if $('#delete_missing').is ':checked'
       class_dict[k] = null for k, v of class_dict when v.length == 0
-    #alert JSON.stringify class_dict
     sel = $('#map_form input[name="res"]')
     if sel.length
       sel.val JSON.stringify class_dict
@@ -25,4 +24,6 @@ $(document).ready ->
       if pre_data[imf]?
         $(this).children('select').val pre_data[imf]
       return
+
+  $('#delete_missing').prop 'checked', pre_delete
   return
