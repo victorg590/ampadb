@@ -1,0 +1,10 @@
+{
+  "version": 3,
+  "file": "tooltip.js",
+  "sourceRoot": "",
+  "sources": [
+    "tooltip.coffee"
+  ],
+  "names": [],
+  "mappings": "AAAA;EAAA,CAAA,CAAE,QAAF,CAAW,CAAC,KAAZ,CAAkB,SAAA;WAChB,CAAA,CAAE,yBAAF,CAA4B,CAAC,OAA7B,CAAA;EADgB,CAAlB;AAAA"
+}

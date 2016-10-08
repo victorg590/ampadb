@@ -5,7 +5,9 @@ $lightblue: #ADD8E6;
 $white: #FFFFFF;
 
 body {
-  padding-top: 70px; /* La barra és de 50px */
+  padding-top: 70px;
+
+  /* La barra és de 50px */
 }
 
 table.table > tbody {
@@ -24,17 +26,19 @@ table.table.text-center {
   font-family: monospace;
 }
 
-.secret,.self-record {
+.secret, .self-record {
   background-color: $lightgrey;
 }
 
 table.table-hover tr:hover {
   .secret, .self-record {
     background-color: $grey;
+
     a {
       color: $lightblue;
     }
   }
+
   .secret.data {
     color: $white;
   }

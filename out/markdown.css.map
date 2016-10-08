@@ -1,0 +1,7 @@
+{
+"version": 3,
+"mappings": "AACE,WAAE;EACA,eAAe,EAAE,SAAS;AAG5B,WAAE;EACA,eAAe,EAAE,YAAY;AAG/B,yBAAM;EACJ,UAAU,EAAE,MAAM;AAGpB,6BAAU;EACR,WAAW,EAAE,IAAI",
+"sources": ["markdown.scss"],
+"names": [],
+"file": "markdown.css"
+}

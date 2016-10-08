@@ -1,14 +1,11 @@
 {% extends "mdmenu.html" %}
 {% load md %}
 {% load printuser %}
-{% load static %}
+{% load static_dbg %}
 
 {% block styles %}
-<link rel="stylesheet" href="{% static 'scss/missatges.css' %}" />
+<link rel="stylesheet" href="{% static_dbg 'missatges/missatges.css' %}" />
 {% endblock styles %}
-{% block scripts %}
-<script src="{% static 'js/tooltip.js' %}"></script>
-{% endblock scripts %}
 
 {% block content %}
 <h1>{{ conversacio }}</h1>
@@ -67,3 +64,7 @@
 {% endif %}
 {% endfor %}
 {% endblock content %}
+
+{% block scripts %}
+<script src="{% static_dbg 'missatges/tooltip.js' %}"></script>
+{% endblock scripts %}

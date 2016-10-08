@@ -1,0 +1,7 @@
+{
+"version": 3,
+"mappings": "AAOA,oBAAqB;EACnB,UAAU,EAAE,MAAM;;AAIlB,eAAG;EACD,WAAW,EAAE,IAAI;EAEjB,8BAAe;IACb,UAAU,EAAE,OAAO;IACnB,KAAK,EAjBG,OAAO;;AAsBrB,SAAU;EACR,gBAAgB,EAnBN,OAAO;;AAsBnB,SAAU;EACR,gBAAgB,EAxBN,OAAO;;AA2BnB,WAAY;EACV,gBAAgB,EA1BJ,OAAO",
+"sources": ["missatges.scss"],
+"names": [],
+"file": "missatges.css"
+}

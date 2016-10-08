@@ -1,5 +1,5 @@
 {% extends "menu.html" %}
-{% load static %}
+{% load static_dbg %}
 
 {% block content %}
 <h1>Resum dels canvis</h1>
@@ -100,5 +100,5 @@ var opn = {
 var text_mes = "Més";
 var text_menys = "Menys";
 </script>
-<script src="{% static 'coffee/confirm.js' %}"></script>
+<script src="{% static_dbg 'importexport/confirm.js' %}"></script>
 {% endblock scripts %}

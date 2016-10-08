@@ -1,5 +1,5 @@
 {% extends "menu.html" %}
-{% load static %}
+{% load static_dbg %}
 
 {% block content %}
 <h1>Mapa de classes</h1>
@@ -69,5 +69,5 @@ var classes = {{ classes_json }};
 var pre_data = {{ pre_data|default:'null' }};
 var pre_delete = {{ pre_delete|default:'false '}};
 </script>
-<script src="{% static 'coffee/classnames.js' %}"></script>
+<script src="{% static_dbg 'importexport/classnames.js' %}"></script>
 {% endblock scripts %}
