@@ -9,6 +9,6 @@
 * [ ] Escriure documentació. PRIORITAT: **baixa**
 * [ ] Adaptar al [PEP 8](https://www.python.org/dev/peps/pep-0008/). PRIORITAT:
     **baixa**
-* [ ] Reduïr HTML i CSS (al menys quan `not DEBUG`). PRIORITAT: **Mitja**
+* [x] <s>Reduïr HTML i CSS (al menys quan `not DEBUG`). PRIORITAT: **Mitja**</s>
 * [ ] Utilitzar `ModelForm` en lloc de `Form` quan simplifiqui el codi.
     PRIORITAT: **baixa**

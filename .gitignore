@@ -35,7 +35,7 @@ __pycache__/
 env/
 build/
 develop-eggs/
-dist/
+#dist/  # DESHABILITAT
 downloads/
 eggs/
 .eggs/

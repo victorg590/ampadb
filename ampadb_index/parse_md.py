@@ -11,13 +11,26 @@ ATTRS = {'ol': ['start'], 'a': ['href', 'title', 'rel'], 'img': ['src', 'title',
     'alt'], 'table': ['class'], 'th': ['align'], 'td': ['align']}
 STYLES = []
 
-def parse_md(md):
+def parse_md(md, wrap='div', html_class='markdown'):
     raw_html = markdown.markdown(md, output_format='html5',
         enable_attributes=False, lazy_ol=False, encoding='utf-8',
         extensions=['markdown.extensions.extra'])
     clean_html = bleach.clean(raw_html, tags=TAGS, attributes=ATTRS,
         styles=STYLES)
-    tree = E.DIV(E.CLASS('markdown'))  # Posa tot l'HTML generat en un <div>
+    # Embolica el codi amb l'etiqueta que calgui
+    if wrap == 'div':
+        if html_class:
+            tree = E.DIV(E.CLASS(html_class))
+        else:
+            tree = E.DIV()
+    elif wrap == 'blockquote':
+        if html_class:
+            tree = E.BLOCKQUOTE(E.CLASS(html_class))
+        else:
+            tree = E.BLOCKQUOTE()
+    else:
+        raise ValueError('`wrap` ha de ser "div" o "blockquote", no '
+            '{}'.format(wrap))
     bin_html = clean_html.encode('utf-8', 'xmlcharrefreplace')
     try:
         for e in lxml.html.fragments_fromstring(bin_html,
@@ -27,7 +40,6 @@ def parse_md(md):
         # S'ha de "desescapar" perque E.P també escapa l'HTML
         tree.append(E.P(html.unescape(clean_html)))
     for table in tree.iter('table'):
-        # Un set, no un diccionari:
         table.classes &= {'table', 'table-striped', 'table-bordered',
             'table-hover', 'table-condensed'}  # Classes permeses
         table.classes |= ['table']  # Afegir sempre la classe "table"

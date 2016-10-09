@@ -6,7 +6,7 @@
 # Utilitza la configuració a l'arxiu "debug.ini"
 export AMPADB_SETTINGS="$(pwd)/debug.ini"
 if [ -f "private.ini" ]; then
-  AMPADB_SETTINGS="$AMPADB_CONFIG:$(pwd)/private.ini"
+  AMPADB_SETTINGS="$AMPADB_SETTINGS:$(pwd)/private.ini"
 fi
 if [ ! -d "venv" ]; then
   echo "No existeix l'entorn virtual. Ara es crearà."

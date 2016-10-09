@@ -42,6 +42,7 @@ def compose(request, to):
             missatge.contingut = cdata['missatge']
             missatge.save()
             missatge.calcular_destinataris()
+            missatge.notificar()
             return redirect('missatges:list')
     else:
         form = ComposeForm(initial={'a': destinatari})
@@ -78,6 +79,7 @@ def reply(request, cid):
             msg.contingut = form.cleaned_data['missatge']
             msg.save()
             msg.calcular_destinataris()
+            msg.notificar()
             return redirect('missatges:show', conversacio.pk)
     else:
         form = ReplyForm()

@@ -1,5 +1,9 @@
 # Destinació dels arxius
-dest_dir = 'out'
+dest_dir = 'dist'
+
+# Directori on estan els arxius estàtics. Ex. "usermanager/#{static_dir}/"
+# ATENCIÓ: 'static' causa problemes amb la detecció d'arxius de Django
+static_dir = 'staticfiles'
 
 rename = (dest, src) ->
   split_src = src.split '/'
@@ -17,21 +21,24 @@ module.exports = (grunt) ->
       sass:
         files: [{
           expand: true
-          src: "*/static/**/*.{sass,scss}"
+          src: "*/#{static_dir}/**/*.{sass,scss}"
           dest: dest_dir
           rename: rename
           }]
       coffee:
         files: [{
             expand: true
-            src: "*/static/**/*.coffee"
+            src: "*/#{static_dir}/**/*.coffee"
             dest: dest_dir
             rename: rename
           }]
       generic:
         files: [{
           expand: true
-          src: ["*/static/**/*", "!*/static/**/*.{sass,scss,coffee}"]
+          src: [
+            "*/#{static_dir}/**/*",
+            "!*/#{static_dir}/**/*.{sass,scss,coffee}"
+          ]
           dest: dest_dir
           rename: rename
           }]
@@ -70,14 +77,17 @@ module.exports = (grunt) ->
 
     watch:
       generic:
-        files: ["*/static/**/*", "!*/static/**/*.{sass,scss,coffee}",
-          "!**/*~", "!**/*.bck*"]
+        files: [
+          "*/#{static_dir}/**/*",
+          "!*/#{static_dir}/**/*.{sass,scss,coffee}",
+          "!**/*~", "!**/*.bck*"
+        ]
         tasks: ['copy:generic']
       sass:
-        files: "*/static/**/*.{sass,scss}"
+        files: "*/#{static_dir}/**/*.{sass,scss}"
         tasks: ['copy:sass', 'sass', 'cssmin']
       coffee:
-        files: "*/static/**/*.coffee"
+        files: "*/#{static_dir}/**/*.coffee"
         tasks: ['copy:coffee', 'coffee', 'uglify']
     clean:
       rmDest:

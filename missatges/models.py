@@ -1,4 +1,7 @@
 from django.db import models
+from django.db.models import Q
+from django.core.mail import EmailMultiAlternatives
+from django.template import loader
 from django.contrib.auth.models import User
 from django.urls import reverse
 from django.utils.functional import cached_property
@@ -67,6 +70,33 @@ class Missatge(models.Model):
             EstatMissatge.objects.create(destinatari=u, missatge=self,
                 vist=vist)
         self.save()
+
+    def notificar(self):
+        context = {
+            'per': self.per,
+            'conversacio': self.conversacio,
+            'missatge': self.contingut
+        }
+        template_path = 'missatges/emails/notificacio.{fmt}'
+        txt_loader = loader.get_template(template_path.format(fmt='txt'))
+        missatge_txt = txt_loader.render(context)
+        html_loader = loader.get_template(template_path.format(fmt='html'))
+        missatge_html = html_loader.render(context)
+        bcc = [d.email for d in self.destinataris.filter(
+            ~Q(email=''),
+            email__isnull=False,
+        )]  # Filtra els destinataris amb correu
+        if not bcc:
+            return  # Si no hi ha destinataris, acaba
+        msg = EmailMultiAlternatives(
+            subject='Nou missatge de {per} a {conversacio}'.format(per=self.per,
+                conversacio=self.conversacio),
+            body=missatge_txt,
+            bcc=bcc
+        )
+        msg.attach_alternative(missatge_html, 'text/html')
+        msg.send()
+
 
     def clean(self):
         super().clean()
