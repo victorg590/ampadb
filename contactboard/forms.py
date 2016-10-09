@@ -45,12 +45,13 @@ class CursForms:
 
 class _AlumneMeta:
     model = Alumne
-    fields = ['nom', 'cognoms', 'classe', 'data_de_naixement', 'nom_pare',
+    fields = ['nom', 'cognoms', 'classe', 'nom_pare',
         'cognoms_pare', 'nom_mare', 'cognoms_mare', 'correu_alumne',
         'compartir_correu_alumne', 'correu_pare', 'compartir_correu_pare',
         'correu_mare', 'compartir_correu_mare', 'telefon_alumne',
         'compartir_telefon_alumne', 'telefon_pare', 'compartir_telefon_pare',
         'telefon_mare', 'compartir_telefon_mare']
+        # data_de_naixement oculta: no s'utilitza
 
 class AlumneForms:
     class NewForm(forms.ModelForm):
@@ -74,6 +75,12 @@ class AlumneForms:
             exclude = ['classe']
         nom = forms.CharField(disabled=True, required=False)
         cognoms = forms.CharField(disabled=True, required=False)
+
+        def clean(self):
+            cleaned_data = super().clean()
+            if not any(map(cleaned_data.get, ['correu_alumne', 'correu_mare',
+                'correu_pare'])):
+                raise ValidationError("Es requereix un correu com a mínim.")
 
     class AdminEditForm(forms.ModelForm):
         class Meta(_AlumneMeta):

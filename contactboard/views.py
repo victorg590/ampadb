@@ -188,11 +188,12 @@ def edit_alumne(request, alumne_pk):
             if form.has_changed():
                 form.save()
             return redirect('contactboard:list', alumne.classe.id_interna)
-    if is_admin(request.user):
-        form = AlumneForms.AdminEditForm(instance=alumne)
     else:
-        form = AlumneForms.EditForm(instance=alumne,
-            initial={'classe': alumne.classe})
+        if is_admin(request.user):
+            form = AlumneForms.AdminEditForm(instance=alumne)
+        else:
+            form = AlumneForms.EditForm(instance=alumne,
+                initial={'classe': alumne.classe})
     context = {
         'form': form,
         'submitText': 'Actualitzar',

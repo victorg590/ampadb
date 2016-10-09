@@ -67,8 +67,8 @@ class InscripcioForm(forms.Form):
     def clean(self):
         cleaned_data = super().clean()
         if cleaned_data.get('iban') and not cleaned_data.get('nif_titular'):
-            raise ValidationError("S'ha d'introduïr el NIF del titular amb el"
-                " compte.")
+            self.add_error('nif_titular', ValidationError("S'ha d'introduïr el "
+                "NIF del titular amb el compte."))
 
 def validate_inscripcio_exists(pk):
     try:

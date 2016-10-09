@@ -60,8 +60,9 @@ class UnregisteredUser(models.Model):
     def clean(self):
         super().clean()
         if User.objects.filter(username=self.username).exists():
-            raise ValidationError("Aquest nom d'usuari ja exiteix i està"
-                " registrat")
+            self.add_error('username',
+                ValidationError("Aquest nom d'usuari ja exiteix i està"
+                " registrat"))
 
     def __str__(self):
         return self.username + ' (*)'

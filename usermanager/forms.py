@@ -48,8 +48,9 @@ class UsersForms:
             if password:
                 validate_password(password)
             if password and password != passwordConfirm:
-                raise forms.ValidationError('La confirmació de contrasenya no és'
-                    ' correcta')
+                self.add_error('password_confirm',
+                    forms.ValidationError('La confirmació de contrasenya no és'
+                    ' correcta'))
 
 
 class RegisterForm(forms.Form):
@@ -83,8 +84,9 @@ class RegisterForm(forms.Form):
         if password:
             validate_password(password)
         if password and password != passwordConfirm:
-            raise forms.ValidationError('La confirmació de contrasenya no és'
-                ' correcta')
+            self.add_error('password_confirm',
+                ValidationError('La confirmació de contrasenya no és'
+                ' correcta'))
         if username and codi:
             if not UnregisteredUser.objects.filter(
                 username=username, codi=codi).exists():
@@ -104,8 +106,9 @@ class AdminChangePasswordForm(forms.Form):
         if password:
             validate_password(password)
         if password and password != passwordConfirm:
-            raise forms.ValidationError('La confirmació de contrasenya no és'
-                ' correcta')
+            self.add_error('password_confirm',
+                forms.ValidationError('La confirmació de contrasenya no és'
+                ' correcta'))
 
 class ChangeCodeForm(forms.Form):
     codi = forms.CharField(label='Codi', max_length=6,
