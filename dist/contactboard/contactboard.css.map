@@ -1,0 +1,7 @@
+{
+"version": 3,
+"mappings": "AAEA,qBAAsB;EACpB,gBAAgB,ECCN,OAAO;;ADEnB,OAAQ;EACN,UAAU,EAAE,MAAM;EAClB,KAAK,ECLA,IAAK;;ADSV,kCAAQ;EACN,gBAAgB,ECVb,IAAK;EDYR,oCAAE;IACA,KAAK,ECXC,OAAO;ADejB,uCAAa;EACX,KAAK,ECfD,KAAK;;ADmBb,sCAAuC;EACrC,gBAAgB,ECvBX,IAAK;EDyBV,wCAAE;IACA,KAAK,ECxBG,OAAO;ED2BjB,8CAAQ;IACN,KAAK,EC3BD,KAAK",
+"sources": ["contactboard.scss","../_config.scss"],
+"names": [],
+"file": "contactboard.css"
+}

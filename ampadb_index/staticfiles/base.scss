@@ -1,9 +1,3 @@
-// Colors
-$grey: #808080;
-$lightgrey: #D3D3D3;
-$lightblue: #ADD8E6;
-$white: #FFFFFF;
-
 body {
   padding-top: 70px;
 
@@ -24,22 +18,4 @@ table.table.text-center {
 
 .username {
   font-family: monospace;
-}
-
-.secret, .self-record {
-  background-color: $lightgrey;
-}
-
-table.table-hover tr:hover {
-  .secret, .self-record {
-    background-color: $grey;
-
-    a {
-      color: $lightblue;
-    }
-  }
-
-  .secret.data {
-    color: $white;
-  }
 }

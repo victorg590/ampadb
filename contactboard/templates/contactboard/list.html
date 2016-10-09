@@ -2,6 +2,11 @@
 {% load userdata %}
 {% load pytr %}
 {% load urllink %}
+{% load static_dbg %}
+
+{% block styles %}
+<link rel="stylesheet" href="{% static_dbg 'contactboard/contactboard.css' %}" />
+{% endblock styles %}
 
 {% block content %}
 <h1>Llista de contactes de {{ classe }}</h1>
@@ -49,11 +54,13 @@
       {% if admin or a == me %}
       <td><a href="{{ a.get_absolute_url }}">{{ a.nom }} {{ a.cognoms }}</a></td>
       {% else %}
-      <td>{{ a.nom }}{{ a.cognoms }}</td>
+      <td>{{ a.nom }} {{ a.cognoms }}</td>
       {% endif %}
 
       {% if a.compartir_correu_alumne %}
       <td>{{ a.correu_alumne|urlize }}</td>
+      {% elif a == me and a.correu_alumne %}
+      <td class="privat">*PRIVAT*</td>
       {% elif admin %}
       <td class="secret">{{ a.correu_alumne|urlize }}</td>
       {% else %}
@@ -62,6 +69,8 @@
 
       {% if a.compartir_correu_pare %}
       <td>{{ a.correu_pare|urlize }}</td>
+      {% elif a == me and a.correu_pare %}
+      <td class="privat">*PRIVAT*</td>
       {% elif admin %}
       <td class="secret">{{ a.correu_pare|urlize }}</td>
       {% else %}
@@ -70,6 +79,8 @@
 
       {% if a.compartir_correu_mare %}
       <td>{{ a.correu_mare|urlize }}</td>
+      {% elif a == me and a.correu_mare %}
+      <td class="privat">*PRIVAT*</td>
       {% elif admin %}
       <td class="secret">{{ a.correu_mare|urlize }}</td>
       {% else %}
@@ -78,6 +89,8 @@
 
       {% if a.compartir_telefon_alumne %}
       <td class="data">{{ a.telefon_alumne }}</td>
+      {% elif a == me and a.telefon_alumne %}
+      <td class="privat">*PRIVAT*</td>
       {% elif admin %}
       <td class="secret data">{{ a.telefon_alumne }}</td>
       {% else %}
@@ -86,6 +99,8 @@
 
       {% if a.compartir_telefon_pare %}
       <td class="data">{{ a.telefon_pare }}</td>
+      {% elif a == me and a.telefon_pare %}
+      <td class="privat">*PRIVAT*</td>
       {% elif admin %}
       <td class="secret data">{{ a.telefon_pare }}</td>
       {% else %}
@@ -94,6 +109,8 @@
 
       {% if a.compartir_telefon_mare %}
       <td class="data">{{ a.telefon_mare }}</td>
+      {% elif a == me and a.telefon_mare %}
+      <td class="privat">*PRIVAT*</td>
       {% elif admin %}
       <td class="secret data">{{ a.telefon_mare }}</td>
       {% else %}

@@ -1,0 +1,22 @@
+.secret, .self-record {
+  background-color: #D3D3D3; }
+
+.privat {
+  font-style: italic;
+  color: gray; }
+
+table.table-hover tr:hover .secret {
+  background-color: gray; }
+  table.table-hover tr:hover .secret a {
+    color: #ADD8E6; }
+table.table-hover tr:hover .secret.data {
+  color: white; }
+
+table.table-hover tr.self-record:hover {
+  background-color: gray; }
+  table.table-hover tr.self-record:hover a {
+    color: #ADD8E6; }
+  table.table-hover tr.self-record:hover .privat {
+    color: white; }
+
+/*# sourceMappingURL=contactboard.css.map */

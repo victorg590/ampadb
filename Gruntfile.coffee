@@ -46,6 +46,7 @@ module.exports = (grunt) ->
       compile:
         options:
           sourcemap: 'auto'
+          loadPath: dest_dir
         files: [{
           expand: true
           src: "#{dest_dir}/**/*.{sass,scss}"

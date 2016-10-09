@@ -74,8 +74,6 @@ class AlumneForms:
             exclude = ['classe']
         nom = forms.CharField(disabled=True, required=False)
         cognoms = forms.CharField(disabled=True, required=False)
-        data_de_naixement = forms.DateField(disabled=True, required=False,
-            widget=forms.DateInput(format='%d/%m/%Y'))
 
     class AdminEditForm(forms.ModelForm):
         class Meta(_AlumneMeta):
