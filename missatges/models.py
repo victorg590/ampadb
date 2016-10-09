@@ -53,8 +53,8 @@ class Missatge(models.Model):
 
     def ha_sigut_editat(self):
         """Indica si un missatge ha sigut editat"""
-        return abs(self.editat - self.enviat) > timedelta(seconds=2)
-        # Permet un marge de +/- 2 segons
+        return abs(self.editat - self.enviat) > timedelta(seconds=10)
+        # Permet un marge de +/- 10 segons
     ha_sigut_editat.boolean = True
     ha_sigut_editat.short_description = 'Ha sigut editat?'
 

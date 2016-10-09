@@ -11,4 +11,16 @@
   {% bootstrap_form form %}
   {% buttons submit=submitText %}{% endbuttons %}
 </form>
+
+{% if info_compartir %}
+<div class="alert alert-info">
+  <p><strong>Compartir</strong></p>
+  <p>Els camps amb dades de contacte tenen una casella opcional de "compartir",
+    que permetrà que la resta d'alumnes de la classe puguin veure aquesta
+    informació. En cap cas és obligatori compartir les dades; si s'escull no
+    fer-ho, sortiràn com a no emplenades per a la resta d'alumnes i com a
+    "<i>*PRIVAT*</i>" per a tú. Els administradors sempre podràn veure les
+    dades.</p>
+</div>
+{% endif %}
 {% endblock content %}

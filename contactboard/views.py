@@ -195,7 +195,8 @@ def edit_alumne(request, alumne_pk):
             initial={'classe': alumne.classe})
     context = {
         'form': form,
-        'submitText': 'Actualitzar'
+        'submitText': 'Actualitzar',
+        'info_compartir': True
     }
     return render(request, 'contactboard/add.html', context)
 
