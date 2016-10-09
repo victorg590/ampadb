@@ -46,7 +46,7 @@ def new_admin(request):
         if form.is_valid():
             cdata = form.cleaned_data
             user = User.objects.create_superuser(cdata['username'],
-                password=cdata['password'])
+                password=cdata['password'], email=cdata['email'])
             user.save()
             return redirect('usermanager:list')
     else:

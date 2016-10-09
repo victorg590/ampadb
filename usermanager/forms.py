@@ -41,6 +41,7 @@ class UsersForms:
             widget=forms.PasswordInput)
         password_confirm = forms.CharField(label='Confirmar contrasenya',
             widget=forms.PasswordInput, required=True)
+        email = forms.EmailField(label='Correu electrònic', required=True)
         def clean(self):
             cleaned_data = super().clean()
             password = cleaned_data.get('password')
