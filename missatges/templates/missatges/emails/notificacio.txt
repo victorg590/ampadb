@@ -1,4 +1,4 @@
 {{ per }} ha enviat un missatge a la conversació {{ conversacio }}.
-    {{ protocol }}://{{ domain }}{{ conversacio.get_absolute_url }}
+    {{ conversacio_url }}
 
 {{ missatge }}

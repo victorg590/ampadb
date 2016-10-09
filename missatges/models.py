@@ -71,10 +71,12 @@ class Missatge(models.Model):
                 vist=vist)
         self.save()
 
-    def notificar(self):
+    def notificar(self, request):
         context = {
             'per': self.per,
             'conversacio': self.conversacio,
+            'conversacio_url': request.build_absolute_uri(
+                self.conversacio.get_absolute_url()),
             'missatge': self.contingut
         }
         template_path = 'missatges/emails/notificacio.{fmt}'
