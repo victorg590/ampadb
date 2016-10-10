@@ -25,7 +25,10 @@ Afegeix grups de missatgeria a "<a
 </ul>
 
 <h2>Missatges de grups</h2>
-<table class="table table-hover">
+<div>
+  <button class="btn btn-link" id="tancats_rebuts">{ Emplenat per l'script }</button>
+</div>
+<table class="table table-hover" id="rebuts">
   <thead>
     <tr>
       <th>Assumpte</th>
@@ -39,6 +42,8 @@ Afegeix grups de missatgeria a "<a
     {% llegit user msg as ha_llegit %}
     {% if not ha_llegit %}
     <tr class="no-llegit">
+    {% elif msg.tancada %}
+    <tr class="tancat">
     {% else %}
     <tr>
     {% endif %}
@@ -69,8 +74,9 @@ Afegeix grups de missatgeria a "<a
 
 <div>
   <a class="btn btn-primary" href="{% url 'missatges:new' %}">Nou missatge</a>
+  <button class="btn btn-link" id="tancats_enviats">{ Emplenat per l'script }</button>
 </div>
-<table class="table table-hover">
+<table class="table table-hover" id="enviats">
   <thead>
     <tr>
       <th>Assumpte</th>
@@ -83,6 +89,8 @@ Afegeix grups de missatgeria a "<a
     {% llegit user msg as ha_llegit %}
     {% if not ha_llegit %}
     <tr class="no-llegit">
+    {% elif msg.tancada %}
+    <tr class="tancat">
     {% else %}
     <tr>
     {% endif %}
@@ -98,3 +106,11 @@ Afegeix grups de missatgeria a "<a
   </tbody>
 </table>
 {% endblock content %}
+
+{% block scripts %}
+<script>
+var text_veure_tancats = "Veure tancats"
+var text_amagar_tancats = "Amagar tancats"
+</script>
+<script src="{% static_dbg 'missatges/missatges.js' %}"></script>
+{% endblock scripts %}

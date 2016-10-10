@@ -12,7 +12,7 @@ def is_admin(user):
 
 def context_processor(request):
     user = request.user
-    if not user.is_authenticated():
+    if not user.is_authenticated:
         return {'anonymous': True, 'admin': False}
     return {'anonymous': False, 'admin': is_admin(user)}
 

@@ -44,7 +44,7 @@ class Missatge(models.Model):
     ordre = models.PositiveSmallIntegerField(editable=False)
     contingut = models.TextField(blank=True,
         help_text='Suporta <a href="/markdown">Markdown</a>')
-    enviat = models.DateTimeField(auto_now_add=True, blank=False,null=False)
+    enviat = models.DateTimeField(auto_now_add=True, blank=False, null=False)
     editat = models.DateTimeField(auto_now=True, blank=False, null=False)
     estat = models.CharField(max_length=8, blank=True, choices=[
         ('CLOSED', 'Tancat'),
@@ -118,17 +118,19 @@ class Conversacio(models.Model):
     class Meta:
         verbose_name = 'conversació'
         verbose_name_plural = 'conversacions'
+        ordering = ['creada', 'tancada']
 
     de = models.ForeignKey(User, on_delete=models.SET_NULL, blank=False,
         null=True)
     a = models.ForeignKey(GrupDeMissatgeria, on_delete=models.SET_NULL,
         blank=False, null=True)
     assumpte = models.CharField(max_length=80)
-    tancat = models.BooleanField(blank=True, default=False)
+    tancada = models.BooleanField(blank=True, default=False)
+    creada = models.DateTimeField(auto_now_add=True, blank=False, null=False)
 
     def __str__(self):
         rstr = self.assumpte
-        if self.tancat:
+        if self.tancada:
             rstr += ' [TANCAT]'
         return rstr
 

@@ -12,9 +12,9 @@ class MissatgeInline(admin.StackedInline):
 @admin.register(Conversacio)
 class ConversacioAdmin(admin.ModelAdmin):
     raw_id_fields = ['de']
-    list_display = ['assumpte', 'tancat', 'de', 'a']
-    list_editable = ['tancat']
-    list_filter = ['tancat', 'a']
+    list_display = ['assumpte', 'tancada', 'creada', 'de', 'a']
+    list_editable = ['tancada']
+    list_filter = ['tancada', 'a']
     search_fields = ['assumpte']
     inlines = [MissatgeInline]
 

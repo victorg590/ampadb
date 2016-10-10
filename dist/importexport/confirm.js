@@ -21,10 +21,8 @@
     for (i = 0, len = ref.length; i < len; i++) {
       op = ref[i];
       if (opn[op] <= 1) {
-        console.log(opn[op] + " (<= 1)");
         $("#view_" + op).remove();
       } else {
-        console.log(opn[op] + " (> 1)");
         $("#list_" + op).hide();
         $("#view_" + op).text(text_mes).show().click(gen_on_click(op));
       }
