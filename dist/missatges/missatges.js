@@ -5,11 +5,11 @@
     return function() {
       if (ctx.tancats_current[seccio]) {
         $("#" + seccio + " tr.tancat").hide('fast');
-        $("#tancats_" + seccio).text(text_veure_tancats);
+        $("#tancats_" + seccio).text(text_amagar_tancats);
         ctx.tancats_current[seccio] = false;
       } else {
         $("#" + seccio + " tr.tancat").show('fast');
-        $("#tancats_" + seccio).text(text_amagar_tancats);
+        $("#tancats_" + seccio).text(text_veure_tancats);
         ctx.tancats_current[seccio] = true;
       }
     };

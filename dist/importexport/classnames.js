@@ -1,10 +1,9 @@
 (function() {
   $(document).ready(function() {
     $('#submit_map').click(function() {
-      var c, class_dict, i, k, len, sel, v;
+      var c, class_dict, k, sel, v;
       class_dict = {};
-      for (i = 0, len = classes.length; i < len; i++) {
-        c = classes[i];
+      for (c in classes) {
         class_dict[c] = [];
       }
       $('.classe-def').each(function() {
@@ -41,6 +40,20 @@
       });
     }
     $('#delete_missing').prop('checked', pre_delete);
+    $('.classe-def > select').each(function() {
+      $(this).find('option').remove().end().append(function() {
+        var k, results, v;
+        results = [];
+        for (k in classes) {
+          v = classes[k];
+          results.push($('<option>', {
+            value: k,
+            text: v
+          }));
+        }
+        return results;
+      });
+    });
   });
 
 }).call(this);

@@ -10,7 +10,7 @@ telfRegex = re.compile(r'''
     ((\+|00)34)?  # Accepta prefixos (+34/0034)
     [679][0-9]{8}
     $
-    ''', re.X)
+    ''', re.VERBOSE)
 
 class Alumne(models.Model):
     class Meta:

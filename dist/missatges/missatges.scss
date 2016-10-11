@@ -1,8 +1,8 @@
 @import "config";
 
-$usercolor: #d8edf3;
-$selfcolor: #d2f9d2;
-$answercolor: #f2f2f2;
+$usercolor: $blauclar;
+$selfcolor: $verdclar;
+$answercolor: $grisclar;
 
 tr td span.no-llegit {
   visibility: hidden;

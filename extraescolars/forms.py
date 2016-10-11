@@ -26,7 +26,7 @@ def validate_dni(dni):
         ([XYZ]|[0-9])              # X, Y, Z (NIE) o número
         [0-9]{7}
         [ABCDEFGHJKLMNPQRSTVWXYZ]  # Lletra de validació
-        ''', re.X)
+        ''', re.VERBOSE)
     if re.fullmatch(dni_regex, dni) is None:
         raise ValidationError('El format del DNI no és vàlid')
     # NIEs

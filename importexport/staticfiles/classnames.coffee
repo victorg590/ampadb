@@ -1,7 +1,7 @@
 $(document).ready ->
   $('#submit_map').click ->
     class_dict = {}
-    class_dict[c] = [] for c in classes
+    class_dict[c] = [] for c of classes
     $('.classe-def').each ->
       imf = $(this).children('label').text()
       to = $(this).children('select').val()
@@ -21,9 +21,17 @@ $(document).ready ->
   if pre_data? and Object.keys(pre_data).length > 0
     $('.classe-def').each ->
       imf = $(this).children('label').text()
-      if pre_data[imf]?
-        $(this).children('select').val pre_data[imf]
+      $(this).children('select').val pre_data[imf] if pre_data[imf]?
       return
 
   $('#delete_missing').prop 'checked', pre_delete
+
+  $('.classe-def > select').each ->
+    $(this)
+      .find 'option'
+      .remove()
+      .end()
+      .append -> $ '<option>', {value: k, text: v} for k, v of classes
+    return
+
   return

@@ -1,5 +1,6 @@
 import csv
 import json
+import re
 from collections import namedtuple
 from .import_fmts import InvalidFormat, bytestream_to_text
 from contactboard.models import Classe, Alumne
