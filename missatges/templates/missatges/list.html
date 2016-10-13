@@ -4,6 +4,7 @@
 {% load static_dbg %}
 
 {% block styles %}
+{{ block.super }}
 <link rel="stylesheet" href="{% static_dbg 'missatges/missatges.css' %}" />
 {% endblock styles %}
 

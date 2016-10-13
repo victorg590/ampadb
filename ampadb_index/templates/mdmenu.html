@@ -2,5 +2,6 @@
 {% load static_dbg %}
 
 {% block styles %}
+{{ block.super }}
 <link rel="stylesheet" href="{% static_dbg 'markdown.css' %}" />
 {% endblock styles %}

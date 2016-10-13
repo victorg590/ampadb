@@ -2,6 +2,11 @@
 
 {% block title %}AMPA IES Forat Del Vent{% endblock %}
 
+{% block styles %}
+{{ block.super }}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.6.3/css/font-awesome.min.css" />
+{% endblock styles %}
+
 {% block body %}
 <nav class="navbar navbar-default navbar-fixed-top">
   <div class="navbar-header">
@@ -25,4 +30,11 @@
   </div>
 </nav>
 {% block content %}{% endblock %}
+<hr />
+<footer style="position: relative; bottom: 0; height: 40px">
+  <p>&copy; 2016 AMPA IES Forat Del Vent</p>
+  <p>Ets programador web? Saps Python / Django? Ajudan's a
+    <a href="https://github.com/victorg590/ampadb">
+      <i class="fa fa-github"></i> Github</a></p>
+</footer>
 {% endblock body %}
