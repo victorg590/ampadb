@@ -1,11 +1,11 @@
-gen_on_click = (op) -> ->  # Torna una funció
+genOnClick = (op) -> ->  # Torna una funció
   list = $("#list_#{op}")
   if list.is ':hidden'
     list.slideDown 'slow'
-    $(this).text text_menys
+    $(this).text textMenys
   else
     list.slideUp 'slow'
-    $(this).text text_mes
+    $(this).text textMes
   return
 
 $(document).ready ->
@@ -15,7 +15,7 @@ $(document).ready ->
     else
       $("#list_#{op}").hide()
       $("#view_#{op}")
-        .text text_mes
+        .text textMes
         .show()
-        .click gen_on_click op
+        .click genOnClick op
   return

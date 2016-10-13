@@ -1,26 +1,26 @@
 (function() {
-  var gen_on_click;
+  var genOnClick;
 
-  gen_on_click = function(seccio, ctx) {
+  genOnClick = function(seccio, ctx) {
     return function() {
-      if (ctx.tancats_current[seccio]) {
+      if (ctx.tancatsCurrent[seccio]) {
         $("#" + seccio + " tr.tancat").hide('fast');
-        $("#tancats_" + seccio).text(text_amagar_tancats);
-        ctx.tancats_current[seccio] = false;
+        $("#tancats_" + seccio).text(textAmagarTancats);
+        ctx.tancatsCurrent[seccio] = false;
       } else {
         $("#" + seccio + " tr.tancat").show('fast');
-        $("#tancats_" + seccio).text(text_veure_tancats);
-        ctx.tancats_current[seccio] = true;
+        $("#tancats_" + seccio).text(textVeureTancats);
+        ctx.tancatsCurrent[seccio] = true;
       }
     };
   };
 
   $(document).ready(function() {
-    $('#tancats_rebuts').text(text_veure_tancats).click(gen_on_click('rebuts', this));
+    $('#tancats_rebuts').text(textVeureTancats).click(genOnClick('rebuts', this));
     $('#rebuts tr.tancat').hide();
-    $('#tancats_enviats').text(text_veure_tancats).click(gen_on_click('enviats', this));
+    $('#tancats_enviats').text(textVeureTancats).click(genOnClick('enviats', this));
     $('#enviats tr.tancat').hide();
-    this.tancats_current = {
+    this.tancatsCurrent = {
       rebuts: false,
       enviats: false
     };

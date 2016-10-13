@@ -1,36 +1,43 @@
-@import "config";
+@import 'config';
 
-.secret, .self-record {
+.secret,
+.self-record {
   background-color: $lightgrey;
 }
 
 .privat {
-  font-style: italic;
   color: $grey;
+  font-style: italic;
 }
 
-table.table-hover tr:hover {
-  .secret {
-    background-color: $grey;
+table {
+  &.table-hover {
+    tr {
+      &:hover {
+        .secret {
+          background-color: $grey;
 
-    a {
-      color: $lightblue;
+          a {
+            color: $lightblue;
+          }
+
+          &.data {
+            color: $white;
+          }
+        }
+
+        &.self-record {
+          background-color: $grey;
+
+          a {
+            color: $lightblue;
+          }
+
+          .privat {
+            color: $white;
+          }
+        }
+      }
     }
-  }
-
-  .secret.data {
-    color: $white;
-  }
-}
-
-table.table-hover tr.self-record:hover {
-  background-color: $grey;
-
-  a {
-    color: $lightblue;
-  }
-
-  .privat {
-    color: $white;
   }
 }

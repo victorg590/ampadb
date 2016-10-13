@@ -1,45 +1,45 @@
 (function() {
   $(document).ready(function() {
     $('#submit_map').click(function() {
-      var c, class_dict, k, sel, v;
-      class_dict = {};
+      var c, classDict, k, sel, v;
+      classDict = {};
       for (c in classes) {
-        class_dict[c] = [];
+        classDict[c] = [];
       }
       $('.classe-def').each(function() {
         var imf, to;
         imf = $(this).children('label').text();
         to = $(this).children('select').val();
-        return class_dict[to].push(imf);
+        return classDict[to].push(imf);
       });
       if ($('#delete_missing').is(':checked')) {
-        for (k in class_dict) {
-          v = class_dict[k];
+        for (k in classDict) {
+          v = classDict[k];
           if (v.length === 0) {
-            class_dict[k] = null;
+            classDict[k] = null;
           }
         }
       }
       sel = $('#map_form input[name="res"]');
       if (sel.length) {
-        sel.val(JSON.stringify(class_dict));
+        sel.val(JSON.stringify(classDict));
       } else {
         $('#map_form').append(function() {
-          return $('<input>').attr('type', 'hidden').attr('name', 'res').val(JSON.stringify(class_dict));
+          return $('<input>').attr('type', 'hidden').attr('name', 'res').val(JSON.stringify(classDict));
         });
       }
       $('#map_form').submit();
     });
-    if ((typeof pre_data !== "undefined" && pre_data !== null) && Object.keys(pre_data).length > 0) {
+    if ((typeof preData !== "undefined" && preData !== null) && Object.keys(preData).length > 0) {
       $('.classe-def').each(function() {
         var imf;
         imf = $(this).children('label').text();
-        if (pre_data[imf] != null) {
-          $(this).children('select').val(pre_data[imf]);
+        if (preData[imf] != null) {
+          $(this).children('select').val(preData[imf]);
         }
       });
     }
-    $('#delete_missing').prop('checked', pre_delete);
+    $('#delete_missing').prop('checked', preDelete);
     $('.classe-def > select').each(function() {
       $(this).find('option').remove().end().append(function() {
         var k, results, v;

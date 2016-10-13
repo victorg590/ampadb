@@ -66,8 +66,8 @@ existent. Si us plau, omple el quadre següent:</p>
 {% block scripts %}
 <script>
 var classes = {{ classes_json }};
-var pre_data = {{ pre_data|default:'null' }};
-var pre_delete = {{ pre_delete|default:'false' }};
+var preData = {{ pre_data|default:'null' }};
+var preDelete = {{ pre_delete|default:'false' }};
 </script>
 <script src="{% static_dbg 'importexport/classnames.js' %}"></script>
 {% endblock scripts %}

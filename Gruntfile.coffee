@@ -90,6 +90,12 @@ module.exports = (grunt) ->
       coffee:
         files: "*/#{static_dir}/**/*.coffee"
         tasks: ['copy:coffee', 'coffee', 'uglify']
+    coffeelint:
+      coffee: "*/#{static_dir}/**/*.coffee"
+    sasslint:
+      options:
+        configFile: ".sass-lint.yml"
+      sass: "*/#{static_dir}/**/*.{sass,scss}"
     clean:
       rmDest:
         files: [{
@@ -103,9 +109,13 @@ module.exports = (grunt) ->
   grunt.loadNpmTasks 'grunt-contrib-coffee'
   grunt.loadNpmTasks 'grunt-contrib-uglify'
   grunt.loadNpmTasks 'grunt-contrib-watch'
+  grunt.loadNpmTasks 'grunt-coffeelint'
+  grunt.loadNpmTasks 'grunt-sass-lint'
   grunt.loadNpmTasks 'grunt-contrib-clean'
 
   grunt.registerTask 'css', ['sass', 'cssmin']
   grunt.registerTask 'js', ['coffee', 'uglify']
-  grunt.registerTask 'default', ['copy', 'css', 'js']
+  grunt.registerTask 'test', ['coffeelint', 'sasslint']
+  grunt.registerTask 'all', ['copy', 'css', 'js']
+  grunt.registerTask 'default', 'all'
   return

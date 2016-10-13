@@ -2,9 +2,11 @@
   text-decoration: underline; }
 .markdown s {
   text-decoration: line-through; }
-.markdown em, .markdown i {
+.markdown em,
+.markdown i {
   font-style: italic; }
-.markdown strong, .markdown b {
+.markdown strong,
+.markdown b {
   font-weight: bold; }
 
 /*# sourceMappingURL=markdown.css.map */

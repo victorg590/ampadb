@@ -1,18 +1,22 @@
 body {
   padding-top: 70px;
 
-  /* La barra és de 50px */
+  // La barra és de 50px
 }
 
-table.table > tbody {
-  th, td {
-    vertical-align: middle;
-  }
-}
+table {
+  &.table {
+    th,
+    td {
+      vertical-align: middle;
+    }
 
-table.table.text-center {
-  th, td {
-    text-align: center;
+    &.text-center {
+      th,
+      td {
+        text-align: center;
+      }
+    }
   }
 }
 

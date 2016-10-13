@@ -1,20 +1,28 @@
-@import "config";
+@import 'config';
 
 $usercolor: $blauclar;
 $selfcolor: $verdclar;
 $answercolor: $grisclar;
 
-tr td span.no-llegit {
-  visibility: hidden;
-}
-
-tr.no-llegit {
+tr {
   td {
-    font-weight: bold;
+    span {
+      &.no-llegit {
+        visibility: hidden;
+      }
+    }
+  }
 
-    span.no-llegit {
-      visibility: visible;
-      color: $deepskyblue;
+  &.no-llegit {
+    td {
+      font-weight: bold;
+
+      span {
+        &.no-llegit {
+          color: $deepskyblue;
+          visibility: visible;
+        }
+      }
     }
   }
 }

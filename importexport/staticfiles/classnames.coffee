@@ -1,30 +1,30 @@
 $(document).ready ->
   $('#submit_map').click ->
-    class_dict = {}
-    class_dict[c] = [] for c of classes
+    classDict = {}
+    classDict[c] = [] for c of classes
     $('.classe-def').each ->
       imf = $(this).children('label').text()
       to = $(this).children('select').val()
-      class_dict[to].push imf
+      classDict[to].push imf
     if $('#delete_missing').is ':checked'
-      class_dict[k] = null for k, v of class_dict when v.length == 0
+      classDict[k] = null for k, v of classDict when v.length == 0
     sel = $('#map_form input[name="res"]')
     if sel.length
-      sel.val JSON.stringify class_dict
+      sel.val JSON.stringify classDict
     else
       $('#map_form').append ->
         $('<input>').attr('type', 'hidden').attr('name', 'res').
-          val JSON.stringify class_dict
+          val JSON.stringify classDict
     $('#map_form').submit()
     return
 
-  if pre_data? and Object.keys(pre_data).length > 0
+  if preData? and Object.keys(preData).length > 0
     $('.classe-def').each ->
       imf = $(this).children('label').text()
-      $(this).children('select').val pre_data[imf] if pre_data[imf]?
+      $(this).children('select').val preData[imf] if preData[imf]?
       return
 
-  $('#delete_missing').prop 'checked', pre_delete
+  $('#delete_missing').prop 'checked', preDelete
 
   $('.classe-def > select').each ->
     $(this)

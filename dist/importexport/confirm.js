@@ -1,16 +1,16 @@
 (function() {
-  var gen_on_click;
+  var genOnClick;
 
-  gen_on_click = function(op) {
+  genOnClick = function(op) {
     return function() {
       var list;
       list = $("#list_" + op);
       if (list.is(':hidden')) {
         list.slideDown('slow');
-        $(this).text(text_menys);
+        $(this).text(textMenys);
       } else {
         list.slideUp('slow');
-        $(this).text(text_mes);
+        $(this).text(textMes);
       }
     };
   };
@@ -24,7 +24,7 @@
         $("#view_" + op).remove();
       } else {
         $("#list_" + op).hide();
-        $("#view_" + op).text(text_mes).show().click(gen_on_click(op));
+        $("#view_" + op).text(textMes).show().click(genOnClick(op));
       }
     }
   });

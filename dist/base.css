@@ -1,12 +1,11 @@
-@charset "UTF-8";
 body {
-  padding-top: 70px;
-  /* La barra és de 50px */ }
+  padding-top: 70px; }
 
-table.table > tbody th, table.table > tbody td {
+table.table th,
+table.table td {
   vertical-align: middle; }
-
-table.table.text-center th, table.table.text-center td {
+table.table.text-center th,
+table.table.text-center td {
   text-align: center; }
 
 .username {

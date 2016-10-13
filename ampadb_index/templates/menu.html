@@ -31,10 +31,12 @@
 </nav>
 {% block content %}{% endblock %}
 <hr />
-<footer style="position: relative; bottom: 0; height: 40px">
+<footer id="menu_footer" style="position: relative; bottom: 0; height: 40px">
+  {% block footer %}
   <p>&copy; 2016 AMPA IES Forat Del Vent</p>
   <p>Ets programador web? Saps Python / Django? Ajudan's a
-    <a href="https://github.com/victorg590/ampadb">
+    <a href="https://github.com/ampafdv/ampadb">
       <i class="fa fa-github"></i> Github</a></p>
+  {% endblock footer %}
 </footer>
 {% endblock body %}

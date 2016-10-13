@@ -1,18 +1,28 @@
 body {
   padding-top: 70px;
 
-  /* La barra és de 50px */
+  // La barra és de 50px
 }
 
-table.table > tbody {
-  th, td {
-    vertical-align: middle;
-  }
+#menu_footer {
+  bottom: 0;
+  height: 40px;
+  position: relative;
 }
 
-table.table.text-center {
-  th, td {
-    text-align: center;
+table {
+  &.table {
+    th,
+    td {
+      vertical-align: middle;
+    }
+
+    &.text-center {
+      th,
+      td {
+        text-align: center;
+      }
+    }
   }
 }
 
