@@ -10,9 +10,17 @@ if [ -f "private.ini" ]; then
 fi
 if [ ! -d "venv" ]; then
   echo "No existeix l'entorn virtual. Ara es crearà."
-  virtualenv3 --system-site-packages "venv"
+  PYTHON_EXECUTABLE=$(python3 -c "import sys; print(sys.executable)")
+  if [ ! "$PYTHON_EXECUTABLE" ]; then
+    echo "Es necessita Python 3 per a la instalació"
+    return 1
+  fi
+  virtualenv3 \
+    --system-site-packages \
+    --prompt "(ampadb) " \
+    --python "$PYTHON_EXECUTABLE" \
+    "venv"
   if [ $? != 0 ]; then
-    # virtualenv ha fallat
     echo "virtualenv no està instalat o ha fallat."
     return 1
   fi

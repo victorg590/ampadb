@@ -14,7 +14,9 @@ def validate_curs_id_unique(value):
 
 class ClasseForms:
     class NewForm(forms.Form):
-        nom = forms.CharField(max_length=50, required=True)
+        # nom = forms.CharField(max_length=50, required=True)
+        nom = forms.ChoiceField(required=True,
+            choices=[(c, c) for c in ['A', 'B', 'C', 'D', 'E']])
         id_interna = forms.SlugField(max_length=20, required=True,
             validators=[validate_non_reserved_id, validate_classe_id_unique],
             help_text='Forma curta de referir-se a la classe. Ha de ser única i'

@@ -6,16 +6,25 @@ IF EXIST "private.ini" (
 
 IF NOT EXIST "venv" (
   ECHO No existeix l'entorn virtual. Ara es crearà.
-  virtualenv --system-site-packages venv
-  REM Assumeix que Virtualenv és per a Python 3, a falta d'una solució millor
+  FOR /F "tokens=*" %%i IN ('py -3 -c "import sys; print(sys.executable)"') DO (
+    SET PYTHON_EXECUTABLE=%%i
+  )
+  IF [%PYTHON_EXECUTABLE%] == [] (
+    ECHO Es necessita Python 3 per a la instalació
+    EXIT /B 1
+  )
+  virtualenv ^
+    --system-site-packages ^
+    --prompt "(ampadb) " ^
+    --python %PYTHON_EXECUTABLE% ^
+    venv
   IF NOT ERRORLEVEL 0 (
-    REM virtualenv ha fallat
     ECHO virtualenv no està instalat o ha fallat
     EXIT /B 1
   )
-  venv\Scripts\activate
+  venv\Scripts\activate.bat
   pip install "setuptools>=18.5"
-  pip install -r stdrequirements.txt
+  pip install -r "stdrequirements.txt"
 ) ELSE (
   venv\Scripts\activate
 )
