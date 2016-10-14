@@ -32,7 +32,7 @@ class CsvImportTestCase(TestCase):
         UnregisteredUser.objects.create(username='d', codi='000000')
 
         alumne5 = Alumne.objects.create(
-            pk=5, nom='O', cognoms='P', classe=classe
+            pk=5, nom='O', cognoms='P', classe=classe,
             data_de_naixement=date(2000, 1, 1))
         usuari5 = User.objects.create(username='e')
         Profile.objects.create(alumne=alumne5, user=usuari5)
