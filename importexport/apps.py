@@ -5,4 +5,5 @@ class ImportexportConfig(AppConfig):
     name = 'importexport'
 
     def ready(self):
-        from . import signals
+        # Registrar senyals
+        from . import signals  # pylint: disable=unused-variable

@@ -17,7 +17,7 @@ class CsvImportTestCase(TestCase):
                                        curs=curs)
 
         alumne1 = Alumne.objects.create(
-            pk=1, nom='A', cognoms='B', classe=classe
+            pk=1, nom='A', cognoms='B', classe=classe,
             data_de_naixement=date(2000, 1, 1))
         usuari1 = User.objects.create(username='a')
         Profile.objects.create(alumne=alumne1, user=usuari1)
