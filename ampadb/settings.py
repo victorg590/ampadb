@@ -136,14 +136,14 @@ PASSWORD_HASHERS = [
 import importlib
 
 if importlib.util.find_spec('bcrypt') is not None:
-    PASSWORD_HASHERS.insert(0,
-        'django.contrib.auth.hashers.BCryptSHA256PasswordHasher')
-    PASSWORD_HASHERS.insert(1,
-        'django.contrib.auth.hashers.BCryptPasswordHasher')
+    PASSWORD_HASHERS.insert(
+        0, 'django.contrib.auth.hashers.BCryptSHA256PasswordHasher')
+    PASSWORD_HASHERS.insert(
+        1, 'django.contrib.auth.hashers.BCryptPasswordHasher')
 
 if importlib.util.find_spec('argon2') is not None:
-    PASSWORD_HASHERS.insert(0,
-        'django.contrib.auth.hashers.Argon2PasswordHasher')
+    PASSWORD_HASHERS.insert(
+        0, 'django.contrib.auth.hashers.Argon2PasswordHasher')
 
 AUTH_PASSWORD_VALIDATORS = [
     {

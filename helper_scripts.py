@@ -17,13 +17,16 @@ cursos = [
     ('2BTX', '2on Batxillerat', 6)
 ]
 
+
 def gencurs():
     """Crea els cursos 1er ESO A - 2on Batx E"""
     creats = []
     with transaction.atomic():
         for c in cursos:
-            curs = Curs.objects.get_or_create(id_interna=c[0],
-                defaults={'nom': c[1], 'ordre': c[2]})[0]
+            curs = Curs.objects.get_or_create(
+                id_interna=c[0],
+                defaults={'nom': c[1], 'ordre': c[2]}
+            )[0]
             for classe in ('A', 'B', 'C', 'D', 'E'):
                 creats.append(Classe.objects.update_or_create(
                     id_interna=(curs.id_interna + classe),

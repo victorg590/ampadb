@@ -3,6 +3,7 @@ import os.path
 import configparser
 import json
 
+
 class AmpaDbSettings:
     def __init__(self):
         settings_var = os.environ.get('AMPADB_SETTINGS')

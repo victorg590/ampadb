@@ -10,6 +10,7 @@ import json
 from django.utils.html import mark_safe
 from django.db import transaction
 
+
 @login_required
 @user_passes_test(is_admin)
 def upload(request):
@@ -29,6 +30,7 @@ def upload(request):
     }
     return render(request, 'importexport/ies/upload.html', context)
 
+
 @login_required
 @user_passes_test(is_admin)
 def classnames(request, upload_id):
@@ -42,7 +44,7 @@ def classnames(request, upload_id):
             ies_format.val_json(imp.ifile, data)
         except json.JSONDecodeError:
             errors.append('Entrada invàlida, si us plau contacta amb el '
-                'desenvolupadors')
+                          'desenvolupadors')
             data = {}
             current_valid = False
         except InvalidFormat as e:
@@ -50,7 +52,7 @@ def classnames(request, upload_id):
             current_valid = False
         else:
             imp.class_dict = json.dumps(data, sort_keys=True,
-                separators=(',', ':'))
+                                        separators=(',', ':'))
             imp.save()
     else:
         data = json.loads(imp.class_dict)
@@ -75,14 +77,15 @@ def classnames(request, upload_id):
     }
     return render(request, 'importexport/ies/classnames.html', context)
 
+
 def confirm(request, upload_id):
     imp = get_object_or_404(IesImport, pk=upload_id)
     try:
         ies_format.val_json(imp.ifile, json.loads(imp.class_dict))
     except InvalidFormat:
         return redirect('importexport:ies:classnames', imp.pk)
-    changes = ies_format.Changes.calculate(imp.ifile,
-        json.loads(imp.class_dict), imp.delete_other)
+    changes = ies_format.Changes.calculate(
+        imp.ifile, json.loads(imp.class_dict), imp.delete_other)
     if request.method == 'POST':
         with transaction.atomic():
             changes.apply()
@@ -93,6 +96,7 @@ def confirm(request, upload_id):
         'chg': changes
     }
     return render(request, 'importexport/ies/confirm.html', context)
+
 
 def cancel(request, upload_id):
     imp = get_object_or_404(IesImport, pk=upload_id)

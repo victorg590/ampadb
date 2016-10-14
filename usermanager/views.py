@@ -10,7 +10,8 @@ from django.contrib.auth.decorators import login_required, user_passes_test
 import csv
 import weasyprint
 from django.views.decorators.debug import (sensitive_variables,
-    sensitive_post_parameters)
+                                           sensitive_post_parameters)
+
 
 @sensitive_post_parameters('password', 'password_confirm')
 @sensitive_variables('form', 'cdata')
@@ -22,7 +23,7 @@ def register(request):
             uu = UnregisteredUser.objects.get(username=cdata['username'])
             profile = Profile.objects.get(unregisteredUser=uu)
             user = User.objects.create_user(uu.username,
-                password=cdata['password'])
+                                            password=cdata['password'])
             user.save()
             profile.unregisteredUser = None
             profile.user = user
@@ -36,6 +37,7 @@ def register(request):
     }
     return render(request, 'registration/register.html', context)
 
+
 @sensitive_post_parameters('password', 'password_confirm')
 @sensitive_variables('form', 'cdata')
 @login_required
@@ -45,8 +47,9 @@ def new_admin(request):
         form = UsersForms.NewAdminForm(request.POST)
         if form.is_valid():
             cdata = form.cleaned_data
-            user = User.objects.create_superuser(cdata['username'],
-                password=cdata['password'], email=cdata['email'])
+            user = User.objects.create_superuser(
+                cdata['username'], password=cdata['password'],
+                email=cdata['email'])
             user.save()
             return redirect('usermanager:list')
     else:
@@ -55,6 +58,7 @@ def new_admin(request):
         'form': form
     }
     return render(request, 'usermanager/new_admin.html', context)
+
 
 @login_required
 @user_passes_test(is_admin)
@@ -67,7 +71,7 @@ def new_user(request, alumne_pk):
             if not cdata['codi']:
                 cdata['codi'] = gen_codi()
             uu = UnregisteredUser(username=cdata['username'],
-                codi=cdata['codi'])
+                                  codi=cdata['codi'])
             uu.save()
             try:
                 p = Profile.objects.get(alumne=alumne)
@@ -77,12 +81,14 @@ def new_user(request, alumne_pk):
             p.save()
             return redirect('contactboard:list', alumne.classe.id_interna)
     else:
-        form = UsersForms.NewForm(initial={'alumne': alumne,
+        form = UsersForms.NewForm(initial={
+            'alumne': alumne,
             'username': gen_username(alumne)})
     context = {
         'form': form
     }
     return render(request, 'usermanager/new.html', context)
+
 
 @login_required
 @user_passes_test(is_admin)
@@ -94,6 +100,7 @@ def list_users(request):
         'registered': users
     }
     return render(request, 'usermanager/list.html', context)
+
 
 @login_required
 @user_passes_test(is_admin)
@@ -112,6 +119,7 @@ def delete_user(request, username):
     }
     return render(request, 'usermanager/delete.html', context)
 
+
 @login_required
 @user_passes_test(is_admin)
 def cancel_user(request, username):
@@ -128,6 +136,7 @@ def cancel_user(request, username):
         'tuser': uu
     }
     return render(request, 'usermanager/cancel.html', context)
+
 
 @sensitive_post_parameters()
 @sensitive_variables('form', 'cdata')
@@ -149,6 +158,7 @@ def admin_changepassword(request, username):
     }
     return render(request, 'usermanager/changepassword.html', context)
 
+
 @login_required
 @user_passes_test(is_admin)
 def change_code_auto(request, username):
@@ -156,6 +166,7 @@ def change_code_auto(request, username):
     uu.codi = gen_codi()
     uu.save()
     return redirect('usermanager:list')
+
 
 @login_required
 @user_passes_test(is_admin)
@@ -175,6 +186,7 @@ def change_code(request, username):
     }
     return render(request, 'usermanager/change_code.html', context)
 
+
 class _MockAlumne:
     def __init__(self):
         self.nom = ''
@@ -182,6 +194,7 @@ class _MockAlumne:
 
     def __str__(self):
         return self.nom + self.cognoms
+
 
 @login_required
 @user_passes_test(is_admin)
@@ -197,8 +210,9 @@ def export_uu(request):
         except Profile.DoesNotExist:
             alumne = _MockAlumne()
         writer.writerow({'Nom': str(alumne), 'Usuari': u.username,
-            'Codi': u.codi})
+                         'Codi': u.codi})
     return response
+
 
 @login_required
 @user_passes_test(is_admin)

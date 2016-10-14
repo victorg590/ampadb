@@ -4,9 +4,11 @@ from .models import Alumne, Classe
 from usermanager.models import Profile
 from ampadb.support import signal_clean
 
+
 @receiver(pre_save, sender=Alumne)
 def alumne_pre_save(sender, **kwargs):
     signal_clean(sender, **kwargs)
+
 
 @receiver(post_save, sender=Alumne)
 def alumne_post_save(sender, **kwargs):

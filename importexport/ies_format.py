@@ -10,6 +10,7 @@ from django.db import transaction
 
 ImportedAlumne = namedtuple('ImportedAlumne', ['nom', 'cognoms', 'classe'])
 
+
 def validate_row(row):
     try:
         nom = row['NOM'].strip()
@@ -34,6 +35,7 @@ def validate_row(row):
     if not classe:
         raise InvalidFormat.falta_a_fila('CLASSE', row)
 
+
 def validate(inp):
     try:
         reader = csv.DictReader(bytestream_to_text(inp))
@@ -44,6 +46,7 @@ def validate(inp):
         validate_row(row)
         res.append(row)
     return res
+
 
 def parse_row(row):
     nom = row['NOM'].strip()
@@ -68,17 +71,20 @@ def parse_row(row):
 
     return ImportedAlumne(nom, cognoms, classe)
 
+
 def parse(validated_inp):
     res = []
     for row in validated_inp:
         res.append(parse_row(row))
     return res
 
+
 def unique_classes(parsed_inp):
     current = set()
     for a in parsed_inp:
         current |= {a.classe}
     return current
+
 
 def val_json(inp, dicc):
     current = set()
@@ -98,6 +104,7 @@ def val_json(inp, dicc):
         raise InvalidFormat('Falten classes: {}'.format(expected - current))
     assert current == expected
 
+
 def rev_json(in_dicc):
     if in_dicc is None:
         return json.dumps(None)
@@ -109,12 +116,14 @@ def rev_json(in_dicc):
             out_dicc[c] = k
     return json.dumps(out_dicc)
 
+
 class Changes:
     AddAlumne = namedtuple('AddAlumne', ['nom', 'cognoms', 'classe'])
     MoveAlumne = namedtuple('MoveAlumne', ['alumne', 'a_classe'])
     DeleteAlumne = namedtuple('DeleteAlumne', ['alumne'])
     DeleteClasse = namedtuple('DeleteClasse', ['classe'])
-    NoopAlumne = namedtuple('NoopAlumne', ['alumne'])  # "No operation", no fer res
+    # "No operation", no fer res
+    NoopAlumne = namedtuple('NoopAlumne', ['alumne'])
 
     def __init__(self):
         self.add = []
@@ -127,8 +136,8 @@ class Changes:
         with transaction.atomic():
             for a in self.add:
                 alumne = Alumne.objects.create(nom=a.nom, cognoms=a.cognoms,
-                    classe=a.classe)
-                uu =UnregisteredUser.objects.create(
+                                               classe=a.classe)
+                uu = UnregisteredUser.objects.create(
                     username=gen_username(alumne),
                     codi=gen_codi()
                 )
@@ -163,13 +172,14 @@ class Changes:
 
         for palumne in pdata:
             classe = Classe.objects.get(id_interna=cls._get_classe(cmap,
-                palumne.classe))
+                                        palumne.classe))
             try:
                 alumne = Alumne.objects.get(nom=palumne.nom,
-                    cognoms=palumne.cognoms)
+                                            cognoms=palumne.cognoms)
             except Alumne.DoesNotExist:
                 ins.add.append(cls.AddAlumne(nom=palumne.nom,
-                    cognoms=palumne.cognoms, classe=classe))
+                                             cognoms=palumne.cognoms,
+                                             classe=classe))
                 continue
             if alumne.classe == classe:
                 ins.noop.append(cls.NoopAlumne(alumne))

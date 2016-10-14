@@ -8,6 +8,7 @@ register = template.Library()
 
 register.simple_tag(get_alumne)
 
+
 @register.simple_tag
 def get_user(alumne_pk):
     alumne = Alumne.objects.get(pk=alumne_pk)
@@ -21,6 +22,7 @@ def get_user(alumne_pk):
         return profile.unregisteredUser
     else:
         return None
+
 
 @register.simple_tag(name='is_admin')
 def is_admin_tag(user):

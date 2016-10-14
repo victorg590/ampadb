@@ -4,10 +4,11 @@ from usermanager.models import Profile
 
 register = template.Library()
 
+
 @register.filter
 def printuser(value):
     val = "{nom} {cognoms}".format(nom=(value.first_name or ''),
-        cognoms=(value.last_name or '')).strip()
+                                   cognoms=(value.last_name or '')).strip()
     if val:
         return val
     try:

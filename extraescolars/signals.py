@@ -3,9 +3,11 @@ from django.dispatch import receiver
 from .models import Extraescolar, Inscripcio
 from ampadb.support import signal_clean
 
+
 @receiver(pre_save, sender=Extraescolar)
 def extraescolar_pre_save(sender, **kwargs):
     signal_clean(sender, **kwargs)
+
 
 @receiver(pre_save, sender=Inscripcio)
 def inscripcio_pre_save(sender, **kwargs):

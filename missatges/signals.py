@@ -3,6 +3,7 @@ from django.dispatch import receiver
 from .models import Missatge
 from ampadb.support import signal_clean
 
+
 @receiver(pre_save, sender=Missatge)
 def missatge_pre_save(sender, **kwargs):
     signal_clean(sender, **kwargs)

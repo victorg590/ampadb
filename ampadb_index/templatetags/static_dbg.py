@@ -5,6 +5,7 @@ from ampadb import settings
 
 register = template.Library()
 
+
 @register.simple_tag
 def static_dbg(path, debug=None):
     """Com `static`, però si no DEBUG, torna la versió minimitzada."""

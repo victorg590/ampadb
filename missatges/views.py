@@ -3,6 +3,7 @@ from .models import GrupDeMissatgeria, Conversacio, Missatge
 from .forms import ComposeForm, ReplyForm
 from django.contrib.auth.decorators import login_required
 
+
 @login_required
 def list_view(request):
     grups = GrupDeMissatgeria.objects.filter(usuaris=request.user)
@@ -15,6 +16,7 @@ def list_view(request):
     }
     return render(request, 'missatges/list.html', context)
 
+
 @login_required
 def new(request):
     grups = []
@@ -24,6 +26,7 @@ def new(request):
         'grups': grups
     }
     return render(request, 'missatges/new.html', context)
+
 
 @login_required
 def compose(request, to):
@@ -51,6 +54,7 @@ def compose(request, to):
     }
     return render(request, 'missatges/compose.html', context)
 
+
 @login_required
 def show(request, cid):
     conversacio = get_object_or_404(Conversacio, pk=cid)
@@ -64,6 +68,7 @@ def show(request, cid):
         'missatges': Missatge.objects.filter(conversacio=conversacio)
     }
     return render(request, 'missatges/show.html', context)
+
 
 @login_required
 def reply(request, cid):
@@ -87,6 +92,7 @@ def reply(request, cid):
         'form': form
     }
     return render(request, 'missatges/reply.html', context)
+
 
 @login_required
 def close(request, cid):

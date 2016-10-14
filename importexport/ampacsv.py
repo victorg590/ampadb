@@ -27,12 +27,14 @@ FIELDNAMES = [
     'Eliminar'
 ]
 
+
 class AmpaDialect(csv.Dialect):
     delimiter = ','
     quotechar = '"'
     quoting = csv.QUOTE_MINIMAL
     lineterminator = '\r\n'  # Per compatibilitat amb Windows
     skipinitialspace = True
+
 
 def get_template(outfile):
     writer = csv.DictWriter(outfile, FIELDNAMES)

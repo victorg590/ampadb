@@ -7,13 +7,15 @@ from django.urls import reverse
 from django.utils.functional import cached_property
 from datetime import timedelta
 
+
 class GrupDeMissatgeria(models.Model):
     class Meta:
         verbose_name_plural = 'grups de missatgeria'
     nom = models.CharField(max_length=100)
     usuaris = models.ManyToManyField(User)
-    motius = models.TextField(blank=True, help_text='Motius per enviar '
-        'missatges a aquest grup. Apareixeràn a "Nou missatge". Un per línia.')
+    motius = models.TextField(blank=True, help_text=(
+        'Motius per enviar missatges a aquest grup. Apareixeràn a '
+        '"Nou missatge". Un per línia.'))
 
     @cached_property
     def motius_list(self):
@@ -22,6 +24,7 @@ class GrupDeMissatgeria(models.Model):
 
     def __str__(self):
         return self.nom
+
 
 class EstatMissatge(models.Model):
     class Meta:
@@ -32,18 +35,21 @@ class EstatMissatge(models.Model):
     missatge = models.ForeignKey('Missatge', on_delete=models.CASCADE)
     vist = models.BooleanField(blank=True, default=False)
 
+
 class Missatge(models.Model):
     class Meta:
         unique_together = ('conversacio', 'ordre')
         ordering = ['-ordre']
-    conversacio = models.ForeignKey('Conversacio', on_delete=models.CASCADE,
+    conversacio = models.ForeignKey(
+        'Conversacio', on_delete=models.CASCADE,
         blank=False, null=False, verbose_name='conversació')
-    per = models.ForeignKey(User, on_delete=models.SET_NULL, blank=False,
+    per = models.ForeignKey(
+        User, on_delete=models.SET_NULL, blank=False,
         null=True, related_name='ha_enviat')
     destinataris = models.ManyToManyField(User, through='EstatMissatge')
     ordre = models.PositiveSmallIntegerField(editable=False)
-    contingut = models.TextField(blank=True,
-        help_text='Suporta <a href="/markdown">Markdown</a>')
+    contingut = models.TextField(
+        blank=True, help_text='Suporta <a href="/markdown">Markdown</a>')
     enviat = models.DateTimeField(auto_now_add=True, blank=False, null=False)
     editat = models.DateTimeField(auto_now=True, blank=False, null=False)
     estat = models.CharField(max_length=8, blank=True, choices=[
@@ -62,13 +68,13 @@ class Missatge(models.Model):
         if self.estat:
             # Les notificacions d'estat no tenen destinataris
             return
-        if not self.per in self.destinataris.all():
+        if self.per not in self.destinataris.all():
             EstatMissatge.objects.create(destinatari=self.per, missatge=self,
-                vist=True)
+                                         vist=True)
         for u in (u for u in self.conversacio.a.usuaris.all()
-            if u not in self.destinataris.all()):
+                  if u not in self.destinataris.all()):
             EstatMissatge.objects.create(destinatari=u, missatge=self,
-                vist=vist)
+                                         vist=vist)
         self.save()
 
     def notificar(self, request):
@@ -91,20 +97,19 @@ class Missatge(models.Model):
         if not bcc:
             return  # Si no hi ha destinataris, acaba
         msg = EmailMultiAlternatives(
-            subject='Nou missatge de {per} a {conversacio}'.format(per=self.per,
-                conversacio=self.conversacio),
+            subject='Nou missatge de {per} a {conversacio}'.format(
+                per=self.per, conversacio=self.conversacio),
             body=missatge_txt,
             bcc=bcc
         )
         msg.attach_alternative(missatge_html, 'text/html')
         msg.send()
 
-
     def clean(self):
         super().clean()
         if self.contingut and self.estat:
             raise ValidationError("Només un de `contingut` i `estat` es pot "
-                "definir")
+                                  "definir")
         elif not (self.contingut or self.estat):
             raise ValidationError("O `contingut` o `estat` s'ha de definir")
 
@@ -114,6 +119,7 @@ class Missatge(models.Model):
         else:
             return self.contingut
 
+
 class Conversacio(models.Model):
     class Meta:
         verbose_name = 'conversació'
@@ -121,9 +127,9 @@ class Conversacio(models.Model):
         ordering = ['creada', 'tancada']
 
     de = models.ForeignKey(User, on_delete=models.SET_NULL, blank=False,
-        null=True)
+                           null=True)
     a = models.ForeignKey(GrupDeMissatgeria, on_delete=models.SET_NULL,
-        blank=False, null=True)
+                          blank=False, null=True)
     assumpte = models.CharField(max_length=80)
     tancada = models.BooleanField(blank=True, default=False)
     creada = models.DateTimeField(auto_now_add=True, blank=False, null=False)
@@ -148,11 +154,13 @@ class Conversacio(models.Model):
     def marcar_com_a_llegits(self, usuari):
         """Marca tots el missatges com a llegits per a l'usuari"""
         for msg in Missatge.objects.filter(conversacio=self):
-            EstatMissatge.objects.update_or_create(destinatari=usuari,
+            EstatMissatge.objects.update_or_create(
+                destinatari=usuari,
                 missatge=msg, defaults={'vist': True})
 
     def tots_llegits(self, usuari):
         """Torna si s'han llegit tots els missatges de la conversació"""
-        return not EstatMissatge.objects.filter(destinatari=usuari,
+        return not EstatMissatge.objects.filter(
+            destinatari=usuari,
             missatge__in=Missatge.objects.filter(conversacio=self),
             vist=False).exists()

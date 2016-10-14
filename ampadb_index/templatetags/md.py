@@ -4,6 +4,7 @@ from ampadb_index.parse_md import parse_md
 
 register = template.Library()
 
+
 @register.filter
 def md(value, arg=''):
     if not arg or arg == 'div':
@@ -14,6 +15,7 @@ def md(value, arg=''):
         kwargs = {'wrap': arg}
     return mark_safe(parse_md(value, **kwargs))
 
+
 class MarkdownNode(template.Node):
     def __init__(self, nodelist):
         self.nodelist = nodelist
@@ -21,6 +23,7 @@ class MarkdownNode(template.Node):
     def render(self, context):
         text = self.nodelist.render(context)
         return mark_safe(parse_md(text))
+
 
 @register.tag(name="markdown")
 def do_markdown(parser, token):
