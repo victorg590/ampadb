@@ -12,3 +12,10 @@ whitenoise>=3.2.1
 # Només Heroku
 cffi
 psycopg2>=2.6.2
+
+# Dependències opcionals
+## Algorisme Argon2, més segur que PBKDF2
+django[argon2]
+## Compresió Brotli, més eficient que GZip, suportada pels navegadors més utilitzats
+## (Només funciona amb HTTPS)
+brotlipy

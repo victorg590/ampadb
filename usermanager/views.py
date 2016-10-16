@@ -245,17 +245,17 @@ def print_uu(_):
 class API:
     # Crea decoradors que tornin un error 403 Forbidden en lloc d'una
     # redirecció
-    def raw_login_required(fn):
+    def raw_login_required(fn):  # pylint: disable=no-self-argument
         def wrapper(request, *args, **kwargs):
             if not request.user.is_authenticated:
                 raise PermissionDenied
-            return fn(request, *args, **kwargs)
+            return fn(request, *args, **kwargs)  # pylint: disable=not-callable
         return wrapper
 
-    def raw_user_passes_test(test):
+    def raw_user_passes_test(test):  # pylint: disable=no-self-argument
         def decorator(fn):
             def wrapper(request, *args, **kwargs):
-                if not test(request.user):
+                if not test(request.user):  # pylint: disable=not-callable
                     raise PermissionDenied
                 return fn(request, *args, **kwargs)
             return wrapper

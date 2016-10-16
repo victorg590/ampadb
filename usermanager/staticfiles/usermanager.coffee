@@ -231,10 +231,10 @@ $(document).ready ->
       hideSearch()
       return
     $.getJSON SEARCH_URL, {q: q}, (data, status) ->
-        if status != 'success'
-          console.error "Error: #{status} | #{data ? '[No data]'}"
-          return
-        parseSearch data
+      if status != 'success'
+        console.error "Error: #{status} | #{data ? '[No data]'}"
         return
+      parseSearch data
+      return
     return
   return
