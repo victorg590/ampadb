@@ -1,11 +1,10 @@
 tr td span.no-llegit {
   visibility: hidden; }
-
 tr.no-llegit td {
   font-weight: bold; }
   tr.no-llegit td span.no-llegit {
-    visibility: visible;
-    color: #00bfff; }
+    color: #00bfff;
+    visibility: visible; }
 
 .msg-self {
   background-color: #d2f9d2; }

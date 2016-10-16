@@ -1,3 +1,5 @@
+# Arxiu que defineix l'entorn per a proves (Windows CMD)
+# Utilitza la configuració de l'arxiu "debug.ini"
 $Env:AMPADB_SETTINGS = $PSScriptRoot\debug.ini
 
 $PrivateIni = Test-Path .\private.ini

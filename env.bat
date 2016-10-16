@@ -1,3 +1,6 @@
+REM Arxiu que defineix l'entorn per a proves (Windows CMD)
+REM Utilitza la configuració de l'arxiu "debug.ini"
+
 @ECHO OFF
 SET AMPADB_SETTINGS=%cd%\debug.ini
 IF EXIST "private.ini" (

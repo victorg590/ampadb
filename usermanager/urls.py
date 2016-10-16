@@ -2,6 +2,14 @@ from django.conf.urls import url, include
 from .apps import UsermanagerConfig
 from . import views
 
+apipatterns = [
+    url(r'^registered_users$', views.API.registered_users,
+        name='registered-users'),
+    url(r'^unregistered_users$', views.API.unregistered_users,
+        name='unregistered-users'),
+    url(r'^echo$', views.API.echo, name='echo'),
+    url(r'^search$', views.API.search, name='search')
+]
 adminpatterns = [
     url(r'^new$', views.new_admin, name='new-admin'),
     url(r'^new/(?P<alumne_pk>[0-9]{1,30})', views.new_user, name='new-user'),
@@ -17,6 +25,7 @@ adminpatterns = [
         views.change_code_auto, name='change-code-auto'),
     url(r'^changecode/(?P<username>[\w.@+-]{1,30})', views.change_code,
         name='change-code'),
+    url(r'^api/', include(apipatterns, namespace='api')),
     url(r'^$', views.list_users, name='list')
 ]
 accountpatterns = [

@@ -1,10 +1,55 @@
 {% extends "menu.html" %}
 {% load userdata %}
-{% load pytr %}
 {% load urllink %}
+{% load static_dbg %}
 
 {% block content %}
-{% if unregistered %}
+<div class="form-group">
+  <input class="form-control" id="search_field" placeholder="Buscar" />
+</div>
+<div class="form-group">
+  <button class="btn btn-primary" id="search_btn">Buscar</button>
+</div>
+<h1 id="resultats_cerca">Resultats de la cerca</h1>
+<small id="n_res_total">{# Emplenat per l'script #}</small>
+<h2 id="cerca_registrats">Registrats</h2>
+<small id="n_res_registered">{# Emplenat per l'script #}</small>
+<div class="table-responsive">
+  <table class="table table-hover text-center" id="search_registered">
+    <thead>
+      <tr>
+        <th>Alumne</th>
+        <th>Nom d'usuari</th>
+        <th>Administrador</th>
+        <th>Canviar contrasenya</th>
+        <th>Eliminar</th>
+      </tr>
+    </thead>
+    <tbody>
+      {# Emplenat per l'script #}
+    </tbody>
+  </table>
+</div>
+
+<h2 id="cerca_no_registrats">No registrats</h2>
+<small id="n_res_unregistered">{# Emplenat per l'script #}</small>
+<div class="table-responsive">
+  <table class="table table-hover text-center" id="search_unregistered">
+    <thead>
+      <tr>
+        <th>Alumne</th>
+        <th>Nom d'usuari</th>
+        <th>Codi</th>
+        <th>Canviar codi</th>
+        <th>Cancel·lar</th>
+      </tr>
+    </thead>
+    <tbody>
+      {# Emplenat per l'script #}
+    </tbody>
+  </table>
+</div>
+{% if n_unregistered %}
 <h1>No registrats
 <small>Els usuaris no registrats sempre apareixen com a "&lt;usuari&gt; (*)".</small></h1>
 <div class="btn-group" role="group">
@@ -15,38 +60,25 @@
     Imprimir (exportar a PDF)
   </a>
 </div>
-<div class="responsive"><table class="table table-hover text-center">
-  <thead>
-    <tr>
-      <th>Alumne</th>
-      <th>Nom d'usuari</th>
-      <th>Codi</th>
-      <th>Canviar codi</th>
-      <th>Cancel·lar</th>
-    </tr>
-  </thead>
-  <tbody>
-    {% for u in unregistered %}
-    <tr>
-      {% with a=u.profile.alumne %}
-      <td><a href="{{ a.get_absolute_url }}">{{ a }}</a></td>
-      {% endwith %}
-      <td>{{ u }}</td>
-      <td>{{ u.codi }}</td>
-      <td><div class="btn-group" role="group">
-        <a class="btn btn-primary"
-          href="{% url 'usermanager:change-code-auto' u.username %}">Generar</a>
-        <a class="btn btn-default"
-          href="{% url 'usermanager:change-code' u.username %}">Canviar</a>
-      </div></td>
-      <td style="text-align: center">
-        <a class="btn btn-danger"
-          href="{% url 'usermanager:cancel' u.username %}">Cancel·lar</a>
-      </td>
-    </tr>
-    {% endfor %}
-  </tbody>
-</table></div>
+<button class="btn btn-link" id="unregistered_toggle">
+  {# Emplenat per l'script #}
+</button> <i id="unregistered_spinner" class="fa fa-spinner fa-spin"></i>
+<div class="table-responsive">
+  <table class="table table-hover text-center" id="table_unregistered">
+    <thead>
+      <tr>
+        <th>Alumne</th>
+        <th>Nom d'usuari</th>
+        <th>Codi</th>
+        <th>Canviar codi</th>
+        <th>Cancel·lar</th>
+      </tr>
+    </thead>
+    <tbody>
+      {# Emplenat per l'script #}
+    </tbody>
+  </table>
+</div>
 {% endif %}
 <h1>Registrats</h1>
 <div class="btn-group" role="group">
@@ -54,40 +86,43 @@
     Nou <strong>aministrador</strong>
   </a>
 </div>
-<table class="table table-hover text-center">
-  <thead>
-    <tr>
-      <th>Alumne</th>
-      <th>Nom d'usuari</th>
-      <th>Administrador</th>
-      <th>Canviar contrasenya</th>
-      <th>Eliminar</th>
-    </tr>
-  </thead>
-  <tbody>
-    {% for u in registered %}
-    <tr>
-      {% is_admin u as adm %}
-      {% if adm %}
-      <th></th>
-      {% else %}
-      {% with a=u.profile.alumne %}
-      <th><a href="{{ a.get_absolute_url }}">{{ a }}</a></th>
-      {% endwith %}
-      {% endif %}
-      <td><span class="username">{{ u }}</span></td>
-      <td>{{ adm|pytr }}</td>
-      <td><a class="btn btn-default"
-          href="{% url 'usermanager:admin-changepassword' u.username %}">
-          Canviar contrasenya
-      </a></td>
-      </td>
-      <td><a class="btn btn-danger"
-          href="{% url 'usermanager:delete' u.username %}">Eliminar</a>
-      </td>
-    </tr>
-    {% endfor %}
-  </tbody>
-  {# Sempre ha d'haver com a mínim un usuari (administrador) #}
-</table>
+<button class="btn btn-link" id="registered_toggle">{# Emplenat per l'script #}</button>
+<i id="registered_spinner" class="fa fa-spinner fa-spin"></i>
+<div class="table-responsive">
+  <table class="table table-hover text-center" id="table_registered">
+    <thead>
+      <tr>
+        <th>Alumne</th>
+        <th>Nom d'usuari</th>
+        <th>Administrador</th>
+        <th>Canviar contrasenya</th>
+        <th>Eliminar</th>
+      </tr>
+    </thead>
+    <tbody>
+      {# Emplenat per l'script #}
+    </tbody>
+  </table>
+</div>
 {% endblock content %}
+
+{% block scripts %}
+<script>
+var N_UNREGISTERED = {{ n_unregistered|default:'Infinity' }};
+var N_REGISTERED = {{ n_registered|default:'Infinity' }};
+var UNREGISTERED = {{ unregistered|default:'null' }};
+var REGISTERED = {{ registered|default:'null' }};
+
+var MAX_DISPLAY = {{ max_display|default:'0' }};
+var TEXT_MOSTRA_TOT = "Mostra tot";
+var TEXT_AMAGA = "Amaga";
+
+{% url 'usermanager:api:registered-users' as registered_users_url %}
+var REGISTERED_USERS_URL = "{{ registered_users_url|escapejs }}";
+{% url 'usermanager:api:unregistered-users' as unregistered_users_url %}
+var UNREGISTERED_USERS_URL = "{{ unregistered_users_url|escapejs }}";
+{% url 'usermanager:api:search' as search_url %}
+var SEARCH_URL = "{{ search_url|escapejs }}";
+</script>
+<script src="{% static_dbg 'usermanager/usermanager.js' %}"></script>
+{% endblock scripts %}

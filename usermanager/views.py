@@ -1,4 +1,7 @@
-from django.http import HttpResponse
+from django.http import HttpResponse, JsonResponse, Http404
+from django.utils.html import mark_safe
+from django.urls import reverse
+from django.core.exceptions import ObjectDoesNotExist, PermissionDenied
 from django.shortcuts import render, redirect, get_object_or_404
 from django.template import loader
 from .forms import *
@@ -7,7 +10,9 @@ from django.contrib.auth.models import User
 from contactboard.models import Alumne
 from ampadb.support import is_admin, gen_username, gen_codi
 from django.contrib.auth.decorators import login_required, user_passes_test
+from django.db.models.query_utils import Q
 import csv
+import json
 import weasyprint
 from django.views.decorators.debug import (sensitive_variables,
                                            sensitive_post_parameters)
@@ -96,9 +101,14 @@ def list_users(request):
     uu = UnregisteredUser.objects.all()
     users = User.objects.all()
     context = {
-        'unregistered': uu,
-        'registered': users
+        'n_unregistered': uu.count(),
+        'n_registered': users.count(),
+        'max_display': 10
     }
+    context['unregistered'] = mark_safe(json.dumps(API._gen_json_unreg(uu))) \
+        if context['n_unregistered'] <= context['max_display'] else 'null'
+    context['registered'] = mark_safe(json.dumps(API._gen_json_reg(users))) \
+        if context['n_registered'] <= context['max_display'] else 'null'
     return render(request, 'usermanager/list.html', context)
 
 
@@ -230,3 +240,114 @@ def print_uu(_):
     html = template.render({'classes': [(k, classes[k]) for k in classes]})
     weasyprint.HTML(string=html).write_pdf(response)
     return response
+
+
+class API:
+    # Crea decoradors que tornin un error 403 Forbidden en lloc d'una
+    # redirecció
+    def raw_login_required(fn):
+        def wrapper(request, *args, **kwargs):
+            if not request.user.is_authenticated:
+                raise PermissionDenied
+            return fn(request, *args, **kwargs)
+        return wrapper
+
+    def raw_user_passes_test(test):
+        def decorator(fn):
+            def wrapper(request, *args, **kwargs):
+                if not test(request.user):
+                    raise PermissionDenied
+                return fn(request, *args, **kwargs)
+            return wrapper
+        return decorator
+
+    @staticmethod
+    def _gen_json_reg(users):
+        ret = []
+        for u in users:
+            try:
+                alumne = u.profile.alumne
+                alumne_url = alumne.get_absolute_url()
+            except ObjectDoesNotExist:
+                alumne = None
+                alumne_url = None
+            ret.append({
+                'alumne': str(alumne) if alumne is not None else None,
+                'alumneUrl': alumne_url,
+                'username': u.username,
+                'admin': is_admin(u),
+                'changePasswordUrl':
+                    reverse('usermanager:admin-changepassword',
+                            args=[u.username]),
+                'deleteUrl': reverse('usermanager:delete',
+                                     args=[u.username])
+            })
+        return ret
+
+    def _gen_json_unreg(users):
+        ret = []
+        for u in users:
+            ret.append({
+                # Assumeix que tots els UU tenen un usuari associat
+                'alumne': str(u.profile.alumne),
+                'alumneUrl': u.profile.alumne.get_absolute_url(),
+                'username': u.username,
+                'codi': u.codi,
+                'changeAutoUrl': reverse('usermanager:change-code-auto',
+                                         args=[u.username]),
+                'changeUrl': reverse('usermanager:change-code',
+                                     args=[u.username]),
+                'cancelUrl': reverse('usermanager:cancel', args=[u.username])
+            })
+        return ret
+
+    @staticmethod
+    @raw_login_required
+    @raw_user_passes_test(is_admin)
+    def registered_users(request):
+        data = {'registeredUsers': API._gen_json_reg(User.objects.all())}
+        return JsonResponse(data)
+
+    @staticmethod
+    @raw_login_required
+    @raw_user_passes_test(is_admin)
+    def unregistered_users(request):
+        data = {'unregisteredUsers': API._gen_json_unreg(
+            UnregisteredUser.objects.all()
+        )}
+        return JsonResponse(data)
+
+    @staticmethod
+    @raw_login_required
+    @raw_user_passes_test(is_admin)
+    def echo(request):
+        return JsonResponse(request.GET)
+
+    @staticmethod
+    @raw_login_required
+    @raw_user_passes_test(is_admin)
+    def search(request):
+        q = request.GET.get('q')
+        if q is None:
+            raise Http404('Required "q" parameter')
+        if not q:
+            return JsonResponse(
+                {'unregisteredUsers': [], 'registeredUsers': []})
+        res = {}
+        uu = UnregisteredUser.objects.filter(
+            Q(username__icontains=q) | Q(profile__alumne__nom__icontains=q) |
+            Q(profile__alumne__cognoms__icontains=q)
+        )
+        if uu.exists():
+            res['unregisteredUsers'] = API._gen_json_unreg(uu)
+        else:
+            res['unregisteredUsers'] = []
+        ru = User.objects.filter(
+            Q(username__icontains=q) | Q(profile__alumne__nom__icontains=q) |
+            Q(profile__alumne__cognoms__icontains=q)
+        )
+        if ru.exists():
+            res['registeredUsers'] = API._gen_json_reg(ru)
+        else:
+            res['registeredUsers'] = []
+        return JsonResponse(res)

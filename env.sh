@@ -1,9 +1,8 @@
 #!/bin/sh
-# Arxiu que defineix l'entorn per a proves
+# Arxiu que defineix l'entorn per a proves (OS X / Linux / *NIX)
+# Utilitza la configuració a l'arxiu "debug.ini"
 # Utilitzar com
 #   . env.sh
-
-# Utilitza la configuració a l'arxiu "debug.ini"
 export AMPADB_SETTINGS="$(pwd)/debug.ini"
 if [ -f "private.ini" ]; then
   AMPADB_SETTINGS="$AMPADB_SETTINGS:$(pwd)/private.ini"

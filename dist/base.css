@@ -1,6 +1,11 @@
 body {
   padding-top: 70px; }
 
+#menu_footer {
+  bottom: 0;
+  height: 40px;
+  position: relative; }
+
 table.table th,
 table.table td {
   vertical-align: middle; }

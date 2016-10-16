@@ -4,6 +4,12 @@ body {
   // La barra és de 50px
 }
 
+#menu_footer {
+  bottom: 0;
+  height: 40px;
+  position: relative;
+}
+
 table {
   &.table {
     th,
