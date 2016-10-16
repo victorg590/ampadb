@@ -7,6 +7,9 @@
   <a class="btn btn-primary" href="{% url 'contactboard:add-curs' %}">Nou curs</a>
   <div class="btn-group" role="group">
     <a class="btn btn-default" href="{% url 'importexport:import' %}">Importar</a>
+    <a class="btn btn-default" href="{% url 'importexport:ies:upload' %}">
+      Importar des d'un arxiu del centre
+    </a>
     <a class="btn btn-default" href="{% url 'importexport:export' %}">Exportar</a>
   </div>
   <a class="btn btn-default" href="{% url 'contactboard:mailto' %}">Enviar correu

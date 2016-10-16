@@ -1,0 +1,40 @@
+@import 'config';
+
+$usercolor: $blauclar;
+$selfcolor: $verdclar;
+$answercolor: $grisclar;
+
+tr {
+  td {
+    span {
+      &.no-llegit {
+        visibility: hidden;
+      }
+    }
+  }
+
+  &.no-llegit {
+    td {
+      font-weight: bold;
+
+      span {
+        &.no-llegit {
+          color: $deepskyblue;
+          visibility: visible;
+        }
+      }
+    }
+  }
+}
+
+.msg-self {
+  background-color: $selfcolor;
+}
+
+.msg-user {
+  background-color: $usercolor;
+}
+
+.msg-answer {
+  background-color: $answercolor;
+}

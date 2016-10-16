@@ -3,6 +3,7 @@ from django.utils.html import mark_safe, format_html
 
 register = template.Library()
 
+
 @register.filter
 def pytricon(value):
     if value:
@@ -17,6 +18,7 @@ def pytricon(value):
     return format_html(
         '<span class="glyphicon glyphicon-{}" style="color:{}"></span>',
         ret, color)
+
 
 @register.filter
 def pytr(value, icons=True):

@@ -3,6 +3,7 @@ from .models import GrupDeMissatgeria, Conversacio, Missatge
 from .forms import ComposeForm, ReplyForm
 from django.contrib.auth.decorators import login_required
 
+
 @login_required
 def list_view(request):
     grups = GrupDeMissatgeria.objects.filter(usuaris=request.user)
@@ -15,6 +16,7 @@ def list_view(request):
     }
     return render(request, 'missatges/list.html', context)
 
+
 @login_required
 def new(request):
     grups = []
@@ -24,6 +26,7 @@ def new(request):
         'grups': grups
     }
     return render(request, 'missatges/new.html', context)
+
 
 @login_required
 def compose(request, to):
@@ -42,6 +45,7 @@ def compose(request, to):
             missatge.contingut = cdata['missatge']
             missatge.save()
             missatge.calcular_destinataris()
+            missatge.notificar(request)
             return redirect('missatges:list')
     else:
         form = ComposeForm(initial={'a': destinatari})
@@ -49,6 +53,7 @@ def compose(request, to):
         'form': form
     }
     return render(request, 'missatges/compose.html', context)
+
 
 @login_required
 def show(request, cid):
@@ -64,6 +69,7 @@ def show(request, cid):
     }
     return render(request, 'missatges/show.html', context)
 
+
 @login_required
 def reply(request, cid):
     conversacio = get_object_or_404(Conversacio, pk=cid)
@@ -78,6 +84,7 @@ def reply(request, cid):
             msg.contingut = form.cleaned_data['missatge']
             msg.save()
             msg.calcular_destinataris()
+            msg.notificar(request)
             return redirect('missatges:show', conversacio.pk)
     else:
         form = ReplyForm()
@@ -85,6 +92,7 @@ def reply(request, cid):
         'form': form
     }
     return render(request, 'missatges/reply.html', context)
+
 
 @login_required
 def close(request, cid):

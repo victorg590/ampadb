@@ -1,6 +1,7 @@
 from django.utils import timezone
 from contactboard.models import Curs
 
+
 def status_inscripcio(extraescolar, alumne):
     reqs = []
     des_de = extraescolar.inscripcio_des_de
@@ -14,14 +15,14 @@ def status_inscripcio(extraescolar, alumne):
     n_cursos = extraescolar.cursos.count()
     if n_cursos == 0:
         reqs.append({'ok': False, 'motiu': 'cursos', 'cursos':
-            '[No està disponible per a cap curs]'})
+                     '[No està disponible per a cap curs]'})
     elif n_cursos != Curs.objects.count():
         ok = (not alumne) or extraescolar.cursos.filter(
             id_interna=alumne.classe.curs.id_interna).exists()
         n = 0
         if n_cursos == 1:
             reqs.append({'ok': ok, 'motiu': 'cursos', 'cursos':
-                str(extraescolar.cursos.all()[0])})
+                         str(extraescolar.cursos.all()[0])})
         else:
             c_str = ''
             for curs in extraescolar.cursos.all():

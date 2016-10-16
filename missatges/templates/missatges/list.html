@@ -1,26 +1,35 @@
 {% extends "menu.html" %}
 {% load llegit %}
 {% load printuser %}
-{% load static %}
+{% load static_dbg %}
 
-{% block head %}
+{% block styles %}
 {{ block.super }}
-<link rel="stylesheet" href="{% static 'scss/missatges.css' %}" />
-{% endblock head %}
+<link rel="stylesheet" href="{% static_dbg 'missatges/missatges.css' %}" />
+{% endblock styles %}
 
 {% block content %}
-{% if grups %}
+{% if admin or grups %}
 <h1>Missatges</h1>
 <h2>Grups de missatgeria</h2>
+{% if admin %}
+Afegeix grups de missatgeria a "<a
+  href="{% url 'admin:missatges_grupdemissatgeria_add' %}">Gestió tècnica</a>".
+{% endif %}
 <p>Reps els missatges dels següents grups de missatgeria:</p>
 <ul>
   {% for g in grups %}
   <li>{{ g }}</li>
+  {% empty %}
+  <li><em>Cap</em></li>
   {% endfor %}
 </ul>
 
 <h2>Missatges de grups</h2>
-<table class="table table-hover">
+<div>
+  <button class="btn btn-link" id="tancats_rebuts">{ Emplenat per l'script }</button>
+</div>
+<table class="table table-hover" id="rebuts">
   <thead>
     <tr>
       <th>Assumpte</th>
@@ -34,6 +43,8 @@
     {% llegit user msg as ha_llegit %}
     {% if not ha_llegit %}
     <tr class="no-llegit">
+    {% elif msg.tancada %}
+    <tr class="tancat">
     {% else %}
     <tr>
     {% endif %}
@@ -52,6 +63,7 @@
   </tbody>
 </table>
 
+
 <h2>Missatges enviats</h2>
 {% else %}
 <div class="page-header">
@@ -63,8 +75,9 @@
 
 <div>
   <a class="btn btn-primary" href="{% url 'missatges:new' %}">Nou missatge</a>
+  <button class="btn btn-link" id="tancats_enviats">{ Emplenat per l'script }</button>
 </div>
-<table class="table table-hover">
+<table class="table table-hover" id="enviats">
   <thead>
     <tr>
       <th>Assumpte</th>
@@ -77,6 +90,8 @@
     {% llegit user msg as ha_llegit %}
     {% if not ha_llegit %}
     <tr class="no-llegit">
+    {% elif msg.tancada %}
+    <tr class="tancat">
     {% else %}
     <tr>
     {% endif %}
@@ -92,3 +107,11 @@
   </tbody>
 </table>
 {% endblock content %}
+
+{% block scripts %}
+<script>
+var textVeureTancats = "Veure tancats"
+var textAmagarTancats = "Amagar tancats"
+</script>
+<script src="{% static_dbg 'missatges/missatges.js' %}"></script>
+{% endblock scripts %}

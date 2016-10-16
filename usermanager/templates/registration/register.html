@@ -1,12 +1,12 @@
 {% extends "base.html" %}
-{% load static %}
+{% load static_dbg %}
 {% load bootstrap3 %}
 {% block title %}Registrar-se :: AMPA IES Forat Del Vent{% endblock %}
 
-{% block head %}
+{% block styles %}
 {{ block.super }}
-<link rel="stylesheet" href="{% static 'scss/login.css' %}"/>
-{% endblock head %}
+<link rel="stylesheet" href="{% static_dbg 'usermanager/login.css' %}" />
+{% endblock styles %}
 
 {% block body %}
 <div class="register">

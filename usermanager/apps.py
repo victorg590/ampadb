@@ -6,4 +6,5 @@ class UsermanagerConfig(AppConfig):
     verbose_name = "Administració d'usuaris"
 
     def ready(self):
-        from . import signals  # Registrar senyals
+        # Registrar senyals
+        from . import signals  # pylint: disable=unused-variable

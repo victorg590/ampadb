@@ -1,0 +1,61 @@
+{% load pytr %}
+
+<div class="table-responsive"><table class="table table-bordered">
+  <tr>
+    <th>Format</th>
+    <th>Es pot importar</th>
+    <th>Arxiu resultant</th>
+    <th>Informació</th>
+  </tr>
+  <tr>
+    <td><a href="https://ca.wikipedia.org/wiki/CSV" rel="nofollow">CSV</a>
+      (E-mail)</td>
+    <td>{{ False|pytr }}</td>
+    {% if classe %}
+    <td><code>{{ classe.id_interna }}.csv</code></td>
+    {% else %}
+    <td><code>alumnes.csv</code></td>
+    {% endif %}
+    <td>Aquest format és reconegut per la majoria de clients de correu,
+      GMail i Outlook inclosos. També es pot convertir a una fulla de càlcul amb
+      Excel/Calc. <em>Aquest format només exporta les dades de contacte, pel que
+      no és adeqüat per còpies de seguretat.</em></td>
+  </tr>
+  <tr>
+    <td>{% urllink 'CSV (Importació)' 'importexport:format' %}</td>
+    <td>{{ True|pytr }}</td>
+    {% if classe %}
+    <td><code>{{ classe.id_interna }}.csv</code></td>
+    {% else %}
+    <td><code>alumnes.csv</code></td>
+    {% endif %}
+    <td>CSV que permet fer canvis en molts usuaris a la vegada (veure
+      {% urllink 'Importar' 'importexport:import' %})</td>
+  </tr>
+  <tr>
+    <td><a href="https://ca.wikipedia.org/wiki/JSON" rel="nofollow">JSON</a></td>
+    <td>{{ True|pytr }}</td>
+    {% if classe %}
+    <td><code>{{ classe.id_interna }}.json</code></td>
+    {% else %}
+    <td><code>{% now 'Y-m-d' %}.json</code></td>
+    {% endif %}
+    <td>Aquest format permet exportar la base de dades a un format llegible.
+      Per fer la transferència més ràpida, l'arxiu resultant està minimitzat;
+      utilitzi una eina com
+      <a href="https://docs.python.org/3.5/library/json.html#module-json.tool" rel="nofollow">
+      <code>json.tool</code></a> o un altre "<i>prettifier</i>" de JSON.</td>
+  </tr>
+  <tr>
+    <td><a href="https://docs.python.org/3.5/library/pickle.html" rel="nofollow">
+      Pickle</a></td>
+    <td>{{ True|pytr }}</td>
+    {% if classe %}
+    <td><code>{{ classe.id_interna }}.pkl.gz</code></td>
+    {% else %}
+    <td><code>{% now 'Y-m-d' %}.pkl.gz</code></td>
+    {% endif %}
+    <td>Aquest format està pensat per a còpies de seguretat.
+      Dóna un arxiu binari comprés (no llegible per humans)
+      més petit que el JSON equivalent.</td>
+</table></div>

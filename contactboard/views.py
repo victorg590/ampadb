@@ -7,6 +7,7 @@ from usermanager.models import Profile
 from .models import Classe, Alumne
 from .forms import *
 
+
 # Conflicte amb la funció built-in list()
 @login_required
 def list_view(request, id_classe):
@@ -16,6 +17,7 @@ def list_view(request, id_classe):
         'alumnes': Alumne.objects.filter(classe=classe),
     }
     return render(request, 'contactboard/list.html', context)
+
 
 @login_required
 @user_passes_test(is_admin)
@@ -28,6 +30,7 @@ def adminlist(request):
     }
     return render(request, 'contactboard/adminlist.html', context)
 
+
 @login_required
 @user_passes_test(is_admin)
 def add_classe(request, id_curs):
@@ -36,7 +39,6 @@ def add_classe(request, id_curs):
         form = ClasseForms.NewForm(request.POST)
         if form.is_valid():
             cdata = form.cleaned_data
-            #return HttpResponse(str(cdata))
             classe = Classe()
             classe.nom = cdata['nom']
             classe.id_interna = cdata['id_interna']
@@ -50,6 +52,7 @@ def add_classe(request, id_curs):
         'submitText': 'Crear'
     }
     return render(request, 'contactboard/add.html', context)
+
 
 @login_required
 @user_passes_test(is_admin)
@@ -77,6 +80,7 @@ def edit_classe(request, id_classe):
     }
     return render(request, 'contactboard/add.html', context)
 
+
 @login_required
 @user_passes_test(is_admin)
 def delete_classe(request, id_classe):
@@ -88,6 +92,7 @@ def delete_classe(request, id_classe):
         'classe': classe
     }
     return render(request, 'contactboard/delete-classe.html', context)
+
 
 @login_required
 @user_passes_test(is_admin)
@@ -110,6 +115,7 @@ def add_curs(request):
         'submitText': 'Crear'
     }
     return render(request, 'contactboard/add.html', context)
+
 
 @login_required
 @user_passes_test(is_admin)
@@ -136,6 +142,7 @@ def edit_curs(request, id_curs):
     }
     return render(request, 'contactboard/add.html', context)
 
+
 @login_required
 @user_passes_test(is_admin)
 def delete_curs(request, id_curs):
@@ -149,6 +156,7 @@ def delete_curs(request, id_curs):
     }
     return render(request, 'contactboard/delete-curs.html', context)
 
+
 @login_required
 @user_passes_test(is_admin)
 def add_alumne(request, id_classe):
@@ -159,7 +167,6 @@ def add_alumne(request, id_classe):
             alumne = form.save(commit=False)
             alumne.classe = classe
             alumne.save()
-            #alumne.save_m2m()  # Innecessàri si no s'afegeix un camp ManyToMany
             return redirect('contactboard:list', id_classe)
     else:
         form = AlumneForms.NewForm()
@@ -188,16 +195,19 @@ def edit_alumne(request, alumne_pk):
             if form.has_changed():
                 form.save()
             return redirect('contactboard:list', alumne.classe.id_interna)
-    if is_admin(request.user):
-        form = AlumneForms.AdminEditForm(instance=alumne)
     else:
-        form = AlumneForms.EditForm(instance=alumne,
-            initial={'classe': alumne.classe})
+        if is_admin(request.user):
+            form = AlumneForms.AdminEditForm(instance=alumne)
+        else:
+            form = AlumneForms.EditForm(instance=alumne,
+                                        initial={'classe': alumne.classe})
     context = {
         'form': form,
-        'submitText': 'Actualitzar'
+        'submitText': 'Actualitzar',
+        'info_compartir': True
     }
     return render(request, 'contactboard/add.html', context)
+
 
 @login_required
 @user_passes_test(is_admin)
@@ -220,6 +230,7 @@ def delete_alumne(request, alumne_pk):
     }
     return render(request, 'contactboard/delete-alumne.html', context)
 
+
 def _build_mailto(fdata, classe=None):
     if classe:
         fdata['classes'] = [classe]
@@ -230,13 +241,13 @@ def _build_mailto(fdata, classe=None):
         classe = Classe.objects.get(id_interna=c)
         for a in Alumne.objects.filter(classe=classe):
             if (MailtoForm.TO_ALUMNES in fdata['enviar_a'] and
-                a.correu_alumne):
+                    a.correu_alumne):
                 mailto_str += a.correu_alumne + ','
             if (MailtoForm.TO_PARES in fdata['enviar_a'] and
-                a.correu_pare):
+                    a.correu_pare):
                 mailto_str += a.correu_pare + ','
             if (MailtoForm.TO_MARES in fdata['enviar_a'] and
-                a.correu_mare):
+                    a.correu_mare):
                 mailto_str += a.correu_mare + ','
     while mailto_str[-1] == ',':
         mailto_str = mailto_str[:-1]
@@ -261,6 +272,7 @@ def mailto(request):
     }
     return render(request, 'contactboard/mailto.html', context)
 
+
 @login_required
 @user_passes_test(is_admin)
 def mailtoclasse(request, id_classe):
@@ -279,5 +291,4 @@ def mailtoclasse(request, id_classe):
         'form': form,
         'classe': classe
     }
-    print(context)
     return render(request, 'contactboard/mailto.html', context)

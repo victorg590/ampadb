@@ -6,4 +6,5 @@ class ExtraescolarsConfig(AppConfig):
     verbose_name = 'Activitats extraescolars'
 
     def ready(self):
-        from . import signals
+        # Registrar senyals
+        from . import signals  # pylint: disable=unused-variable

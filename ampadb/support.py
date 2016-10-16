@@ -5,13 +5,16 @@ from usermanager.models import User, UnregisteredUser
 from usermanager.models import Profile
 import logging
 import random
+import unicodedata
+
 
 def is_admin(user):
     return user.is_staff and user.is_superuser
 
+
 def context_processor(request):
     user = request.user
-    if not user.is_authenticated():
+    if not user.is_authenticated:
         return {'anonymous': True, 'admin': False}
     return {'anonymous': False, 'admin': is_admin(user)}
 
@@ -20,8 +23,8 @@ def redirect_with_get(url, get_params, *args, **kwargs):
     """Crea una redirecció amb paràmetres GET.
 
     Demana una URL que es passa a `reverse` (amb arguments, si cal)
-    i una llista de tuples del format `(clau, valor)`. Els valors seràn escapats
-    per a URL.
+    i una llista de tuples del format `(clau, valor)`. Els valors seràn
+    escapats per a URL.
     """
     first = True
     get_string = ''
@@ -34,9 +37,11 @@ def redirect_with_get(url, get_params, *args, **kwargs):
     resolved_url = reverse(url, args=args, kwargs=kwargs)
     return HttpResponseRedirect(resolved_url + get_string)
 
+
 def username_exists(username):
     return (User.objects.filter(username=username) or
-        UnregisteredUser.objects.filter(username=username))
+            UnregisteredUser.objects.filter(username=username))
+
 
 def get_user(username):
     try:
@@ -45,26 +50,6 @@ def get_user(username):
             user = UnregisteredUser.objects.get(username=username)
     return user
 
-def gen_username(alumne):
-    try:
-        un = alumne.nom.replace(' ', '')[0]
-    except IndexError:
-        return ''
-    un += '.'
-    un += alumne.cognoms
-    un = un.replace(' ', '')
-    un = un.lower()
-    next_try = 1
-    while True:
-        if not username_exists(un):
-            break
-        next_try_str = str(next_try)
-        un = un[:(30 - len(next_try_str))] + next_try_str
-        next_try += 1
-        if next_try > 50:
-            logging.warning('Unable to find a new username')
-            return None
-    return un[:30]
 
 def gen_codi():
     try:
@@ -74,9 +59,44 @@ def gen_codi():
     num = ransrc.randint(000000, 999999)
     return str(num).zfill(6)
 
+
+def desaccentuar(text):
+    return ''.join([
+        c for c in
+        unicodedata.normalize('NFKD', text)  # Descomposar: 'à' -> 'a`'
+        if not unicodedata.combining(c)  # Eliminar caràcters de combinació
+                                         # (ex. '`')
+    ])
+
+
+def gen_username(alumne):
+    try:
+        un = alumne.nom.replace(' ', '')[0]
+    except IndexError:
+        un = ''
+    un += '.'
+    un += alumne.cognoms
+    un = un.replace(' ', '')
+    un = un.lower()
+    un = desaccentuar(un[:30])
+    next_try = 1
+    while True:
+        if not username_exists(un):
+            break
+        next_try_str = str(next_try)
+        un = un[:(30 - len(next_try_str))] + next_try_str
+        next_try += 1
+        if next_try > 20:
+            logging.warning("No s'ha pogut trobar un nom d'usuari per a {}. "
+                            "Crean't-ne un aleatori.".format(alumne))
+            return gen_codi()
+    return un
+
+
 def signal_clean(sender, **kwargs):
     instance = kwargs['instance']
     return instance.full_clean()
+
 
 def get_alumne(username):
     try:

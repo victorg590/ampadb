@@ -1,6 +1,6 @@
 import csv
 
-fieldnames = [
+FIELDNAMES = [
     'pk',
     'Nom',
     'Cognoms',
@@ -27,6 +27,7 @@ fieldnames = [
     'Eliminar'
 ]
 
+
 class AmpaDialect(csv.Dialect):
     delimiter = ','
     quotechar = '"'
@@ -34,6 +35,7 @@ class AmpaDialect(csv.Dialect):
     lineterminator = '\r\n'  # Per compatibilitat amb Windows
     skipinitialspace = True
 
+
 def get_template(outfile):
-    writer = csv.DictWriter(outfile, fieldnames)
+    writer = csv.DictWriter(outfile, FIELDNAMES)
     writer.writeheader()

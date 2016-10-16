@@ -1,0 +1,19 @@
+body {
+  padding-top: 70px; }
+
+#menu_footer {
+  bottom: 0;
+  height: 40px;
+  position: relative; }
+
+table.table th,
+table.table td {
+  vertical-align: middle; }
+table.table.text-center th,
+table.table.text-center td {
+  text-align: center; }
+
+.username {
+  font-family: monospace; }
+
+/*# sourceMappingURL=base.css.map */

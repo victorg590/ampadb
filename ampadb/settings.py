@@ -136,14 +136,14 @@ PASSWORD_HASHERS = [
 import importlib
 
 if importlib.util.find_spec('bcrypt') is not None:
-    PASSWORD_HASHERS.insert(0,
-        'django.contrib.auth.hashers.BCryptSHA256PasswordHasher')
-    PASSWORD_HASHERS.insert(1,
-        'django.contrib.auth.hashers.BCryptPasswordHasher')
+    PASSWORD_HASHERS.insert(
+        0, 'django.contrib.auth.hashers.BCryptSHA256PasswordHasher')
+    PASSWORD_HASHERS.insert(
+        1, 'django.contrib.auth.hashers.BCryptPasswordHasher')
 
 if importlib.util.find_spec('argon2') is not None:
-    PASSWORD_HASHERS.insert(0,
-        'django.contrib.auth.hashers.Argon2PasswordHasher')
+    PASSWORD_HASHERS.insert(
+        0, 'django.contrib.auth.hashers.Argon2PasswordHasher')
 
 AUTH_PASSWORD_VALIDATORS = [
     {
@@ -187,9 +187,9 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.10/howto/static-files/
 
-STATIC_ROOT = os.path.join(PROJECT_DIR, 'static')
+STATIC_ROOT = 'static'
 STATIC_URL = '/static/'
-STATICFILES_DIRS = []
+STATICFILES_DIRS = ['dist']
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 STATICFILES_FINDERS = [
     'django.contrib.staticfiles.finders.FileSystemFinder',

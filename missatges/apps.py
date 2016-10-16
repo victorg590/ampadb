@@ -5,4 +5,5 @@ class MissatgesConfig(AppConfig):
     name = 'missatges'
 
     def ready(self):
-        from . import signals
+        # Registrar senyals
+        from . import signals  # pylint: disable=unused-variable

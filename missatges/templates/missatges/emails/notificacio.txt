@@ -1,0 +1,4 @@
+{{ per }} ha enviat un missatge a la conversació {{ conversacio }}.
+    {{ conversacio_url }}
+
+{{ missatge }}

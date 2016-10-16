@@ -3,6 +3,7 @@ import os.path
 import configparser
 import json
 
+
 class AmpaDbSettings:
     def __init__(self):
         settings_var = os.environ.get('AMPADB_SETTINGS')
@@ -85,11 +86,11 @@ class AmpaDbSettings:
 
     def set(self, key, value):
         os.environ['AMPADB_' + key.upper()] = value
-        self.config.interpolation = False
-        self.config.set('FALLBACK', key, value)
-        if self.config and self.settings_file:
-            with open(self.settings_file) as sf:
-                self.config.write(sf)
+        if self.config:
+            self.config.set('FALLBACK', key, value)
+            if self.settings_file:
+                with open(self.settings_file) as sf:
+                    self.config.write(sf)
 
     def setjson(self, key, value):
         return self.set(key, json.dumps(value))

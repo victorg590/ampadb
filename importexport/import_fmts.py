@@ -6,12 +6,16 @@ import pathlib
 import tempfile
 from datetime import datetime
 from django.core.exceptions import ValidationError
-from .forms import IEFormats
 from contactboard.models import *
 from usermanager.models import *
+from extraescolars.models import *
+from missatges.models import *
+from django.contrib.auth.models import User
 from django.db import transaction
 from ampadb.support import gen_username, gen_codi, username_exists
+from . import ampacsv
 from .pklf import CURRENT_VERSION, PickledInfo
+
 
 class InvalidFormat(Exception):
     @classmethod
@@ -20,11 +24,14 @@ class InvalidFormat(Exception):
 
     @classmethod
     def falta_a_fila(cls, columna, fila):
-        return cls('Falta columna {} a la fila {}'.format(columna, fila))
+        return cls('Falta columna {} a la fila {}'.format(columna,
+                   str(fila)))
 
     @classmethod
     def invalid(cls, columna, fila, rao):
-        return cls('{} invàlid a la fila {}: {}'.format(columna, fila, rao))
+        return cls('{} invàlid a la fila {}: {}'.format(columna, str(fila),
+                   rao))
+
 
 def bytestream_to_text(bytestream, encoding='utf-8'):
     textstream = tempfile.TemporaryFile(mode='w+t')
@@ -33,6 +40,9 @@ def bytestream_to_text(bytestream, encoding='utf-8'):
         textstream.write(decoded_chunk)
     textstream.seek(0)
     return textstream
+
+from .forms import IEFormats  # Aquí per a evitar dependències circulars # nopep8
+
 
 def detect_format(filename):
     """Detecta un format a partir la extensió.
@@ -51,7 +61,9 @@ def detect_format(filename):
     else:
         raise ValueError
 
+
 def _importar_fila(fila):
+    ret = {'alumne': None, 'classe': None, 'curs': None, 'user': None}
     try:
         pk = int(fila['pk'])
     except (ValueError, KeyError):
@@ -68,23 +80,23 @@ def _importar_fila(fila):
         usuari_existia = False
 
     try:
-        eliminar = int(fila['Eliminar'])
+        eliminar = int(fila['Eliminar'] or 0)
         if eliminar not in [0, 1, 2]:
             raise ValueError
     except ValueError:
-        raise InvalidFormat('"Eliminar" ha de estar buit o ser 0, 1 o 2 (fila: '
-            + fila + ')')
+        raise InvalidFormat('"Eliminar" ha de estar buit o ser 0, 1 o 2 (fila:'
+                            ' ' + str(fila) + ')')
     except KeyError:
         eliminar = 0
 
     if eliminar == 1:
         if not usuari_existia:
-            return None
+            return ret
         alumne.delete()
-        return None
+        return ret
     elif eliminar == 2:
         if not usuari_existia:
-            return None
+            return ret
         try:
             profile = Profile.objects.get(alumne=alumne)
             if profile.user:
@@ -94,7 +106,7 @@ def _importar_fila(fila):
         except Profile.DoesNotExist:
             pass
         alumne.delete()
-        return None
+        return ret
 
     try:
         nom = fila['Nom']
@@ -122,10 +134,10 @@ def _importar_fila(fila):
 
     try:
         ddn_temp = fila['Data de naixement']
-        if not ddn_temp and usuari_existia:
-            data_de_naixement = None
-        else:
+        if ddn_temp:
             data_de_naixement = datetime.strptime(ddn_temp, '%Y-%m-%d')
+        else:
+            data_de_naixement = None
     except KeyError:
         if usuari_existia:
             data_de_naixement = None
@@ -133,33 +145,38 @@ def _importar_fila(fila):
             raise InvalidFormat.falta_columna('Data de naixement')
     except ValueError:
         raise InvalidFormat.invalid('Data de naixement', fila,
-            ". S'espera el format 'YYYY-MM-DD'.")
+                                    "S'espera el format 'YYYY-MM-DD'.")
     if data_de_naixement:
         alumne.data_de_naixement = data_de_naixement
 
     try:
-        alumne.nom_pare = fila['Nom pare']
+        if fila['Nom pare']:
+            alumne.nom_pare = fila['Nom pare']
     except KeyError:
         pass
 
     try:
-        alumne.cognoms_pare = fila['Cognoms pare']
+        if fila['Cognoms pare']:
+            alumne.cognoms_pare = fila['Cognoms pare']
     except KeyError:
         pass
 
     try:
-        alumne.nom_mare = fila['Nom mare']
+        if fila['Nom mare']:
+            alumne.nom_mare = fila['Nom mare']
     except KeyError:
         pass
 
     try:
-        alumne.cognoms_mare = fila['Congnoms mare']
+        if fila['Cognoms mare']:
+            alumne.cognoms_mare = fila['Cognoms mare']
     except KeyError:
         pass
 
     try:
-        alumne.correu_alumne = fila['Correu alumne']
-        alumne.clean_fields()
+        if fila['Correu alumne']:
+            alumne.correu_alumne = fila['Correu alumne']
+            alumne.clean_fields()
     except KeyError:
         pass
     except ValidationError as e:
@@ -168,7 +185,7 @@ def _importar_fila(fila):
         except KeyError:
             exc = None
         if exc:
-            raise InvalidFormat.invalid('Correu alumne', fila, exc[0])
+            raise InvalidFormat.invalid('Correu alumne', fila, exc)
 
     try:
         tmp = fila['Compartir correu alumne']
@@ -177,11 +194,12 @@ def _importar_fila(fila):
         alumne.compartir_correu_alumne = False
     except ValueError:
         raise InvalidFormat.invalid('Compartir correu alumne', fila,
-            'Ha de ser 0 o 1')
+                                    'Ha de ser 0 o 1')
 
     try:
-        alumne.correu_pare = fila['Correu pare']
-        alumne.clean_fields()
+        if fila['Correu pare']:
+            alumne.correu_pare = fila['Correu pare']
+            alumne.clean_fields()
     except KeyError:
         pass
     except ValidationError as e:
@@ -199,11 +217,12 @@ def _importar_fila(fila):
         alumne.compartir_correu_pare = False
     except ValueError:
         raise InvalidFormat.invalid('Compartir correu pare', fila,
-            'Ha de ser 0 o 1')
+                                    'Ha de ser 0 o 1')
 
     try:
-        alumne.correu_mare = fila['Correu mare']
-        alumne.clean_fields()
+        if fila['Correu mare']:
+            alumne.correu_mare = fila['Correu mare']
+            alumne.clean_fields()
     except KeyError:
         pass
     except ValidationError as e:
@@ -221,11 +240,12 @@ def _importar_fila(fila):
         alumne.compartir_correu_mare = False
     except ValueError:
         raise InvalidFormat.invalid('Compartir correu mare', fila,
-            'Ha de ser 0 o 1')
+                                    'Ha de ser 0 o 1')
 
     try:
-        alumne.telefon_alumne = fila['Telèfon alumne']
-        alumne.clean_fields()
+        if fila['Telèfon alumne']:
+            alumne.telefon_alumne = fila['Telèfon alumne']
+            alumne.clean_fields()
     except KeyError:
         pass
     except ValidationError as e:
@@ -243,11 +263,12 @@ def _importar_fila(fila):
         alumne.compartir_telefon_alumne = False
     except ValueError:
         raise InvalidFormat.invalid('Compartir telèfon alumne', fila,
-            'Ha de ser 0 o 1')
+                                    'Ha de ser 0 o 1')
 
     try:
-        alumne.telefon_pare = fila['Telèfon pare']
-        alumne.clean_fields()
+        if fila['Telèfon pare']:
+            alumne.telefon_pare = fila['Telèfon pare']
+            alumne.clean_fields()
     except KeyError:
         pass
     except ValidationError as e:
@@ -265,11 +286,12 @@ def _importar_fila(fila):
         alumne.compartir_telefon_pare = False
     except ValueError:
         raise InvalidFormat.invalid('Compartir telèfon pare', fila,
-            'Ha de ser 0 o 1')
+                                    'Ha de ser 0 o 1')
 
     try:
-        alumne.telefon_mare = fila['Telèfon mare']
-        alumne.clean_fields()
+        if fila['Telèfon mare']:
+            alumne.telefon_mare = fila['Telèfon mare']
+            alumne.clean_fields()
     except KeyError:
         pass
     except ValidationError as e:
@@ -287,7 +309,7 @@ def _importar_fila(fila):
         alumne.compartir_telefon_mare = False
     except ValueError:
         raise InvalidFormat.invalid('Compartir telèfon mare', fila,
-            'Ha de ser 0 o 1')
+                                    'Ha de ser 0 o 1')
 
     try:
         curs_id = fila['Curs']
@@ -309,14 +331,13 @@ def _importar_fila(fila):
         except Classe.DoesNotExist:
             if not curs_id:
                 raise InvalidFormat('"Classe" no existeix, però tampoc es'
-                    ' defineix "Curs" (fila: {})'.format(fila))
-            try:
-                curs = Curs.objects.get(id_interna=curs_id)
-            except Curs.DoesNotExist:
-                curs = Curs(nom=curs_id, id_interna=curs_id)
-                curs.save()
+                                    ' defineix "Curs" (fila: {})'.format(fila))
+            curs = Curs.objects.get_or_create(id_interna=curs_id,
+                                              defaults={'nom': curs_id})[0]
             classe = Classe(nom=classe_id, id_interna=classe_id, curs=curs)
             classe.save()
+            ret['classe'] = classe.pk
+            ret['curs'] = curs.pk
             alumne.classe = classe
 
     try:
@@ -328,7 +349,8 @@ def _importar_fila(fila):
                 if not (profile.user or profile.unregisteredUser):
                     raise Profile.DoesNotExist
                 alumne.save()
-                return alumne.pk
+                ret['alumne'] = alumne.pk
+                return ret
             except Profile.DoesNotExist:
                 username = ''
         else:
@@ -365,62 +387,112 @@ def _importar_fila(fila):
                     else:
                         alumne.save()
                         Profile.objects.create(alumne=alumne,
-                            unregisteredUser=user)
+                                               unregisteredUser=user)
             if user is None:
-                user = UnregisteredUser(username=username,
-                    codi=gen_codi())
-                user.save()
+                user = UnregisteredUser.objects.create(username=username,
+                                                       codi=gen_codi())
+                ret['user'] = user.pk
                 alumne.save()
-                profile = Profile(alumne=alumne, unregisteredUser=user)
-                profile.save()
+                Profile.objects.update_or_create(alumne=alumne, defaults={
+                    'unregisteredUser': user, 'user': None})
         else:
-            user = UnregisteredUser(username=username, codi=gen_codi())
-            user.save()
+            user = UnregisteredUser.objects.create(username=username,
+                                                   codi=gen_codi())
+            ret['user'] = user.pk
             alumne.save()
-            profile = Profile(alumne=alumne, unregisteredUser=user)
-            profile.save()
+            Profile.objects.update_or_create(alumne=alumne, defaults={
+                'unregisteredUser': user, 'user': None})
     alumne.save()
-    return alumne.pk
+    ret['alumne'] = alumne.pk
+    return ret
 
-def import_ampacsv(infile):
+
+def _csv_del_all():
+    Alumne.objects.all().delete()
+    Classe.objects.all().delete()
+    Curs.objects.all().delete()
+    User.objects.exclude(is_staff=True, is_superuser=True).delete()
+    UnregisteredUser.objects.all().delete()
+    Profile.objects.all().delete()
+
+
+def _csv_del_not_added(afegits):
+    alumnes = {d['alumne'] for d in afegits if d['alumne'] is not None}
+    classes = {d['classe'] for d in afegits if d['classe'] is not None}
+    classes |= {Alumne.objects.only('classe').get(pk=a).classe.pk
+                for a in alumnes}
+    cursos = {d['curs'] for d in afegits if d['curs'] is not None}
+    cursos |= {Classe.objects.only('curs').get(pk=c).curs.pk
+               for c in classes}
+    usuaris = {d['user'] for d in afegits if d['user'] is not None}
+    for a in alumnes:
+        try:
+            p = Profile.objects.get(alumne__pk=a).unregisteredUser.pk
+            usuaris |= {p}
+        except Profile.DoesNotExist:
+            pass
+
+    Alumne.objects.exclude(pk__in=alumnes).delete()
+    Classe.objects.exclude(pk__in=classes).delete()
+    Curs.objects.exclude(pk__in=cursos).delete()
+    UnregisteredUser.objects.exclude(pk__in=usuaris).delete()
+    User.objects.exclude(is_staff=True, is_superuser=True).delete()
+
+
+def import_ampacsv(infile, preexistents=''):
     reader = csv.DictReader(infile, dialect=ampacsv.AmpaDialect())
     with transaction.atomic():
+        if preexistents == 'DEL_ALL':
+            _csv_del_all()
+        afegits = []
         for fila in reader:
-            _importar_fila(fila)
+            afegits.append(_importar_fila(fila))
+        if preexistents == 'DEL':
+            _csv_del_not_added(afegits)
 
-def import_excel(infile):
+
+def import_excel(infile, preexistents=''):
     reader = csv.DictReader(infile, dialect='excel')
     with transaction.atomic():
+        if preexistents == 'DEL_ALL':
+            _csv_del_all()
+        afegits = []
         for fila in reader:
-            _importar_fila(fila)
+            afegits.append(_importar_fila(fila))
+        if preexistents == 'DEL':
+            _csv_del_not_added(afegits)
 
-def import_json(infile):
+
+def import_json(infile, preexistents=''):
     try:
         info = PickledInfo.from_json(json.load(infile))
-        info.unpickle()
+        info.unpickle(preexistents)
     except InvalidFormat:
         raise
     except Exception as e:
         raise InvalidFormat("No és un arxiu JSON d'aquesta aplicació (" +
-            str(e) + ')') from e
+                            str(e) + ')') from e
 
-def import_pickle(infile):
+
+def import_pickle(infile, preexistents=''):
     try:
         with gzip.GzipFile(fileobj=infile) as gz:
-            return import_pickle_uncompressed(gz)
+            return import_pickle_uncompressed(gz, preexistents)
     except OSError:
-        return import_pickle_uncompressed(infile)  # Prova per si no està comprimit
+        # Prova per si no està comprimit
+        return import_pickle_uncompressed(infile, preexistents)
 
-def import_pickle_uncompressed(infile):
+
+def import_pickle_uncompressed(infile, preexistents=''):
     try:
         info = pickle.load(infile)
     except pickle.UnpicklingError:
         raise InvalidFormat('No és un arxiu Pickle')
     try:
         info.check_version(CURRENT_VERSION)
-        info.unpickle()
+        info.unpickle(preexistents)
     except InvalidFormat:
         raise
     except Exception as e:
         raise InvalidFormat("No és un arxiu Pickle d'aquesta aplicació (" +
-            str(e) + ')') from e
+                            str(e) + ')') from e

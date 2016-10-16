@@ -9,10 +9,11 @@ from django.contrib.auth.models import User
 from .pklf import *
 from . import ampacsv
 
+
 def export_csv(outfile, alumnes):
     fieldnames = ['First Name', 'Last Name', 'Birthday', 'E-mail Address',
-        'E-mail 2 Address', 'E-mail 3 Address', 'Home Phone', 'Home Phone 2',
-        'Home Phone 3', 'Categories']
+                  'E-mail 2 Address', 'E-mail 3 Address', 'Home Phone',
+                  'Home Phone 2', 'Home Phone 3', 'Categories']
     writer = csv.DictWriter(outfile, fieldnames)
     writer.writeheader()
     for a in alumnes:
@@ -31,9 +32,10 @@ def export_csv(outfile, alumnes):
             'Categories': str(a.classe)
         })
 
+
 def export_ampacsv(outfile, alumnes):
     writer = csv.DictWriter(outfile, ampacsv.fieldnames,
-        dialect=ampacsv.AmpaDialect())
+                            dialect=ampacsv.AmpaDialect())
     writer.writeheader()
     for a in alumnes:
         try:
@@ -46,11 +48,11 @@ def export_ampacsv(outfile, alumnes):
                 username = '-'
         except Profile.DoesNotExist:
             username = '-'
-        writer.writerow({
+        d = {
             'pk': a.pk,
             'Nom': a.nom,
             'Cognoms': a.cognoms,
-            'Data de naixement': a.data_de_naixement.strftime('%Y-%m-%d'),
+            'Data de naixement': '',
             'Nom pare': a.nom_pare,
             'Cognoms pare': a.cognoms_pare,
             'Nom mare': a.nom_mare,
@@ -71,11 +73,16 @@ def export_ampacsv(outfile, alumnes):
             'Curs': a.classe.curs.id_interna,
             'Usuari': username,
             'Eliminar': 0
-        })
+        }
+        if a.data_de_naixement:
+            d['Data de naixement'] = a.data_de_naixement.strftime('%Y-%m-%d')
+        writer.writerow(d)
+
 
 def optimize_pickle(nopkl, protocol=4):
     pkl = pickle.dumps(nopkl, protocol=protocol)
     return pickle.loads(pickletools.optimize(pkl))
+
 
 def gen_pickled_info(classe=None):
     if classe is None:
@@ -86,10 +93,12 @@ def gen_pickled_info(classe=None):
     curs.classes.append(PickledClasse.transform(classe))
     return info
 
+
 def export_pickle(outfile, classe=None):
     info = gen_pickled_info(classe)
     with gzip.GzipFile(fileobj=outfile, mode='ab') as gz:
         pickle.dump(optimize_pickle(info), gz, protocol=4)
+
 
 def export_json(outfile, classe=None):
     info = gen_pickled_info(classe)

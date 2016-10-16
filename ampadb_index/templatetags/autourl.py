@@ -3,6 +3,7 @@ from django.utils.html import format_html, mark_safe
 
 register = template.Library()
 
+
 @register.filter
 def autourl(value):
     try:

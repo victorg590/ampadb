@@ -8,7 +8,8 @@ adminpatterns = [
     url(r'^edit/(?P<act_id>.+)', views.edit, name='edit'),
     url(r'^delete/(?P<act_id>.+)', views.delete, name='delete'),
     url(r'^inscripcions$', views.inscripcions, name='inscripcions'),
-    url(r'^cancel_ins/(?P<ins_pk>.+)', views.cancel_ins, name='cancel-inscripcio')
+    url(r'^cancel_ins/(?P<ins_pk>.+)', views.cancel_ins,
+        name='cancel-inscripcio')
 ]
 urlpatterns = [
     url(r'^admin/', include(adminpatterns)),

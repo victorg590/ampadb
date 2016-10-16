@@ -6,4 +6,5 @@ class ContactboardConfig(AppConfig):
     verbose_name = 'Cursos i classes'
 
     def ready(self):
-        from . import signals  # Registrar senyals
+        # Registrar senyals
+        from . import signals  # pylint: disable=unused-variable

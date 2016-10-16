@@ -1,7 +1,7 @@
 {% extends "menu.html" %}
-{% load static %}
+{% load static_dbg %}
 
-{% block head %}
+{% block styles %}
 {{ block.super }}
-<link rel="stylesheet" href="{% static 'scss/markdown.css' %}" />
-{% endblock head %}
+<link rel="stylesheet" href="{% static_dbg 'markdown.css' %}" />
+{% endblock styles %}

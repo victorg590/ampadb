@@ -1,0 +1,15 @@
+{% load md %}
+
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+</head>
+<body>
+  <p>{{ per }} ha enviat un missatge a la conversació {{ conversacio }}:</p>
+  {{ missatge|md:'blockquote' }}
+  <a class="btn btn-primary" href="{{ conversacio_url }}">
+    Ves a la conversació
+  </a>
+</body>
+</html>

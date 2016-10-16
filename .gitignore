@@ -1,10 +1,13 @@
 ### Altres ###
-biblio.txt
-# Configuració privada
-private.ini
-# Arxius estàtics
-ampadb/static/
+/biblio.txt
 db.*.sqlite3
+# Configuració privada
+/private.ini
+# Arxius estàtics
+/static/
+node_modules/
+# Arxius pujats
+uploads/
 
 # Created by https://www.gitignore.io/api/django,python,sass,windows
 
@@ -32,7 +35,7 @@ __pycache__/
 env/
 build/
 develop-eggs/
-dist/
+#dist/  # DESHABILITAT
 downloads/
 eggs/
 .eggs/
@@ -113,7 +116,7 @@ ENV/
 
 ### Sass ###
 .sass-cache/
-*.css.map
+#*.css.map  # DESHABILITAT
 
 
 ### Windows ###

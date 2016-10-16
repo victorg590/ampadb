@@ -9,7 +9,8 @@ from ampadb.support import get_alumne, is_admin, redirect_with_get
 from .support import status_inscripcio
 import weasyprint
 from django.views.decorators.debug import (sensitive_variables,
-    sensitive_post_parameters)
+                                           sensitive_post_parameters)
+
 
 def check_data(request):
     alumne = get_alumne(request.user.username)
@@ -29,8 +30,10 @@ def check_data(request):
     if not alumne.cognoms_mare:
         falten.append("Cognoms de la mare")
     if falten:
-        return render(request, 'extraescolars/no_data.html', {'falten': falten})
+        return render(request, 'extraescolars/no_data.html',
+                      {'falten': falten})
     return None
+
 
 # Conflicte amb el built-in list()
 @login_required
@@ -45,8 +48,8 @@ def list_view(request):
     inscripcions = []
     for e in Extraescolar.objects.all():
         d = {'obj': e}
-        d['inscripcio_oberta'] = status_inscripcio(e,
-            get_alumne(request.user.username))[0]
+        d['inscripcio_oberta'] = status_inscripcio(
+            e, get_alumne(request.user.username))[0]
         activitats.append(d)
         if Inscripcio.objects.filter(alumne=alumne, activitat=e):
             inscripcions.append(e)
@@ -57,6 +60,7 @@ def list_view(request):
     }
     return render(request, 'extraescolars/list.html', context)
 
+
 @login_required
 def show(request, act_id):
     activitat = get_object_or_404(Extraescolar, id_interna=act_id)
@@ -66,7 +70,8 @@ def show(request, act_id):
             'inscripcions': Inscripcio.objects.filter(activitat=activitat)
         }
         return render(request, 'extraescolars/show.html', context)
-    inscripcio = status_inscripcio(activitat, get_alumne(request.user.username))
+    inscripcio = status_inscripcio(activitat,
+                                   get_alumne(request.user.username))
     context = {
         'activitat': activitat,
         'oberta': inscripcio[0],
@@ -80,6 +85,7 @@ def show(request, act_id):
     except Inscripcio.DoesNotExist:
         return render(request, 'extraescolars/show_no_inscrit.html', context)
 
+
 @login_required
 def inscripcio(request, act_id):
     activitat = get_object_or_404(Extraescolar, id_interna=act_id)
@@ -87,7 +93,8 @@ def inscripcio(request, act_id):
     if datacheck:
         return datacheck
     if (request.method != 'POST' or
-        not status_inscripcio(activitat, get_alumne(request.user.username))[0]):
+        not status_inscripcio(activitat, get_alumne(
+            request.user.username))[0]):
         return redirect('extraescolars:show', act_id)
     alumne = get_alumne(request.user.username)
     inscripcio = Inscripcio()
@@ -97,6 +104,7 @@ def inscripcio(request, act_id):
     inscripcio.pagat = False
     inscripcio.save()
     return redirect('extraescolars:show', act_id)
+
 
 @login_required
 def cancel(request, act_id):
@@ -115,6 +123,7 @@ def cancel(request, act_id):
         pass
     return redirect('extraescolars:show', act_id)
 
+
 @sensitive_variables()
 def _genpdf(context):
     response = HttpResponse(content_type='application/pdf')
@@ -123,6 +132,7 @@ def _genpdf(context):
     html = template.render(context)
     weasyprint.HTML(string=html).write_pdf(response)
     return response
+
 
 @sensitive_post_parameters('dni_pare', 'dni_mare', 'iban', 'nif_titular')
 @sensitive_variables('form', 'context')
@@ -148,6 +158,7 @@ def genfull(request):
     }
     return render(request, 'extraescolars/genfull.html', context)
 
+
 @login_required
 @user_passes_test(is_admin)
 def add(request):
@@ -163,6 +174,7 @@ def add(request):
         'submitText': 'Crear'
     }
     return render(request, 'extraescolars/add.html', context)
+
 
 @login_required
 @user_passes_test(is_admin)
@@ -181,6 +193,7 @@ def edit(request, act_id):
     }
     return render(request, 'extraescolars/add.html', context)
 
+
 @login_required
 @user_passes_test(is_admin)
 def delete(request, act_id):
@@ -192,6 +205,7 @@ def delete(request, act_id):
             'extraescolar': activitat
         }
         return render(request, 'extraescolars/delete.html', context)
+
 
 @login_required
 @user_passes_test(is_admin)
@@ -208,8 +222,8 @@ def inscripcions(request):
             pk = search_form.cleaned_data['q']
             context['ins'] = Inscripcio.objects.get(pk=pk)
             if request.method == 'POST':
-                form = InscripcioAdminForm(request.POST,
-                    instance=context['ins'])
+                form = InscripcioAdminForm(
+                    request.POST, instance=context['ins'])
             else:
                 form = InscripcioAdminForm(instance=context['ins'])
             if form.is_valid():
@@ -222,6 +236,7 @@ def inscripcions(request):
         'search_form': search_form
     })
     return render(request, 'extraescolars/inscripcions.html', context)
+
 
 @login_required
 @user_passes_test(is_admin)
