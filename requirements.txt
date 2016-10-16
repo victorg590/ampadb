@@ -15,7 +15,7 @@ psycopg2>=2.6.2
 
 # Dependències opcionals
 ## Algorisme Argon2, més segur que PBKDF2
-django[argon2]
+argon2-cffi>=16.2.0
 ## Compresió Brotli, més eficient que GZip, suportada pels navegadors més utilitzats
 ## (Només funciona amb HTTPS)
 brotlipy
