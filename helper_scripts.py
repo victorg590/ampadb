@@ -5,7 +5,7 @@ S'han d'executar amb
     '>>> from . import helper_scripts'
 """
 
-from contactboard.models import Curs, Classe
+from contactboard.models import Curs, Classe, Alumne
 from django.db import transaction
 
 cursos = [
@@ -33,3 +33,12 @@ def gencurs():
                     defaults={'nom': classe, 'curs': curs})
                 )
     return creats
+
+def updateAll():
+    """Desa tots els models que han canviat des de la versió 1.0.
+
+    Aixó permet emitir les senyals associades al model.
+    """
+    # Alumnes: correu_alumne = user.email, nom_alumne = user.name...
+    for a in Alumne.objects.all():
+        a.save()
