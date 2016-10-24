@@ -6,7 +6,7 @@ from .models import *
 class AlumneAdmin(admin.ModelAdmin):
     fieldsets = [
         ('Informació personal',
-            {'fields': [('nom', 'cognoms'), 'classe', 'data_de_naixement',
+            {'fields': [('nom', 'cognoms'), 'classe',
                         ('correu_alumne', 'compartir_correu_alumne'),
                         ('telefon_alumne', 'compartir_telefon_alumne')]}),
         ('Informació de contacte del pare',
