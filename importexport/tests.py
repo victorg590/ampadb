@@ -20,13 +20,17 @@ class CsvImportTestCase(TestCase):
             pk=1, nom='A', cognoms='B', classe=classe,
             data_de_naixement=date(2000, 1, 1))
         usuari1 = User.objects.create(username='a')
-        Profile.objects.create(alumne=alumne1, user=usuari1)
+        Profile.objects.update_or_create(alumne=alumne1,
+                                         defaults={'user': usuari1})
 
         alumne2 = Alumne.objects.create(
             pk=2, nom='C', cognoms='D', classe=classe,
             data_de_naixement=date(2000, 1, 1))
         usuari2 = UnregisteredUser.objects.create(username='b', codi='000000')
-        Profile.objects.create(alumne=alumne2, unregisteredUser=usuari2)
+        Profile.objects.update_or_create(
+            alumne=alumne2,
+            defaults={'unregisteredUser': usuari2}
+        )
 
         User.objects.create(username='c')
         UnregisteredUser.objects.create(username='d', codi='000000')
@@ -35,7 +39,8 @@ class CsvImportTestCase(TestCase):
             pk=5, nom='O', cognoms='P', classe=classe,
             data_de_naixement=date(2000, 1, 1))
         usuari5 = User.objects.create(username='e')
-        Profile.objects.create(alumne=alumne5, user=usuari5)
+        Profile.objects.update_or_create(alumne=alumne5,
+                                         defaults={'user': usuari5})
 
     def test_user_already_exists(self):
         alumne = Alumne.objects.get(pk=1)

@@ -12,16 +12,13 @@ def alumne_pre_save(sender, **kwargs):
 
 @receiver(post_save, sender=Alumne)
 def alumne_post_save(sender, **kwargs):
-    try:
-        profile = Profile.objects.get(alumne=kwargs['instance'])
-        if not profile.user:
-            return
-    except Profile.DoesNotExist:
-        return
     instance = kwargs['instance']
-    profile.user.email = instance.correu_alumne
-    profile.user.first_name = instance.nom
-    profile.user.last_name = instance.cognoms
+    profile = Profile.objects.get_or_create(alumne=instance)[0]
+    if profile.user:
+        profile.user.email = instance.correu_alumne
+        profile.user.first_name = instance.nom
+        profile.user.last_name = instance.cognoms
+        profile.user.save()
 
 
 @receiver(pre_save, sender=Classe)
