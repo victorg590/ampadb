@@ -1,4 +1,5 @@
 from django.contrib import admin
+from usermanager.admin import ProfileInline
 from .models import *
 
 
@@ -18,6 +19,7 @@ class AlumneAdmin(admin.ModelAdmin):
                         ('correu_mare', 'compartir_correu_mare'),
                         ('telefon_mare', 'compartir_telefon_mare')]}),
     ]
+    inlines = [ProfileInline]
     list_display = ['nom', 'cognoms', 'classe', 'correu_alumne',
                     'telefon_alumne', 'correu_pare', 'telefon_pare',
                     'correu_mare', 'telefon_mare']
@@ -27,8 +29,7 @@ class AlumneAdmin(admin.ModelAdmin):
     list_filter = ['classe']
     ordering = ['cognoms', 'nom']
 
-
-class ClasseInline(admin.StackedInline):
+class ClasseInline(admin.TabularInline):
     model = Classe
     prepopulated_fields = {'id_interna': ['nom']}
     extra = 0
