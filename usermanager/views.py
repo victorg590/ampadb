@@ -34,6 +34,7 @@ def register(request):
             profile.user = user
             profile.save()
             uu.delete()
+            profile.alumne.save()
             return redirect('login')
     else:
         form = RegisterForm()
