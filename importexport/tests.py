@@ -27,8 +27,10 @@ class CsvImportTestCase(TestCase):
             pk=2, nom='C', cognoms='D', classe=classe,
             data_de_naixement=date(2000, 1, 1))
         usuari2 = UnregisteredUser.objects.create(username='b', codi='000000')
-        Profile.objects.update_or_create(alumne=alumne2,
-                                         defaults={'unregisteredUser': usuari2})
+        Profile.objects.update_or_create(
+            alumne=alumne2,
+            defaults={'unregisteredUser': usuari2}
+        )
 
         User.objects.create(username='c')
         UnregisteredUser.objects.create(username='d', codi='000000')
