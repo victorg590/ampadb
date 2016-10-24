@@ -383,11 +383,15 @@ def _importar_fila(fila):
                 except Profile.DoesNotExist:
                     if registered:
                         alumne.save()
-                        Profile.objects.create(alumne=alumne, user=user)
+                        Profile.objects.update_or_create(
+                            alumne=alumne,
+                            defaults={'user': user}
+                        )
                     else:
                         alumne.save()
-                        Profile.objects.create(alumne=alumne,
-                                               unregisteredUser=user)
+                        Profile.objects.update_or_create(
+                            alumne=alumne,
+                            defaults={'unregisteredUser': user})
             if user is None:
                 user = UnregisteredUser.objects.create(username=username,
                                                        codi=gen_codi())
