@@ -1,3 +1,4 @@
+from ampadb.support import Forms
 from django import forms
 from django.core.exceptions import ValidationError
 from .models import Extraescolar, Inscripcio
@@ -11,11 +12,11 @@ class _ExtraescolarMeta:
 
 
 class ExtraescolarForms:
-    class AddForm(forms.ModelForm):
+    class AddForm(Forms.ModelForm):
         class Meta(_ExtraescolarMeta):
             pass
 
-    class EditForm(forms.ModelForm):
+    class EditForm(Forms.ModelForm):
         class Meta(_ExtraescolarMeta):
             pass
         id_interna = forms.CharField(disabled=True, required=False)
@@ -47,7 +48,7 @@ def validate_dni(dni):
         raise ValidationError('No és un DNI vàlid (la lletra no és correcta).')
 
 
-class InscripcioForm(forms.Form):
+class InscripcioForm(Forms.Form):
     dni_pare = forms.CharField(
         label="DNI del pare", max_length=9,
         help_text='DNI o NIE del pare (no es guardarà).',
@@ -93,12 +94,12 @@ def validate_inscripcio_exists(pk):
         raise ValidationError('No existeix la inscripció ' + str(pk))
 
 
-class SearchInscripcioForm(forms.Form):
+class SearchInscripcioForm(Forms.Form):
     q = forms.CharField(label='Id inscripció',
                         validators=[validate_inscripcio_exists])
 
 
-class InscripcioAdminForm(forms.ModelForm):
+class InscripcioAdminForm(Forms.ModelForm):
     class Meta:
         model = Inscripcio
         fields = ['confirmat', 'pagat']

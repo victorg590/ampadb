@@ -1,3 +1,4 @@
+from ampadb.support import Forms
 from django import forms
 from django.core import validators
 from django.contrib.auth.password_validation import validate_password
@@ -18,7 +19,7 @@ def validate_alumne_unique(value):
 
 
 class UsersForms:
-    class NewForm(forms.Form):
+    class NewForm(Forms.Form):
         alumne = forms.CharField(disabled=True, required=False)
         username = forms.CharField(
             label="Nom d'usuari", max_length=30,
@@ -37,7 +38,7 @@ class UsersForms:
                 "pertany a aquesta persona. Si no s'entra cap, es generarà un "
                 "automàticament."))
 
-    class NewAdminForm(forms.Form):
+    class NewAdminForm(Forms.Form):
         username = forms.CharField(
             label="Nom d'usuari", max_length=30,
             help_text='Fins a 30 caracters (lletres, números i ".@+-")',
@@ -65,7 +66,7 @@ class UsersForms:
                                     ' correcta'))
 
 
-class RegisterForm(forms.Form):
+class RegisterForm(Forms.Form):
     username = forms.CharField(
         label="Nom d'usuari", max_length=30,
         help_text="Utilitza el nom d'usuari que et van donar",
@@ -109,7 +110,7 @@ class RegisterForm(forms.Form):
                                             ' nom i codi')
 
 
-class AdminChangePasswordForm(forms.Form):
+class AdminChangePasswordForm(Forms.Form):
     password = forms.CharField(
         label='Nova contrasenya', widget=forms.PasswordInput, required=True)
     password_confirm = forms.CharField(
@@ -129,7 +130,7 @@ class AdminChangePasswordForm(forms.Form):
                                 ' correcta'))
 
 
-class ChangeCodeForm(forms.Form):
+class ChangeCodeForm(Forms.Form):
     codi = forms.CharField(
         label='Codi', max_length=6,
         validators=[validators.RegexValidator(r'^[0-9]{6}$')],

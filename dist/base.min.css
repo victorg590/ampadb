@@ -1,1 +1,1 @@
-body{padding-top:70px}#menu_footer{bottom:0;height:40px;position:relative}table.table td,table.table th{vertical-align:middle}table.table.text-center td,table.table.text-center th{text-align:center}.username{font-family:monospace}
+body{padding-top:70px}#menu_footer{bottom:0;height:40px;position:relative}table.table td,table.table th{vertical-align:middle}table.table.text-center td,table.table.text-center th{text-align:center}.username{font-family:monospace}.required>label.control-label::after{color:#f66;content:'*'}

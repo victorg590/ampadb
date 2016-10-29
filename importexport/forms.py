@@ -1,3 +1,4 @@
+from ampadb.support import Forms
 from django import forms
 from django.core.exceptions import ValidationError
 
@@ -11,7 +12,7 @@ class IEFormats:
     EXCELCSV = 'csv.excel'
 
 
-class ExportForm(forms.Form):
+class ExportForm(Forms.Form):
     FORMAT_CHOICES = [
         (IEFormats.CSV, 'CSV (E-mail)'),
         (IEFormats.AMPACSV, 'CSV (Importació)'),
@@ -23,7 +24,7 @@ class ExportForm(forms.Form):
     classe = forms.CharField(required=False, widget=forms.HiddenInput)
 
 
-class ImportForm(forms.Form):
+class ImportForm(Forms.Form):
     FORMAT_CHOICES = [
         (IEFormats.AUTO, 'Autodetectar'),
         (IEFormats.AMPACSV, 'CSV'),
@@ -58,7 +59,7 @@ from .import_fmts import InvalidFormat  # nopep8
 
 
 class Ies:
-    class UploadForm(forms.Form):
+    class UploadForm(Forms.Form):
         ifile = forms.FileField(required=True, label="Arxiu d'importació")
 
         def clean(self):

@@ -113,8 +113,8 @@ module.exports = (grunt) ->
   grunt.loadNpmTasks 'grunt-sass-lint'
   grunt.loadNpmTasks 'grunt-contrib-clean'
 
-  grunt.registerTask 'css', ['sass', 'cssmin']
-  grunt.registerTask 'js', ['coffee', 'uglify']
+  grunt.registerTask 'css', ['copy:sass', 'sass', 'cssmin']
+  grunt.registerTask 'js', ['copy:coffee', 'coffee', 'uglify']
   grunt.registerTask 'test', ['coffeelint', 'sasslint']
   grunt.registerTask 'all', ['copy', 'css', 'js']
   grunt.registerTask 'default', 'all'
