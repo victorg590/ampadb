@@ -1,22 +1,22 @@
 .secret,
 .self-record {
-  background-color: #d3d3d3; }
+  background-color: lightgray; }
 
 .privat {
-  color: #808080;
+  color: gray;
   font-style: italic; }
 
 table.table-hover tr:hover .secret {
-  background-color: #808080; }
+  background-color: gray; }
   table.table-hover tr:hover .secret a {
-    color: #add8e6; }
+    color: lightblue; }
   table.table-hover tr:hover .secret.data {
-    color: #fff; }
+    color: white; }
 table.table-hover tr:hover.self-record {
-  background-color: #808080; }
+  background-color: gray; }
   table.table-hover tr:hover.self-record a {
-    color: #add8e6; }
+    color: lightblue; }
   table.table-hover tr:hover.self-record .privat {
-    color: #fff; }
+    color: white; }
 
 /*# sourceMappingURL=contactboard.css.map */

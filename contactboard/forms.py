@@ -1,3 +1,4 @@
+from ampadb.support import Forms
 from django import forms
 from django.core.exceptions import ValidationError
 from .models import Alumne, Classe, Curs, validate_non_reserved_id
@@ -16,7 +17,7 @@ def validate_curs_id_unique(value):
 
 
 class ClasseForms:
-    class NewForm(forms.Form):
+    class NewForm(Forms.Form):
         nom = forms.ChoiceField(
             required=True,
             choices=[(c, c) for c in ['A', 'B', 'C', 'D', 'E']])
@@ -36,7 +37,7 @@ class ClasseForms:
 
 
 class CursForms:
-    class NewForm(forms.Form):
+    class NewForm(Forms.Form):
         nom = forms.CharField(max_length=50, required=True)
         id_interna = forms.SlugField(
             max_length=20, required=True,
@@ -50,7 +51,7 @@ class CursForms:
                 'Ordre dels cursos. Ex.: 1er ESO = 1, 2on ESO = 2, ...,'
                 ' 1er Batx = 5...'))
 
-    class EditForm(forms.Form):
+    class EditForm(Forms.Form):
         nom = forms.CharField(max_length=50, required=True)
         id_interna = forms.SlugField(disabled=True, required=False)
         ordre = forms.IntegerField(
@@ -74,7 +75,7 @@ class _AlumneMeta:
 
 
 class AlumneForms:
-    class NewForm(forms.ModelForm):
+    class NewForm(Forms.ModelForm):
         class Meta(_AlumneMeta):
             exclude = ['classe']
             widgets = {
@@ -90,7 +91,7 @@ class AlumneForms:
                 })
             }
 
-    class EditForm(forms.ModelForm):
+    class EditForm(Forms.ModelForm):
         class Meta(_AlumneMeta):
             exclude = ['classe']
         nom = forms.CharField(disabled=True, required=False)
@@ -102,12 +103,12 @@ class AlumneForms:
                                               'correu_pare'])):
                 raise ValidationError("Es requereix un correu com a mínim.")
 
-    class AdminEditForm(forms.ModelForm):
+    class AdminEditForm(Forms.ModelForm):
         class Meta(_AlumneMeta):
             pass
 
 
-class MailtoForm(forms.Form):
+class MailtoForm(Forms.Form):
     TO_ALUMNES = 'alumnes'
     TO_PARES = 'pares'
     TO_MARES = 'mares'

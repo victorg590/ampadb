@@ -1,3 +1,4 @@
+from django import forms
 from django.http import HttpResponseRedirect
 from django.urls import reverse
 from urllib.parse import quote
@@ -111,3 +112,10 @@ def get_alumne(username):
     except Profile.DoesNotExist:
         return None
     return profile.alumne
+
+class Forms:
+    class Form(forms.Form):
+        required_css_class = 'required'
+
+    class ModelForm(forms.ModelForm):
+        required_css_class = 'required'

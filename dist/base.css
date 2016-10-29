@@ -16,4 +16,8 @@ table.table.text-center td {
 .username {
   font-family: monospace; }
 
+.required > label.control-label::after {
+  color: #f66;
+  content: '*'; }
+
 /*# sourceMappingURL=base.css.map */
