@@ -200,6 +200,7 @@ def delete(request, act_id):
     activitat = get_object_or_404(Extraescolar, id_interna=act_id)
     if request.method == 'POST':
         activitat.delete()
+        return redirect('extraescolars:list')
     else:
         context = {
             'extraescolar': activitat
