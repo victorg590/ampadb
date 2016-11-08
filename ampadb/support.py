@@ -7,7 +7,7 @@ from usermanager.models import Profile
 import logging
 import random
 import unicodedata
-
+import re
 
 def is_admin(user):
     return user.is_staff and user.is_superuser
@@ -79,7 +79,12 @@ def gen_username(alumne):
     un += alumne.cognoms
     un = un.replace(' ', '')
     un = un.lower()
-    un = desaccentuar(un[:30])
+    un = desaccentuar(un)
+    un_filter = filter(
+        lambda s: re.search(r'[\w.@+-]', s, flags=re.ASCII) is not None,
+        un
+    )  # Mira si encaixa en els caràcters ASCII. Sinó, elimina el caracter
+    un = ''.join(c for c in un_filter)[:30]
     next_try = 1
     while True:
         if not username_exists(un):
