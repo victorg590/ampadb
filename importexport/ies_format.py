@@ -134,13 +134,20 @@ class Changes:
     def apply(self):
         with transaction.atomic():
             for a in self.add:
-                alumne = Alumne.objects.create(nom=a.nom, cognoms=a.cognoms,
-                                               classe=a.classe)
-                uu = UnregisteredUser.objects.create(
-                    username=gen_username(alumne),
-                    codi=gen_codi()
+                alumne, nou = Alumne.objects.get_or_create(
+                    nom=a.nom, cognoms=a.cognoms,
+                    defaults={'classe': a.classe}
                 )
-                Profile.objects.create(alumne=alumne, unregisteredUser=uu)
+                if not nou:
+                    alumne.classe = a.classe
+                    alumne.save()
+                profile = Profile.objects.get_or_create(alumne=alumne)[0]
+                if not profile.unregisteredUser and not profile.user:
+                    uu = UnregisteredUser.objects.get_or_create(
+                        username=gen_username(alumne),
+                        defaults={'codi': gen_codi()}
+                    )[0]
+                    profile.unregisteredUser = uu
             for m in self.move:
                 m.alumne.classe = m.a_classe
                 m.alumne.save()
