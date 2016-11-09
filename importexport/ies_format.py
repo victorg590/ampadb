@@ -148,6 +148,7 @@ class Changes:
                         defaults={'codi': gen_codi()}
                     )[0]
                     profile.unregisteredUser = uu
+                    profile.save()
             for m in self.move:
                 m.alumne.classe = m.a_classe
                 m.alumne.save()

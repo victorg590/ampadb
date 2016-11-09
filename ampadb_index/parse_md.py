@@ -12,8 +12,7 @@ TAGS = [
 
 ATTRS = {
     'ol': ['start'], 'a': ['href', 'title', 'rel'],
-    'img': ['src', 'title', 'alt'], 'table': ['class'], 'th': ['align'],
-    'td': ['align']
+    'img': ['src', 'title', 'alt'], 'th': ['align'], 'td': ['align']
 }
 
 STYLES = []
@@ -49,8 +48,6 @@ def parse_md(md, wrap='div', html_class='markdown'):
         # S'ha de "desescapar" perque E.P també escapa l'HTML
         tree.append(E.P(html.unescape(clean_html)))
     for table in tree.iter('table'):
-        table.classes &= {'table', 'table-striped', 'table-bordered',
-                          'table-hover', 'table-condensed'}  # Classes permeses
-        table.classes |= ['table']  # Afegir sempre la classe "table"
+         table.classes |= {'table'}  # Afegir la classe "table"
     return lxml.html.tostring(tree, encoding='utf-8', method='html',
                               pretty_print=True).decode('utf-8')
