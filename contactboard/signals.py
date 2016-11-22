@@ -16,8 +16,14 @@ def alumne_post_save(sender, **kwargs):
     profile = Profile.objects.get_or_create(alumne=instance)[0]
     if profile.user:
         profile.user.email = instance.correu_alumne
-        profile.user.first_name = instance.nom
-        profile.user.last_name = instance.cognoms
+        if len(instance.nom) <= 30:
+            profile.user.first_name = instance.nom
+        else:
+            profile.user.first_name = instance.nom[0:26] + '...'
+        if len(instance.cognoms) <= 30:
+            profile.user.last_name = instance.cognoms
+        else:
+            profile.user.first_name = instance.cognoms[0:26] + '...'
         profile.user.save()
 
 
