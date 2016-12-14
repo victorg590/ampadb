@@ -160,6 +160,7 @@ def admin_changepassword(request, username):
         if form.is_valid():
             cdata = form.cleaned_data
             user.set_password(cdata['password'])
+            user.save()
             return redirect('usermanager:list')
     else:
         form = AdminChangePasswordForm()
