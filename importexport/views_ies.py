@@ -53,6 +53,7 @@ def classnames(request, upload_id):
         else:
             imp.class_dict = json.dumps(data, sort_keys=True,
                                         separators=(',', ':'))
+            imp.delete_other = json.loads(request.POST.get('delete', 'true'))
             imp.save()
     else:
         data = json.loads(imp.class_dict)
@@ -67,8 +68,6 @@ def classnames(request, upload_id):
     context = {
         'errors': errors,
         'classes': all_classes,
-        'classes_json': mark_safe(json.dumps(
-            {c.pk: str(c) for c in all_classes}, sort_keys=True)),
         'imp_classes': imp_classes,
         'pre_data': mark_safe(ies_format.rev_json(data)),
         'pre_delete': mark_safe(json.dumps(imp.delete_other)),

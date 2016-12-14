@@ -1,20 +1,25 @@
+setParamNoRepeat = (paramName, newVal) ->
+  sel = $("#map_form input[name=\"#{paramName}\"]")
+  if sel.length
+    sel.val JSON.stringify newVal
+  else
+    $('#map_form').append ->
+      $('<input>').attr('type', 'hidden').attr('name', paramName)
+        .val JSON.stringify newVal
+
 $(document).ready ->
   $('#submit_map').click ->
     classDict = {}
-    classDict[c] = [] for c of classes
     $('.classe-def').each ->
       imf = $(this).children('label').text()
       to = $(this).children('select').val()
-      classDict[to].push imf
-    if $('#delete_missing').is ':checked'
-      classDict[k] = null for k, v of classDict when v.length == 0
+      if not (classDict[to]?.push imf)?
+        classDict[to] = [imf]
+      return
+
     sel = $('#map_form input[name="res"]')
-    if sel.length
-      sel.val JSON.stringify classDict
-    else
-      $('#map_form').append ->
-        $('<input>').attr('type', 'hidden').attr('name', 'res').
-          val JSON.stringify classDict
+    setParamNoRepeat 'res', classDict
+    setParamNoRepeat 'delete', $('#delete_missing').prop 'checked'
     $('#map_form').submit()
     return
 
@@ -25,13 +30,4 @@ $(document).ready ->
       return
 
   $('#delete_missing').prop 'checked', preDelete
-
-  $('.classe-def > select').each ->
-    $(this)
-      .find 'option'
-      .remove()
-      .end()
-      .append -> $ '<option>', {value: k, text: v} for k, v of classes
-    return
-
   return
