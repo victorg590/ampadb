@@ -134,13 +134,10 @@ class Changes:
     def apply(self):
         with transaction.atomic():
             for a in self.add:
-                alumne, nou = Alumne.objects.get_or_create(
+                alumne = Alumne.objects.update_or_create(
                     nom=a.nom, cognoms=a.cognoms,
                     defaults={'classe': a.classe}
-                )
-                if not nou:
-                    alumne.classe = a.classe
-                    alumne.save()
+                )[0]
                 profile = Profile.objects.get_or_create(alumne=alumne)[0]
                 if not profile.unregisteredUser and not profile.user:
                     uu = UnregisteredUser.objects.get_or_create(
@@ -172,11 +169,6 @@ class Changes:
         ins = cls()
         pdata = parse(validate(imp))
 
-        for c in cmap:
-            if cmap[c] is None:
-                classe = Classe.objects.get(id_interna=c)
-                ins.delete_classe.append(cls.DeleteClasse(classe))
-
         for palumne in pdata:
             classe = Classe.objects.get(id_interna=cls._get_classe(cmap,
                                         palumne.classe))
@@ -202,4 +194,9 @@ class Changes:
                 alumne in (o.alumne for o in ins.noop)
             ):
                 ins.delete.append(cls.DeleteAlumne(alumne))
+
+        for c in Classe.objects.all():
+            if c.id_interna not in cmap or not cmap[c.id_interna]:
+                ins.delete_classe.append(cls.DeleteClasse(c))
+
         return ins
