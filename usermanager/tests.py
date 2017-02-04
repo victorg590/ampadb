@@ -12,29 +12,25 @@ class ProfileDeleteTestCase(TestCase):
         classe = Classe.objects.create(id_interna='TEST', nom='T', curs=curs)
 
         alumne1 = Alumne.objects.create(
-            pk=1, nom='A', cognoms='B', classe=classe,
-            data_de_naixement=date(2000, 1, 1))
+            pk=1, nom='A', cognoms='B', classe=classe)
         user1 = User.objects.create(username='a.b')
         Profile.objects.update_or_create(alumne=alumne1,
                                          defaults={'user': user1})
 
         alumne2 = Alumne.objects.create(
-            pk=2, nom='C', cognoms='D', classe=classe,
-            data_de_naixement=date(2000, 1, 1))
+            pk=2, nom='C', cognoms='D', classe=classe)
         user2 = UnregisteredUser.objects.create(username='c.d', codi='000000')
         Profile.objects.update_or_create(alumne=alumne2,
                                          defaults={'unregisteredUser': user2})
 
         alumne3 = Alumne.objects.create(
-            pk=3, nom='E', cognoms='F', classe=classe,
-            data_de_naixement=date(2000, 1, 1))
+            pk=3, nom='E', cognoms='F', classe=classe)
         Profile.objects.update_or_create(alumne=alumne3)
 
     def test_with_user(self):
         alumne = Alumne.objects.get(pk=1)
         self.assertEqual('A', alumne.nom)
         self.assertEqual('B', alumne.cognoms)
-        self.assertEqual(date(2000, 1, 1), alumne.data_de_naixement)
         profile = Profile.objects.get(alumne=alumne)
         profile_pk = profile.pk
         user = User.objects.get(username='a.b')
@@ -50,7 +46,6 @@ class ProfileDeleteTestCase(TestCase):
         alumne = Alumne.objects.get(pk=2)
         self.assertEqual('C', alumne.nom)
         self.assertEqual('D', alumne.cognoms)
-        self.assertEqual(date(2000, 1, 1), alumne.data_de_naixement)
         profile = Profile.objects.get(alumne=alumne)
         profile_pk = profile.pk
         user = UnregisteredUser.objects.get(username='c.d')
@@ -67,7 +62,6 @@ class ProfileDeleteTestCase(TestCase):
         alumne = Alumne.objects.get(pk=3)
         self.assertEqual('E', alumne.nom)
         self.assertEqual('F', alumne.cognoms)
-        self.assertEqual(date(2000, 1, 1), alumne.data_de_naixement)
         profile = Profile.objects.get(alumne=alumne)
         profile_pk = profile.pk
         self.assertEqual(None, profile.user)
@@ -83,9 +77,8 @@ class ProfileTestCase(TestCase):
         curs = Curs.objects.create(id_interna='TEST', nom='TEST')
         classe = Classe.objects.create(id_interna='TEST', nom='T', curs=curs)
 
-        self.alumne = Alumne.objects.create(
-            pk=1, nom='A', cognoms='B', classe=classe,
-            data_de_naixement=date(2000, 1, 1))
+        self.alumne = Alumne.objects.create(pk=1, nom='A', cognoms='B',
+                                            classe=classe)
 
     def test_not_both_users(self):
         profile = Profile(alumne=self.alumne)

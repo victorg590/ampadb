@@ -38,10 +38,10 @@ DATETIME_FMT = '%Y-%m-%d %H:%M:%S.%f%z'
 
 
 class PickledAlumne:
-    data = ('nom', 'cognoms', 'data_de_naixement', 'nom_pare', 'cognoms_pare',
-            'nom_mare', 'cognoms_mare', 'correu_alumne',
-            'compartir_correu_alumne', 'correu_pare', 'compartir_correu_pare',
-            'correu_mare', 'compartir_correu_mare', 'telefon_alumne',
+    data = ('nom', 'cognoms', 'nom_pare', 'cognoms_pare', 'nom_mare',
+            'cognoms_mare', 'correu_alumne', 'compartir_correu_alumne',
+            'correu_pare', 'compartir_correu_pare', 'correu_mare',
+            'compartir_correu_mare', 'telefon_alumne',
             'compartir_telefon_alumne', 'telefon_pare',
             'compartir_telefon_pare', 'telefon_mare', 'compartir_telefon_mare')
 
@@ -62,20 +62,14 @@ class PickledAlumne:
                                                defaults=ddict)[0].pk
 
     def to_json(self):
-        dest = {k: getattr(self, k) for k in self.data
-                if k != 'data_de_naixement'}
+        dest = {k: getattr(self, k) for k in self.data}
         dest['pk'] = self.pk
-        dest['data_de_naixement'] = self.data_de_naixement.strftime(DATE_FMT)
         return dest
 
     @classmethod
     def from_json(cls, orig):
-        corig = {k: v for k, v in orig.items() if k != 'data_de_naixement'}
-        try:
-            return cls(data_de_naixement=datetime.datetime.strptime(
-                orig['data_de_naixement'], DATE_FMT), **corig)
-        except TypeError:
-            return cls(data_de_naixement=None, **corig)
+        corig = {k: v for k, v in orig.items()}
+        return cls(**corig)
 
 
 class PickledClasse:
