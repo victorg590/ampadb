@@ -25,39 +25,45 @@ class Alumne(models.Model):
     # Actualment no utilitzat, deixat per si cal utilitar-lo més endavant
     # (p. ex. en les extraescolars)
     data_de_naixement = models.DateField(blank=True, null=True, editable=False)
-    nom_pare = models.CharField('nom del pare', max_length=255, blank=True)
-    cognoms_pare = models.CharField('cognoms del pare', max_length=255,
-                                    blank=True)
-    nom_mare = models.CharField('nom de la mare', max_length=255, blank=True)
-    cognoms_mare = models.CharField('cognoms de la mare', max_length=255,
-                                    blank=True)
+    nom_tutor_1 = models.CharField('nom del tutor 1', max_length=255,
+                                   blank=True)
+    cognoms_tutor_1 = models.CharField('cognoms del tutor 1', max_length=255,
+                                       blank=True)
+    nom_tutor_2 = models.CharField('nom del tutor 2', max_length=255,
+                                   blank=True)
+    cognoms_tutor_2 = models.CharField('cognoms del tutor 2', max_length=255,
+                                       blank=True)
     correu_alumne = models.EmailField("correu de l'alumne", blank=True,
                                       validators=[validate_email])
     compartir_correu_alumne = models.BooleanField(
         "compartir correu de l'alumne", default=False)
-    correu_pare = models.EmailField("correu del pare", blank=True,
-                                    validators=[validate_email])
-    compartir_correu_pare = models.BooleanField("compartir correu del pare",
-                                                default=False)
-    correu_mare = models.EmailField("correu de la mare", blank=True,
-                                    validators=[validate_email])
-    compartir_correu_mare = models.BooleanField("compartir correu de la mare",
-                                                default=False)
+    correu_tutor_1 = models.EmailField("correu del tutor 1", blank=True,
+                                       validators=[validate_email])
+    compartir_correu_tutor_1 = models.BooleanField(
+        "compartir correu del tutor 1", default=False
+    )
+    correu_tutor_2 = models.EmailField("correu del tutor 2", blank=True,
+                                       validators=[validate_email])
+    compartir_correu_tutor_2 = models.BooleanField(
+        "compartir correu del tutor 2", default=False
+    )
     telefon_alumne = models.CharField(
         "telèfon de l'alumne", max_length=15,
         blank=True, validators=[RegexValidator(regex=telfRegex)])
     compartir_telefon_alumne = models.BooleanField(
         "compartir telèfon de l'alumne", default=False)
-    telefon_pare = models.CharField(
-        "telèfon del pare", max_length=15,
+    telefon_tutor_1 = models.CharField(
+        "telèfon del tutor 1", max_length=15,
         blank=True, validators=[RegexValidator(regex=telfRegex)])
-    compartir_telefon_pare = models.BooleanField("compartir telèfon del pare",
-                                                 default=False)
-    telefon_mare = models.CharField(
-        "telèfon de la mare", max_length=15,
+    compartir_telefon_tutor_1 = models.BooleanField(
+        "compartir telèfon del tutor 1", default=False
+    )
+    telefon_tutor_2 = models.CharField(
+        "telèfon del tutor 2", max_length=15,
         blank=True, validators=[RegexValidator(regex=telfRegex)])
-    compartir_telefon_mare = models.BooleanField(
-        "compartir telèfon de la mare", default=False)
+    compartir_telefon_tutor_2 = models.BooleanField(
+        "compartir telèfon del tutor 2", default=False
+    )
 
     def get_absolute_url(self):
         url = reverse('contactboard:edit-alumne', args=[self.pk])
