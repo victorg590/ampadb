@@ -49,13 +49,13 @@ def validate_dni(dni):
 
 
 class InscripcioForm(Forms.Form):
-    dni_pare = forms.CharField(
-        label="DNI del pare", max_length=9,
-        help_text='DNI o NIE del pare (no es guardarà).',
+    dni_tutor_1 = forms.CharField(
+        label="DNI del tutor 1", max_length=9,
+        help_text='DNI o NIE del tutor 1 (no es guardarà).',
         validators=[validate_dni])
-    dni_mare = forms.CharField(
-        label="DNI de la mare", max_length=9,
-        help_text='DNI o NIE de la mare (no es guardarà).',
+    dni_tutor_2 = forms.CharField(
+        label="DNI del tutor 2", max_length=9,
+        help_text='DNI o NIE del tutor 2 (no es guardarà).',
         validators=[validate_dni])
     catsalut = forms.CharField(label="Núm. targeta sanitària (Catsalut)")
     iban = forms.CharField(

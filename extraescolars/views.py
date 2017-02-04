@@ -21,14 +21,14 @@ def check_data(request):
         falten.append("Nom de l'alumne")
     if not alumne.cognoms:
         falten.append("Cognoms de l'alumne")
-    if not alumne.nom_pare:
-        falten.append("Nom del pare")
-    if not alumne.cognoms_pare:
-        falten.append("Cognoms del pare")
-    if not alumne.nom_mare:
-        falten.append("Nom de la mare")
-    if not alumne.cognoms_mare:
-        falten.append("Cognoms de la mare")
+    if not alumne.nom_tutor_1:
+        falten.append("Nom del tutor 1")
+    if not alumne.cognoms_tutor_1:
+        falten.append("Cognoms del tutor 1")
+    if not alumne.nom_tutor_2:
+        falten.append("Nom del tutor 2")
+    if not alumne.cognoms_tutor_2:
+        falten.append("Cognoms del tutor 2")
     if falten:
         return render(request, 'extraescolars/no_data.html',
                       {'falten': falten})
@@ -134,7 +134,7 @@ def _genpdf(context):
     return response
 
 
-@sensitive_post_parameters('dni_pare', 'dni_mare', 'iban', 'nif_titular')
+@sensitive_post_parameters('dni_tutor_1', 'dni_tutor_2', 'iban', 'nif_titular')
 @sensitive_variables('form', 'context')
 @login_required
 def genfull(request):
