@@ -101,7 +101,7 @@ class AlumneForms:
 
         def clean(self):
             cleaned_data = super().clean()
-            if not any(map(cleaned_data.get, ['correu_alumne', 'correu_mare',
+            if not any(map(cleaned_data.get, ['correu_alumne', 'correu_tutor_2',
                                               'correu_tutor_1'])):
                 raise ValidationError("Es requereix un correu com a mínim.")
 
@@ -112,12 +112,10 @@ class AlumneForms:
 
 class MailtoForm(Forms.Form):
     TO_ALUMNES = 'alumnes'
-    TO_TUTORS_1 = 'tutor_1'
-    TO_TUTORS_2 = 'tutor_2'
+    TO_TUTORS = 'tutors'
     TO = [
         (TO_ALUMNES, 'Alumnes'),
-        (TO_TUTORS_1, 'Tutors (1)'),
-        (TO_TUTORS_2, 'Tutors (2)')
+        (TO_TUTORS, 'Tutors')
     ]
     AS_TO = 'no'
     AS_BCC = ''

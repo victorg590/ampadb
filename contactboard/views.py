@@ -240,15 +240,14 @@ def _build_mailto(fdata, classe=None):
     for c in fdata['classes']:
         classe = Classe.objects.get(id_interna=c)
         for a in Alumne.objects.filter(classe=classe):
-            if (MailtoForm.TO_ALUMNES in fdata['enviar_a'] and
+            if (MailtoForm.TO_TUTORS in fdata['enviar_a'] and
                     a.correu_alumne):
                 mailto_str += a.correu_alumne + ','
-            if (MailtoForm.TO_PARES in fdata['enviar_a'] and
-                    a.correu_pare):
-                mailto_str += a.correu_pare + ','
-            if (MailtoForm.TO_MARES in fdata['enviar_a'] and
-                    a.correu_mare):
-                mailto_str += a.correu_mare + ','
+            if MailtoForm.TO_TUTORS in fdata['enviar_a']:
+                if a.correu_tutor_1:
+                    mailto_str += a.correu_tutor_1 + ','
+                if a.correu_tutor_2:
+                    mailto_str += a.correu_tutor_2 + ','
     while mailto_str[-1] == ',':
         mailto_str = mailto_str[:-1]
     return mailto_str
