@@ -10,21 +10,21 @@ class AlumneAdmin(admin.ModelAdmin):
             {'fields': [('nom', 'cognoms'), 'classe',
                         ('correu_alumne', 'compartir_correu_alumne'),
                         ('telefon_alumne', 'compartir_telefon_alumne')]}),
-        ('Informació de contacte del pare',
-            {'fields': [('nom_pare', 'cognoms_pare'),
-                        ('correu_pare', 'compartir_correu_pare'),
-                        ('telefon_pare', 'compartir_telefon_pare')]}),
-        ('Informació de contacte de la mare',
-            {'fields': [('nom_mare', 'cognoms_mare'),
-                        ('correu_mare', 'compartir_correu_mare'),
-                        ('telefon_mare', 'compartir_telefon_mare')]}),
+        ('Informació de contacte del tutor 1',
+            {'fields': [('nom_tutor_1', 'cognoms_tutor_1'),
+                        ('correu_tutor_1', 'compartir_correu_tutor_1'),
+                        ('telefon_tutor_1', 'compartir_telefon_tutor_1')]}),
+        ('Informació de contacte del tutor 2',
+            {'fields': [('nom_tutor_2', 'cognoms_tutor_2'),
+                        ('correu_tutor_2', 'compartir_correu_tutor_2'),
+                        ('telefon_tutor_2', 'compartir_telefon_tutor_2')]}),
     ]
     inlines = [ProfileInline]
     list_display = ['nom', 'cognoms', 'classe', 'correu_alumne',
-                    'telefon_alumne', 'correu_pare', 'telefon_pare',
-                    'correu_mare', 'telefon_mare']
-    list_editable = ['correu_alumne', 'telefon_alumne', 'correu_pare',
-                     'telefon_pare', 'correu_mare', 'telefon_mare']
+                    'telefon_alumne', 'correu_tutor_1', 'telefon_tutor_1',
+                    'correu_tutor_2', 'telefon_tutor_2']
+    list_editable = ['correu_alumne', 'telefon_alumne', 'correu_tutor_1',
+                     'telefon_tutor_1', 'correu_tutor_2', 'telefon_tutor_2']
     search_fields = ['nom', 'cognoms']
     list_filter = ['classe']
     ordering = ['cognoms', 'nom']

@@ -64,12 +64,14 @@ class CursForms:
 class _AlumneMeta:
     model = Alumne
     fields = [
-        'nom', 'cognoms', 'classe', 'nom_pare',
-        'cognoms_pare', 'nom_mare', 'cognoms_mare', 'correu_alumne',
-        'compartir_correu_alumne', 'correu_pare', 'compartir_correu_pare',
-        'correu_mare', 'compartir_correu_mare', 'telefon_alumne',
-        'compartir_telefon_alumne', 'telefon_pare', 'compartir_telefon_pare',
-        'telefon_mare', 'compartir_telefon_mare'
+        'nom', 'cognoms', 'classe', 'nom_tutor_1',
+        'cognoms_tutor_1', 'nom_tutor_2', 'cognoms_tutor_2', 'correu_alumne',
+        'compartir_correu_alumne', 'correu_tutor_1',
+        'compartir_correu_tutor_1', 'correu_tutor_2',
+        'compartir_correu_tutor_2', 'telefon_alumne',
+        'compartir_telefon_alumne', 'telefon_tutor_1',
+        'compartir_telefon_tutor_1', 'telefon_tutor_2',
+        'compartir_telefon_tutor_2'
         # data_de_naixement oculta: no s'utilitza
     ]
 
@@ -100,7 +102,7 @@ class AlumneForms:
         def clean(self):
             cleaned_data = super().clean()
             if not any(map(cleaned_data.get, ['correu_alumne', 'correu_mare',
-                                              'correu_pare'])):
+                                              'correu_tutor_1'])):
                 raise ValidationError("Es requereix un correu com a mínim.")
 
     class AdminEditForm(Forms.ModelForm):
@@ -110,12 +112,12 @@ class AlumneForms:
 
 class MailtoForm(Forms.Form):
     TO_ALUMNES = 'alumnes'
-    TO_PARES = 'pares'
-    TO_MARES = 'mares'
+    TO_TUTORS_1 = 'tutor_1'
+    TO_TUTORS_2 = 'tutor_2'
     TO = [
         (TO_ALUMNES, 'Alumnes'),
-        (TO_PARES, 'Pares'),
-        (TO_MARES, 'Mares')
+        (TO_TUTORS_1, 'Tutors (1)'),
+        (TO_TUTORS_2, 'Tutors (2)')
     ]
     AS_TO = 'no'
     AS_BCC = ''
