@@ -14,7 +14,7 @@ class Migration(migrations.Migration):
     initial = True
 
     dependencies = [
-        ('contactboard', '0001_initial'),
+        ('contactboard', '0001_squashed_0007_v1_0_0'),
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
     ]
 
