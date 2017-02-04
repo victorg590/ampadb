@@ -1,4 +1,3 @@
-from unittest import skip
 from django.test import TestCase
 from contactboard.models import *
 from usermanager.models import *
@@ -161,7 +160,6 @@ class CsvImportTestCase(TestCase):
         self.assertRaises(UnregisteredUser.DoesNotExist,
                           UnregisteredUser.objects.get, username='a')
 
-    @skip("Test anul·lat fins a adaptar-lo al nou codi")
     def test_del_all(self):
         string = StringIO()
         ampacsv.get_template(string)
@@ -198,7 +196,7 @@ class PickleImportTestCase(TestCase):
 
     def setUp(self):
         dict_test = {
-            '_metadata': {'VERSION': 2},
+            '_metadata': {'VERSION': 3},
             'cursos': [
                 {
                     'id_interna': 'T',
@@ -227,7 +225,6 @@ class PickleImportTestCase(TestCase):
                 dict_test['cursos'][0]['classes'][0]['alumnes'][0]})
         self.dict_test = dict_test
 
-    @skip("Test anul·lat fins a adaptar-lo al nou codi")
     def test_del_all(self):
         info = PickledInfo.from_json(self.dict_test)
         info.unpickle('DEL_ALL')
