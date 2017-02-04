@@ -7,7 +7,7 @@ from django.db import transaction
 from decimal import Decimal
 import datetime
 
-CURRENT_VERSION = 2
+CURRENT_VERSION = 3
 
 
 def _def_list(*vals):
@@ -36,14 +36,15 @@ def _def_list(*vals):
 DATE_FMT = '%Y-%m-%d'
 DATETIME_FMT = '%Y-%m-%d %H:%M:%S.%f%z'
 
-
 class PickledAlumne:
-    data = ('nom', 'cognoms', 'data_de_naixement', 'nom_pare', 'cognoms_pare',
-            'nom_mare', 'cognoms_mare', 'correu_alumne',
-            'compartir_correu_alumne', 'correu_pare', 'compartir_correu_pare',
-            'correu_mare', 'compartir_correu_mare', 'telefon_alumne',
-            'compartir_telefon_alumne', 'telefon_pare',
-            'compartir_telefon_pare', 'telefon_mare', 'compartir_telefon_mare')
+    data = ('nom', 'cognoms', 'data_de_naixement', 'nom_tutor_1',
+            'cognoms_tutor_1', 'nom_tutor_2', 'cognoms_tutor_2',
+            'correu_alumne', 'compartir_correu_alumne', 'correu_tutor_1',
+            'compartir_correu_tutor_1', 'correu_tutor_2',
+            'compartir_correu_tutor_2', 'telefon_alumne',
+            'compartir_telefon_alumne', 'telefon_tutor_1',
+            'compartir_telefon_tutor_1', 'telefon_tutor_2',
+            'compartir_telefon_tutor_2')
 
     def __init__(self, *, pk, **kwargs):
         self.pk = pk  # PK és un cas especial
