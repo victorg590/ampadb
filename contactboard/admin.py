@@ -29,6 +29,7 @@ class AlumneAdmin(admin.ModelAdmin):
     list_filter = ['classe']
     ordering = ['cognoms', 'nom']
 
+
 class ClasseInline(admin.TabularInline):
     model = Classe
     prepopulated_fields = {'id_interna': ['nom']}

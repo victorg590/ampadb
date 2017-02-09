@@ -101,7 +101,8 @@ class AlumneForms:
 
         def clean(self):
             cleaned_data = super().clean()
-            if not any(map(cleaned_data.get, ['correu_alumne', 'correu_tutor_2',
+            if not any(map(cleaned_data.get, ['correu_alumne',
+                                              'correu_tutor_2',
                                               'correu_tutor_1'])):
                 raise ValidationError("Es requereix un correu com a mínim.")
 
