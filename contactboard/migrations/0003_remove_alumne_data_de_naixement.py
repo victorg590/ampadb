@@ -8,7 +8,7 @@ from django.db import migrations
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('contactboard', '0002_noop'),
+        ('contactboard', '0002_mare_pare_a_tutors'),
     ]
 
     operations = [

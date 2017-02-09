@@ -176,7 +176,7 @@ class PickleImportTestCase(TestCase):
 
     def setUp(self):
         dict_test = {
-            '_metadata': {'VERSION': 2},
+            '_metadata': {'VERSION': 3},
             'cursos': [
                 {
                     'id_interna': 'T',

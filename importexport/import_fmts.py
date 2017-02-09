@@ -133,26 +133,26 @@ def _importar_fila(fila):
         alumne.cognoms = cognoms
 
     try:
-        if fila['Nom pare']:
-            alumne.nom_pare = fila['Nom pare']
+        if fila['Nom tutor 1']:
+            alumne.nom_tutor_1 = fila['Nom tutor 1']
     except KeyError:
         pass
 
     try:
-        if fila['Cognoms pare']:
-            alumne.cognoms_pare = fila['Cognoms pare']
+        if fila['Cognoms tutor 1']:
+            alumne.cognoms_tutor_1 = fila['Cognoms tutor 1']
     except KeyError:
         pass
 
     try:
-        if fila['Nom mare']:
-            alumne.nom_mare = fila['Nom mare']
+        if fila['Nom tutor 2']:
+            alumne.nom_tutor_2 = fila['Nom tutor 2']
     except KeyError:
         pass
 
     try:
-        if fila['Cognoms mare']:
-            alumne.cognoms_mare = fila['Cognoms mare']
+        if fila['Cognoms tutor 2']:
+            alumne.cognoms_tutor_2 = fila['Cognoms tutor 2']
     except KeyError:
         pass
 
@@ -180,49 +180,49 @@ def _importar_fila(fila):
                                     'Ha de ser 0 o 1')
 
     try:
-        if fila['Correu pare']:
-            alumne.correu_pare = fila['Correu pare']
+        if fila['Correu tutor 1']:
+            alumne.correu_tutor_1 = fila['Correu tutor 1']
             alumne.clean_fields()
     except KeyError:
         pass
     except ValidationError as e:
         try:
-            exc = e['correu_pare']
+            exc = e['correu_tutor_1']
         except KeyError:
             exc = None
         if exc:
-            raise InvalidFormat.invalid('Correu pare', fila, exc[0])
+            raise InvalidFormat.invalid('Correu tutor 1', fila, exc[0])
 
     try:
-        tmp = fila['Compartir correu pare']
-        alumne.compartir_correu_pare = bool(tmp and int(tmp))
+        tmp = fila['Compartir correu tutor 1']
+        alumne.compartir_correu_tutor_1 = bool(tmp and int(tmp))
     except KeyError:
-        alumne.compartir_correu_pare = False
+        alumne.compartir_correu_tutor_1 = False
     except ValueError:
-        raise InvalidFormat.invalid('Compartir correu pare', fila,
+        raise InvalidFormat.invalid('Compartir correu tutor 1', fila,
                                     'Ha de ser 0 o 1')
 
     try:
-        if fila['Correu mare']:
-            alumne.correu_mare = fila['Correu mare']
+        if fila['Correu tutor 2']:
+            alumne.correu_tutor_2 = fila['Correu tutor 2']
             alumne.clean_fields()
     except KeyError:
         pass
     except ValidationError as e:
         try:
-            exc = e['correu_mare']
+            exc = e['correu_tutor_2']
         except KeyError:
             exc = None
         if exc:
-            raise InvalidFormat.invalid('Correu mare', fila, exc[0])
+            raise InvalidFormat.invalid('Correu tutor 2', fila, exc[0])
 
     try:
-        tmp = fila['Compartir correu mare']
-        alumne.compartir_correu_mare = bool(tmp and int(tmp))
+        tmp = fila['Compartir correu tutor 2']
+        alumne.compartir_correu_tutor_2 = bool(tmp and int(tmp))
     except KeyError:
-        alumne.compartir_correu_mare = False
+        alumne.compartir_correu_tutor_2 = False
     except ValueError:
-        raise InvalidFormat.invalid('Compartir correu mare', fila,
+        raise InvalidFormat.invalid('Compartir correu tutor 2', fila,
                                     'Ha de ser 0 o 1')
 
     try:
@@ -249,49 +249,49 @@ def _importar_fila(fila):
                                     'Ha de ser 0 o 1')
 
     try:
-        if fila['Telèfon pare']:
-            alumne.telefon_pare = fila['Telèfon pare']
+        if fila['Telèfon tutor 1']:
+            alumne.telefon_tutor_1 = fila['Telèfon tutor 1']
             alumne.clean_fields()
     except KeyError:
         pass
     except ValidationError as e:
         try:
-            exc = e['telefon_pare']
+            exc = e['telefon_tutor_1']
         except KeyError:
             exc = None
         if exc:
-            raise InvalidFormat.invalid('Telèfon pare', fila, exc[0])
+            raise InvalidFormat.invalid('Telèfon tutor 1', fila, exc[0])
 
     try:
-        tmp = fila['Compartir telèfon pare']
-        alumne.compartir_telefon_pare = bool(tmp and int(tmp))
+        tmp = fila['Compartir telèfon tutor 1']
+        alumne.compartir_telefon_tutor_1 = bool(tmp and int(tmp))
     except KeyError:
-        alumne.compartir_telefon_pare = False
+        alumne.compartir_telefon_tutor_1 = False
     except ValueError:
-        raise InvalidFormat.invalid('Compartir telèfon pare', fila,
+        raise InvalidFormat.invalid('Compartir telèfon tutor 1', fila,
                                     'Ha de ser 0 o 1')
 
     try:
-        if fila['Telèfon mare']:
-            alumne.telefon_mare = fila['Telèfon mare']
+        if fila['Telèfon tutor 2']:
+            alumne.telefon_tutor_2 = fila['Telèfon tutor 2']
             alumne.clean_fields()
     except KeyError:
         pass
     except ValidationError as e:
         try:
-            exc = e['telefon_mare']
+            exc = e['telefon_tutor_2']
         except KeyError:
             exc = None
         if exc:
-            raise InvalidFormat.invalid('Telèfon mare', fila, exc[0])
+            raise InvalidFormat.invalid('Telèfon tutor 2', fila, exc[0])
 
     try:
-        tmp = fila['Compartir telèfon mare']
-        alumne.compartir_telefon_mare = bool(tmp and int(tmp))
+        tmp = fila['Compartir telèfon tutor 2']
+        alumne.compartir_telefon_tutor_2 = bool(tmp and int(tmp))
     except KeyError:
-        alumne.compartir_telefon_mare = False
+        alumne.compartir_telefon_tutor_2 = False
     except ValueError:
-        raise InvalidFormat.invalid('Compartir telèfon mare', fila,
+        raise InvalidFormat.invalid('Compartir telèfon tutor 2', fila,
                                     'Ha de ser 0 o 1')
 
     try:
