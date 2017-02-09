@@ -37,6 +37,7 @@ def _def_list(*vals):
 DATE_FMT = '%Y-%m-%d'
 DATETIME_FMT = '%Y-%m-%d %H:%M:%S.%f%z'
 
+
 class PickledObject(abc.ABC):
     @classmethod
     @abc.abstractmethod
@@ -55,6 +56,7 @@ class PickledObject(abc.ABC):
     @abc.abstractmethod
     def from_json(cls, orig):
         pass
+
 
 class PickledAlumne(PickledObject):
     data = ('nom', 'cognoms', 'data_de_naixement', 'nom_tutor_1',
