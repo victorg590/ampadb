@@ -72,7 +72,6 @@ class _AlumneMeta:
         'compartir_telefon_alumne', 'telefon_tutor_1',
         'compartir_telefon_tutor_1', 'telefon_tutor_2',
         'compartir_telefon_tutor_2'
-        # data_de_naixement oculta: no s'utilitza
     ]
 
 
@@ -80,18 +79,6 @@ class AlumneForms:
     class NewForm(Forms.ModelForm):
         class Meta(_AlumneMeta):
             exclude = ['classe']
-            widgets = {
-                'data_de_naixement': forms.widgets.DateInput(attrs={
-                    'format': '%d/%m/%Y',
-                    'input_formats': [
-                        '%d/%m/%Y',
-                        '%d-%m-%Y',
-                        '%d-%m-%y',
-                        '%d/%m/%y',
-                        '%Y-%m-%d'  # ISO
-                    ]
-                })
-            }
 
     class EditForm(Forms.ModelForm):
         class Meta(_AlumneMeta):

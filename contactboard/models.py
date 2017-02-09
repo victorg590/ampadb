@@ -22,9 +22,6 @@ class Alumne(models.Model):
     nom = models.CharField(max_length=255, blank=False)
     cognoms = models.CharField(max_length=255, blank=False)
     classe = models.ForeignKey('Classe', on_delete=models.CASCADE)
-    # Actualment no utilitzat, deixat per si cal utilitar-lo més endavant
-    # (p. ex. en les extraescolars)
-    data_de_naixement = models.DateField(blank=True, null=True, editable=False)
     nom_tutor_1 = models.CharField('nom del tutor 1', max_length=255,
                                    blank=True)
     cognoms_tutor_1 = models.CharField('cognoms del tutor 1', max_length=255,

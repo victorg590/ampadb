@@ -133,23 +133,6 @@ def _importar_fila(fila):
         alumne.cognoms = cognoms
 
     try:
-        ddn_temp = fila['Data de naixement']
-        if ddn_temp:
-            data_de_naixement = datetime.strptime(ddn_temp, '%Y-%m-%d')
-        else:
-            data_de_naixement = None
-    except KeyError:
-        if usuari_existia:
-            data_de_naixement = None
-        else:
-            raise InvalidFormat.falta_columna('Data de naixement')
-    except ValueError:
-        raise InvalidFormat.invalid('Data de naixement', fila,
-                                    "S'espera el format 'YYYY-MM-DD'.")
-    if data_de_naixement:
-        alumne.data_de_naixement = data_de_naixement
-
-    try:
         if fila['Nom tutor 1']:
             alumne.nom_tutor_1 = fila['Nom tutor 1']
     except KeyError:

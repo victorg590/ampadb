@@ -59,14 +59,12 @@ class PickledObject(abc.ABC):
 
 
 class PickledAlumne(PickledObject):
-    data = ('nom', 'cognoms', 'data_de_naixement', 'nom_tutor_1',
-            'cognoms_tutor_1', 'nom_tutor_2', 'cognoms_tutor_2',
-            'correu_alumne', 'compartir_correu_alumne', 'correu_tutor_1',
-            'compartir_correu_tutor_1', 'correu_tutor_2',
-            'compartir_correu_tutor_2', 'telefon_alumne',
-            'compartir_telefon_alumne', 'telefon_tutor_1',
-            'compartir_telefon_tutor_1', 'telefon_tutor_2',
-            'compartir_telefon_tutor_2')
+    data = ('nom', 'cognoms', 'nom_tutor_1', 'cognoms_tutor_1', 'nom_tutor_2',
+    'cognoms_tutor_2', 'correu_alumne', 'compartir_correu_alumne',
+    'correu_tutor_1', 'compartir_correu_tutor_1', 'correu_tutor_2',
+    'compartir_correu_tutor_2', 'telefon_alumne', 'compartir_telefon_alumne',
+    'telefon_tutor_1', 'compartir_telefon_tutor_1', 'telefon_tutor_2',
+    'compartir_telefon_tutor_2')
 
     def __init__(self, *, pk, **kwargs):
         self.pk = pk  # PK és un cas especial
@@ -85,20 +83,14 @@ class PickledAlumne(PickledObject):
                                                defaults=ddict)[0].pk
 
     def to_json(self):
-        dest = {k: getattr(self, k) for k in self.data
-                if k != 'data_de_naixement'}
+        dest = {k: getattr(self, k) for k in self.data}
         dest['pk'] = self.pk
-        dest['data_de_naixement'] = self.data_de_naixement.strftime(DATE_FMT)
         return dest
 
     @classmethod
     def from_json(cls, orig):
-        corig = {k: v for k, v in orig.items() if k != 'data_de_naixement'}
-        try:
-            return cls(data_de_naixement=datetime.datetime.strptime(
-                orig['data_de_naixement'], DATE_FMT), **corig)
-        except TypeError:
-            return cls(data_de_naixement=None, **corig)
+        corig = {k: v for k, v in orig.items()}
+        return cls(**corig)
 
 
 class PickledClasse(PickledObject):

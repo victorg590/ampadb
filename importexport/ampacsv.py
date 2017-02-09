@@ -4,7 +4,6 @@ FIELDNAMES = [
     'pk',
     'Nom',
     'Cognoms',
-    'Data de naixement',
     'Nom tutor 1',
     'Cognoms tutor 1',
     'Nom tutor 2',

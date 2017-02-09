@@ -22,7 +22,6 @@ def export_csv(outfile, alumnes):
         writer.writerow({
             'First Name': a.nom,
             'Last Name': a.cognoms,
-            'Birthday': a.data_de_naixement,
             'E-mail Address': a.correu_alumne,
             'E-mail 2 Address': a.correu_tutor_1,
             'E-mail 3 Address': a.correu_tutor_2,
@@ -52,7 +51,6 @@ def export_ampacsv(outfile, alumnes):
             'pk': a.pk,
             'Nom': a.nom,
             'Cognoms': a.cognoms,
-            'Data de naixement': '',
             'Nom tutor 1': a.nom_tutor_1,
             'Cognoms tutor 1': a.cognoms_tutor_1,
             'Nom tutor 2': a.nom_tutor_2,
@@ -74,8 +72,6 @@ def export_ampacsv(outfile, alumnes):
             'Usuari': username,
             'Eliminar': 0
         }
-        if a.data_de_naixement:
-            d['Data de naixement'] = a.data_de_naixement.strftime('%Y-%m-%d')
         writer.writerow(d)
 
 
