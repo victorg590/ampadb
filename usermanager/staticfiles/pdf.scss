@@ -1,0 +1,54 @@
+// Fonts:
+@import url('https://fonts.googleapis.com/css?family=Noto+Sans:400,400i,700,700i|Noto+Serif:400,400i,700,700i');
+
+$margin: 25mm;
+// O
+//$margin: (top: ?, bottom: ?, left: ?, right: ?);
+
+$margins: (top: $margin, bottom: $margin, left: $margin,
+           right: $margin) !default;
+
+@page {
+  size: portrait;
+  margin: {
+    left: map-get($margins, left);
+    right: map-get($margins, right);
+    top: map-get($margins, top);
+    bottom: map-get($margins, bottom);
+  }
+}
+
+body {
+  font-family: 'Noto Sans', sans-serif;
+  margin: 8px;
+}
+
+.serif {
+  font-family: 'Noto Serif', serif;
+}
+
+b, strong {
+  font-weight: bold;
+}
+
+i, em {
+  font-style: italic;
+}
+
+hr.pgbr {
+  border-color: red;
+  @media print{
+    border-style: none;
+    page-break-after: always;
+  }
+}
+
+.no-break {
+  page-break-inside: avoid;
+}
+
+.no-print {
+  @media print {
+    display: none;
+  }
+}

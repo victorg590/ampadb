@@ -1,6 +1,6 @@
 from django import template
 from django.utils.html import mark_safe
-from ampadb_index.parse_md import parse_md
+from ..parse_md import parse_md
 
 register = template.Library()
 
