@@ -1,0 +1,24 @@
+{% extends "menu.html" %}
+{% load bootstrap3 %}
+
+{% block content %}
+<h1>Generar circular</h1>
+<p>Per a crear una circular, escriu una plantilla. Pots utilitzar
+  <a href="{% url 'markdown-help' %}">Markdown</a>. Les següents variables seran
+  substituïdes per a cada alumne:</p>
+<ul>
+  <li><code>$nom</code>: Nom de l'alumne.</li>
+  <li><code>$cognoms</code>: Cognoms de l'alumne.</li>
+  <li><code>$classe</code>: La classe actual de l'alumne.</li>
+  <li><code>$usuari</code>: El nom d'usuari.</li>
+  <li><code>$codi</code>: El codi per a activar <code>$usuari</code>.</li>
+  <li><code>$url</code>: Direcció d'aquest lloc web.</li>
+  <li>Qualsevol altre variable començant per <code>$</code> és incorrecte i
+    no es modificarà. Ex.: <code>$abcd</code> &rarr; "$abcd"</li>
+</ul>
+<form method="post">
+  {% csrf_token %}
+  {% bootstrap_form form %}
+  {% buttons submit="Generar" %}{% endbuttons %}
+</form>
+{% endblock content %}

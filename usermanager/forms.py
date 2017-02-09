@@ -137,3 +137,6 @@ class ChangeCodeForm(Forms.Form):
         help_text=(
             "Un codi numèric de 6 dígits per confirmar que l'usuari "
             "pertany a aquesta persona."))
+
+class LetterForm(Forms.Form):
+    plantilla = forms.CharField(widget=forms.Textarea)
