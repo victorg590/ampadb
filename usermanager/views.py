@@ -244,6 +244,7 @@ def print_uu(_):
     weasyprint.HTML(string=html).write_pdf(response)
     return response
 
+
 def _letter(request, template):
     context = {
         'tpl': mark_safe(parse_md(template, wrap='raw')),
@@ -251,6 +252,7 @@ def _letter(request, template):
         'surl': request.build_absolute_uri('/')
     }
     return render(request, 'usermanager/pdf_letter.html', context)
+
 
 @login_required
 @user_passes_test(is_admin)
@@ -274,6 +276,7 @@ def gen_letter(request):
         'form': form
     }
     return render(request, 'usermanager/gen_letter.html', context)
+
 
 class API:
     # Crea decoradors que tornin un error 403 Forbidden en lloc d'una
