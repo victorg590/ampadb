@@ -1,0 +1,35 @@
+@import url("https://fonts.googleapis.com/css?family=Noto+Sans:400,400i,700,700i|Noto+Serif:400,400i,700,700i");
+@page {
+  size: portrait;
+  margin-left: 25mm;
+  margin-right: 25mm;
+  margin-top: 25mm;
+  margin-bottom: 25mm; }
+body {
+  font-family: 'Noto Sans', sans-serif;
+  margin: 8px; }
+
+.serif {
+  font-family: 'Noto Serif', serif; }
+
+b, strong {
+  font-weight: bold; }
+
+i, em {
+  font-style: italic; }
+
+hr.pgbr {
+  border-color: red; }
+  @media print {
+    hr.pgbr {
+      border-style: none;
+      page-break-after: always; } }
+
+.no-break {
+  page-break-inside: avoid; }
+
+@media print {
+  .no-print {
+    display: none; } }
+
+/*# sourceMappingURL=pdf.css.map */
