@@ -1,6 +1,7 @@
 {% extends "menu.html" %}
 {% load bootstrap3 %}
 {% load autourl %}
+{% load pytr %}
 
 {% block content %}
 {% if msg == 'deleted' %}
@@ -20,9 +21,9 @@
 <p><b>Activitat: </b>{{ ins.activitat|autourl }}</p>
 {% if ins.activitat.preu %}
 {% if ins.pagat %}
-<p><b>Pagat: </b><span style="color:#008000">Sí</span></p>
+<p><b>Pagat: </b>{{ ins.pagat|pytricon }}</p>
 {% else %}
-<p><b>Pagat: </b><span style="color:#FF0000">No</span>
+<p><b>Pagat: </b>{{ ins.pagat|pytricon }}
   (<b>Preu: </b>{{ ins.activitat.preu }} €)</p>
 {% endif %}
 {% endif %}

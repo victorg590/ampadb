@@ -7,7 +7,6 @@ from .forms import InscripcioForm, ExtraescolarForms, SearchInscripcioForm
 from .forms import InscripcioAdminForm
 from ampadb.support import get_alumne, is_admin, redirect_with_get
 from .support import status_inscripcio
-import weasyprint
 from django.views.decorators.debug import (sensitive_variables,
                                            sensitive_post_parameters)
 
@@ -21,14 +20,14 @@ def check_data(request):
         falten.append("Nom de l'alumne")
     if not alumne.cognoms:
         falten.append("Cognoms de l'alumne")
-    if not alumne.nom_pare:
-        falten.append("Nom del pare")
-    if not alumne.cognoms_pare:
-        falten.append("Cognoms del pare")
-    if not alumne.nom_mare:
-        falten.append("Nom de la mare")
-    if not alumne.cognoms_mare:
-        falten.append("Cognoms de la mare")
+    if not alumne.nom_tutor_1:
+        falten.append("Nom del tutor 1")
+    if not alumne.cognoms_tutor_1:
+        falten.append("Cognoms del tutor 1")
+    if not alumne.nom_tutor_2:
+        falten.append("Nom del tutor 2")
+    if not alumne.cognoms_tutor_2:
+        falten.append("Cognoms del tutor 2")
     if falten:
         return render(request, 'extraescolars/no_data.html',
                       {'falten': falten})
@@ -124,17 +123,7 @@ def cancel(request, act_id):
     return redirect('extraescolars:show', act_id)
 
 
-@sensitive_variables()
-def _genpdf(context):
-    response = HttpResponse(content_type='application/pdf')
-    response['Content-Disposition'] = 'filename="Inscripció extraescolars.pdf"'
-    template = loader.get_template('extraescolars/pdf.html')
-    html = template.render(context)
-    weasyprint.HTML(string=html).write_pdf(response)
-    return response
-
-
-@sensitive_post_parameters('dni_pare', 'dni_mare', 'iban', 'nif_titular')
+@sensitive_post_parameters('dni_tutor_1', 'dni_tutor_2', 'iban', 'nif_titular')
 @sensitive_variables('form', 'context')
 @login_required
 def genfull(request):
@@ -150,7 +139,8 @@ def genfull(request):
                 'dades': form.cleaned_data,
                 'inscripcions': inscripcions
             }
-            return _genpdf(context)
+            return render(request, 'extraescolars/fitxa_inscripcio.html',
+                          context)
     else:
         form = InscripcioForm()
     context = {

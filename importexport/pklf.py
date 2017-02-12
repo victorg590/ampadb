@@ -6,8 +6,9 @@ from django.contrib.auth.models import User
 from django.db import transaction
 from decimal import Decimal
 import datetime
+import abc
 
-CURRENT_VERSION = 2
+CURRENT_VERSION = 3
 
 
 def _def_list(*vals):
@@ -37,13 +38,33 @@ DATE_FMT = '%Y-%m-%d'
 DATETIME_FMT = '%Y-%m-%d %H:%M:%S.%f%z'
 
 
-class PickledAlumne:
-    data = ('nom', 'cognoms', 'data_de_naixement', 'nom_pare', 'cognoms_pare',
-            'nom_mare', 'cognoms_mare', 'correu_alumne',
-            'compartir_correu_alumne', 'correu_pare', 'compartir_correu_pare',
-            'correu_mare', 'compartir_correu_mare', 'telefon_alumne',
-            'compartir_telefon_alumne', 'telefon_pare',
-            'compartir_telefon_pare', 'telefon_mare', 'compartir_telefon_mare')
+class PickledObject(abc.ABC):
+    @classmethod
+    @abc.abstractmethod
+    def transform(cls, obj):
+        pass
+
+    @abc.abstractmethod
+    def unpickle(self):
+        pass
+
+    @abc.abstractmethod
+    def to_json(self):
+        pass
+
+    @classmethod
+    @abc.abstractmethod
+    def from_json(cls, orig):
+        pass
+
+
+class PickledAlumne(PickledObject):
+    data = ('nom', 'cognoms', 'nom_tutor_1', 'cognoms_tutor_1', 'nom_tutor_2',
+    'cognoms_tutor_2', 'correu_alumne', 'compartir_correu_alumne',
+    'correu_tutor_1', 'compartir_correu_tutor_1', 'correu_tutor_2',
+    'compartir_correu_tutor_2', 'telefon_alumne', 'compartir_telefon_alumne',
+    'telefon_tutor_1', 'compartir_telefon_tutor_1', 'telefon_tutor_2',
+    'compartir_telefon_tutor_2')
 
     def __init__(self, *, pk, **kwargs):
         self.pk = pk  # PK és un cas especial
@@ -62,23 +83,17 @@ class PickledAlumne:
                                                defaults=ddict)[0].pk
 
     def to_json(self):
-        dest = {k: getattr(self, k) for k in self.data
-                if k != 'data_de_naixement'}
+        dest = {k: getattr(self, k) for k in self.data}
         dest['pk'] = self.pk
-        dest['data_de_naixement'] = self.data_de_naixement.strftime(DATE_FMT)
         return dest
 
     @classmethod
     def from_json(cls, orig):
-        corig = {k: v for k, v in orig.items() if k != 'data_de_naixement'}
-        try:
-            return cls(data_de_naixement=datetime.datetime.strptime(
-                orig['data_de_naixement'], DATE_FMT), **corig)
-        except TypeError:
-            return cls(data_de_naixement=None, **corig)
+        corig = {k: v for k, v in orig.items()}
+        return cls(**corig)
 
 
-class PickledClasse:
+class PickledClasse(PickledObject):
     data = ('nom',)
 
     def __init__(self, *, id_interna, alumnes=None, **kwargs):
@@ -122,7 +137,7 @@ class PickledClasse:
             **corig)
 
 
-class PickledCurs:
+class PickledCurs(PickledObject):
     data = ('nom', 'ordre')
 
     def __init__(self, *, id_interna, classes=None, **kwargs):
@@ -168,7 +183,7 @@ class PickledCurs:
             **corig)
 
 
-class PickledUser:
+class PickledUser(PickledObject):
     data = ('password', 'is_staff', 'is_superuser')
 
     def __init__(self, *, username, alumne=None, **kwargs):
@@ -211,7 +226,7 @@ class PickledUser:
         return cls(**orig)
 
 
-class PickledUnregisteredUser:
+class PickledUnregisteredUser(PickledObject):
     data = ('codi',)
 
     def __init__(self, *, username, alumne=None, **kwargs):
@@ -255,7 +270,7 @@ class PickledUnregisteredUser:
         return cls(**orig)
 
 
-class PickledInscripcio:
+class PickledInscripcio(PickledObject):
     data = ('confirmat', 'pagat')
 
     def __init__(self, *, alumne, **kwargs):
@@ -284,7 +299,7 @@ class PickledInscripcio:
         return cls(**orig)
 
 
-class PickledExtraescolar:
+class PickledExtraescolar(PickledObject):
     data = ('nom', 'descripcio_curta', 'inscripcio_des_de',
             'inscripcio_fins_a', 'preu')
 
@@ -354,7 +369,7 @@ class PickledExtraescolar:
             **corig)
 
 
-class PickledGrupDeMissatgeria:
+class PickledGrupDeMissatgeria(PickledObject):
     data = ('nom', 'motius')
 
     def __init__(self, *, pk, usuaris=None, **kwargs):
@@ -388,7 +403,7 @@ class PickledGrupDeMissatgeria:
         return cls(**orig)
 
 
-class PickledMissatge:
+class PickledMissatge(PickledObject):
     data = ('contingut', 'enviat', 'editat', 'estat')
 
     def __init__(self, *, per, ordre, **kwargs):
@@ -437,7 +452,7 @@ class PickledMissatge:
         return cls(**corig)
 
 
-class PickledConversacio:
+class PickledConversacio(PickledObject):
     data = ('assumpte', 'tancat')
 
     def __init__(self, *, pk, de, a, missatges=None, **kwargs):
@@ -484,7 +499,7 @@ class PickledConversacio:
                    **corig)
 
 
-class PickledInfo:
+class PickledInfo(PickledObject):
     def check_version(self, expected):
         if expected != self.VERSION:
             raise ValueError('La versió del nou document no és compatible'

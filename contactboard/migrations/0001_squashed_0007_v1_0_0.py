@@ -11,8 +11,6 @@ import re
 
 class Migration(migrations.Migration):
 
-    replaces = [('contactboard', '0001_initial'), ('contactboard', '0002_change_meta'), ('contactboard', '0003_split_compartir'), ('contactboard', '0004_nom_cognoms_pare_mare'), ('contactboard', '0005_data_de_naixement_opcional'), ('contactboard', '0006_nom_i_cognoms_unics'), ('contactboard', '0007_disabled_data_de_naixement')]
-
     initial = True
 
     dependencies = [

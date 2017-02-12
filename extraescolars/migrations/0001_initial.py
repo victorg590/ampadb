@@ -13,7 +13,7 @@ class Migration(migrations.Migration):
     initial = True
 
     dependencies = [
-        ('contactboard', '0004_nom_cognoms_pare_mare'),
+        ('contactboard', '0001_squashed_0007_v1_0_0'),
     ]
 
     operations = [

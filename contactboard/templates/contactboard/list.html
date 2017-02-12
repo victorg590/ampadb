@@ -33,11 +33,11 @@
     <tr>
       <th>Nom</th>
       <th>E-mail alumne</th>
-      <th>E-mail pare</th>
-      <th>E-mail mare</th>
+      <th>E-mail tutor 1</th>
+      <th>E-mail tutor 2</th>
       <th>Tèlf. alumne</th>
-      <th>Tèlf. pare</th>
-      <th>Tèlf. mare</th>
+      <th>Tèlf. tutor 1</th>
+      <th>Tèlf. tutor 2</th>
       {% if admin %}
       <th>Usuari</th>
       <th>Eliminar</th>
@@ -68,22 +68,22 @@
       <td></td>
       {% endif %}
 
-      {% if a.compartir_correu_pare %}
-      <td>{{ a.correu_pare|urlize }}</td>
-      {% elif a == me and a.correu_pare %}
+      {% if a.compartir_correu_tutor_1 %}
+      <td>{{ a.correu_tutor_1|urlize }}</td>
+      {% elif a == me and a.correu_tutor_1 %}
       <td class="privat">*PRIVAT*</td>
       {% elif admin %}
-      <td class="secret">{{ a.correu_pare|urlize }}</td>
+      <td class="secret">{{ a.correu_tutor_1|urlize }}</td>
       {% else %}
       <td></td>
       {% endif %}
 
-      {% if a.compartir_correu_mare %}
-      <td>{{ a.correu_mare|urlize }}</td>
-      {% elif a == me and a.correu_mare %}
+      {% if a.compartir_correu_tutor_2 %}
+      <td>{{ a.correu_tutor_2|urlize }}</td>
+      {% elif a == me and a.correu_tutor_2 %}
       <td class="privat">*PRIVAT*</td>
       {% elif admin %}
-      <td class="secret">{{ a.correu_mare|urlize }}</td>
+      <td class="secret">{{ a.correu_tutor_2|urlize }}</td>
       {% else %}
       <td></td>
       {% endif %}
@@ -98,22 +98,22 @@
       <td></td>
       {% endif %}
 
-      {% if a.compartir_telefon_pare %}
-      <td class="data">{{ a.telefon_pare }}</td>
-      {% elif a == me and a.telefon_pare %}
+      {% if a.compartir_telefon_tutor_1 %}
+      <td class="data">{{ a.telefon_tutor_1 }}</td>
+      {% elif a == me and a.telefon_tutor_1 %}
       <td class="privat">*PRIVAT*</td>
       {% elif admin %}
-      <td class="secret data">{{ a.telefon_pare }}</td>
+      <td class="secret data">{{ a.telefon_tutor_1 }}</td>
       {% else %}
       <td></td>
       {% endif %}
 
-      {% if a.compartir_telefon_mare %}
-      <td class="data">{{ a.telefon_mare }}</td>
-      {% elif a == me and a.telefon_mare %}
+      {% if a.compartir_telefon_tutor_2 %}
+      <td class="data">{{ a.telefon_tutor_2 }}</td>
+      {% elif a == me and a.telefon_tutor_2 %}
       <td class="privat">*PRIVAT*</td>
       {% elif admin %}
-      <td class="secret data">{{ a.telefon_mare }}</td>
+      <td class="secret data">{{ a.telefon_tutor_2 }}</td>
       {% else %}
       <td></td>
       {% endif %}

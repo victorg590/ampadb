@@ -22,13 +22,12 @@ def export_csv(outfile, alumnes):
         writer.writerow({
             'First Name': a.nom,
             'Last Name': a.cognoms,
-            'Birthday': a.data_de_naixement,
             'E-mail Address': a.correu_alumne,
-            'E-mail 2 Address': a.correu_pare,
-            'E-mail 3 Address': a.correu_mare,
+            'E-mail 2 Address': a.correu_tutor_1,
+            'E-mail 3 Address': a.correu_tutor_2,
             'Home Phone': a.telefon_alumne,
-            'Home Phone 2': a.telefon_pare,
-            'Home Phone 3': a.telefon_mare,
+            'Home Phone 2': a.telefon_tutor_1,
+            'Home Phone 3': a.telefon_tutor_2,
             'Categories': str(a.classe)
         })
 
@@ -52,30 +51,27 @@ def export_ampacsv(outfile, alumnes):
             'pk': a.pk,
             'Nom': a.nom,
             'Cognoms': a.cognoms,
-            'Data de naixement': '',
-            'Nom pare': a.nom_pare,
-            'Cognoms pare': a.cognoms_pare,
-            'Nom mare': a.nom_mare,
-            'Cognoms mare': a.cognoms_mare,
+            'Nom tutor 1': a.nom_tutor_1,
+            'Cognoms tutor 1': a.cognoms_tutor_1,
+            'Nom tutor 2': a.nom_tutor_2,
+            'Cognoms tutor 2': a.cognoms_tutor_2,
             'Correu alumne': a.correu_alumne,
             'Compartir correu alumne': int(a.compartir_correu_alumne),
-            'Correu pare': a.correu_pare,
-            'Compartir correu pare': int(a.compartir_correu_pare),
-            'Correu mare': a.correu_mare,
-            'Compartir correu mare': int(a.compartir_correu_mare),
+            'Correu tutor 1': a.correu_tutor_1,
+            'Compartir correu tutor 1': int(a.compartir_correu_tutor_1),
+            'Correu tutor 2': a.correu_tutor_2,
+            'Compartir correu tutor 2': int(a.compartir_correu_tutor_2),
             'Telèfon alumne': a.telefon_alumne,
             'Compartir telèfon alumne': int(a.compartir_telefon_alumne),
-            'Telèfon pare': a.telefon_pare,
-            'Compartir telèfon pare': int(a.compartir_telefon_pare),
-            'Telèfon mare': a.telefon_mare,
-            'Compartir telèfon mare': int(a.compartir_telefon_mare),
+            'Telèfon tutor 1': a.telefon_tutor_1,
+            'Compartir telèfon tutor 1': int(a.compartir_telefon_tutor_1),
+            'Telèfon tutor 2': a.telefon_tutor_2,
+            'Compartir telèfon tutor 2': int(a.compartir_telefon_tutor_2),
             'Classe': a.classe.id_interna,
             'Curs': a.classe.curs.id_interna,
             'Usuari': username,
             'Eliminar': 0
         }
-        if a.data_de_naixement:
-            d['Data de naixement'] = a.data_de_naixement.strftime('%Y-%m-%d')
         writer.writerow(d)
 
 

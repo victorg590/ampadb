@@ -14,9 +14,9 @@ from django.contrib.auth.decorators import login_required, user_passes_test
 from django.db.models.query_utils import Q
 import csv
 import json
-import weasyprint
 from django.views.decorators.debug import (sensitive_variables,
                                            sensitive_post_parameters)
+from ampadb_index.parse_md import parse_md
 
 
 @sensitive_post_parameters('password', 'password_confirm')
@@ -229,7 +229,7 @@ def export_uu(request):
 
 @login_required
 @user_passes_test(is_admin)
-def print_uu(_):
+def print_uu(request):
     classes = {}
     for uu in UnregisteredUser.objects.all():
         classe = Profile.objects.get(unregisteredUser=uu).alumne.classe
@@ -237,12 +237,41 @@ def print_uu(_):
             classes[classe].append(uu)
         except KeyError:
             classes[classe] = [uu]
-    response = HttpResponse(content_type='application/pdf')
-    response['Content-Disposition'] = 'filename="codis_ampa.pdf"'
-    template = loader.get_template('usermanager/pdf_codis.html')
-    html = template.render({'classes': [(k, classes[k]) for k in classes]})
-    weasyprint.HTML(string=html).write_pdf(response)
-    return response
+    return render(request, 'usermanager/pdf_codis.html',
+                  {'classes': classes.items()})
+
+
+def _letter(request, template):
+    context = {
+        'tpl': mark_safe(parse_md(template, wrap='raw')),
+        'uu': UnregisteredUser.objects.all(),
+        'surl': request.build_absolute_uri('/')
+    }
+    return render(request, 'usermanager/letter.html', context)
+
+
+@login_required
+@user_passes_test(is_admin)
+def gen_letter(request):
+    INITIAL = '''\
+        Alumne/a: $nom $cognoms
+
+        Usuari: `$usuari`
+
+        Codi: `$codi`
+
+        Lloc web: `$url`'''
+    INITIAL = '\n'.join([s.strip() for s in INITIAL.split('\n')])
+    if request.method == 'POST':
+        form = LetterForm(request.POST, initial={'plantilla': INITIAL})
+        if form.is_valid():
+            return _letter(request, form.cleaned_data['plantilla'])
+    else:
+        form = LetterForm(initial={'plantilla': INITIAL})
+    context = {
+        'form': form
+    }
+    return render(request, 'usermanager/gen_letter.html', context)
 
 
 class API:

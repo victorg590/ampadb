@@ -1,0 +1,13 @@
+{% extends "pdf.html" %}
+{% load mail_tpl %}
+
+{% block content %}
+{% for u in uu %}
+<div class="no-break serif">
+  {% mail_template tpl u surl %}
+</div>
+{% if not forloop.last %}
+<hr class="pgbr" />
+{% endif %}
+{% endfor %}
+{% endblock content %}
