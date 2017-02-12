@@ -1,0 +1,80 @@
+{% extends "menu.html" %}
+
+{% block content %}
+<div class="page-header">
+<h1>Sintaxi de cerca</h1>
+</div>
+
+<pre class="noSpaces">
+  Terme
+</pre>
+<p>Una cerca mostrarà tots els resultats que continguin "Terme" en un o més
+  camps.</p>
+
+<hr />
+
+<pre>
+  Terme1 Terme2
+</pre>
+<p>Amb dos o més termes, tots han d'estar en com a mínim un camp.</p>
+
+<hr />
+
+<pre>
+  "Terme 1" "Terme 2"
+</pre>
+<p>Escribint alguns termes entre cometes dobles fa que s'interpretin com un
+  sol terme (p. ex. noms compostos o cognoms). Llavors, un camp ha de
+  coincidir exactament (però pot tenir més text abans o desprès). Exemple:</p>
+<pre>
+  "B C"
+</pre>
+
+<p>Sí: A B C D</p>
+<p>No: D C B A (Ordre diferent)</p>
+
+<hr />
+
+<pre>
+  'Terme 1' 'Terme 2'
+</pre>
+<p>Un terme entre cometes simples ha de coincidir amb el contingut sencer
+  d'un camp. Exemple:</p>
+<pre>
+  'A'
+</pre>
+<p>Sí: A</p>
+<p>No: A B C</p>
+
+<hr />
+
+<pre>
+  Terme1 Terme2 | Terme 3 Terme 4
+</pre>
+<p> Una barra vertical (<code>|</code>) separada per espais separa dues cerques
+  el resultat de les quals es sumarà. És a dir, trobarà els resultats que
+  coincideixin amb qualsevol de les dues expressions. Exemple:</p>
+
+<pre>
+  A B | C D
+</pre>
+<p>Sí: A B</p>
+<p>Sí: C D</p>
+<p>No: A C</p>
+
+<p>Es poden afegir més de dues expresions separades per <code>|</code>:</p>
+<pre>
+  A | B | C | ...
+</pre>
+
+<hr />
+<pre>
+  A B|C D
+</pre>
+<p>Un sol terme amb una <code>|</code> (que no estigui entre cometes) admet les
+  dues (o més) possibilitats d'aquell terme. L'expressió anterior seria
+  equivalent a:</p>
+<pre>
+  A B D | A C D
+</pre>
+{% endblock content %}

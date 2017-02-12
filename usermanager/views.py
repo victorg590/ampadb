@@ -9,6 +9,7 @@ from .models import *
 from django.contrib.auth.models import User
 from contactboard.models import Alumne
 from ampadb.support import is_admin, gen_username, gen_codi
+from ampadb.datasearch import datasearch
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.db.models.query_utils import Q
 import csv
@@ -365,18 +366,28 @@ class API:
             return JsonResponse(
                 {'unregisteredUsers': [], 'registeredUsers': []})
         res = {}
-        uu = UnregisteredUser.objects.filter(
-            Q(username__icontains=q) | Q(profile__alumne__nom__icontains=q) |
-            Q(profile__alumne__cognoms__icontains=q)
-        )
+
+        def composer(key, exact):
+            # Sempre fa cerques sense comptar majúscules
+            if exact:
+                return (
+                    Q(username__iexact=key) |
+                    Q(profile__alumne__nom__iexact=key) |
+                    Q(profile__alumne__cognoms__iexact=key)
+                )
+            else:
+                return (
+                    Q(username__icontains=key) |
+                    Q(profile__alumne__nom__icontains=key) |
+                    Q(profile__alumne__cognoms__icontains=key)
+                )
+
+        uu = UnregisteredUser.objects.filter(datasearch(q, composer))
         if uu.exists():
             res['unregisteredUsers'] = API._gen_json_unreg(uu)
         else:
             res['unregisteredUsers'] = []
-        ru = User.objects.filter(
-            Q(username__icontains=q) | Q(profile__alumne__nom__icontains=q) |
-            Q(profile__alumne__cognoms__icontains=q)
-        )
+        ru = User.objects.filter(datasearch(q, composer))
         if ru.exists():
             res['registeredUsers'] = API._gen_json_reg(ru)
         else:

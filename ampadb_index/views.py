@@ -15,3 +15,6 @@ def index(request):
 
 def markdown_help(request):
     return render(request, 'support/markdown_help.html')
+
+def search_syntax(request):
+    return render(request, 'support/search_syntax.html')
