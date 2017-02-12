@@ -4,16 +4,16 @@ from django.db.models.query_utils import Q
 _dummycomposer = lambda key, exact: Q()
 
 def parse_token(token, composer):
-    if token[0] == '"':
-        return composer(token[1:-1], False)
-    elif token[0] == "'":
-        return composer(token[1:-1], True)
-    elif '|' in token:
+    if '|' in token:
         first, *other = token.split('|')
         current = parse_token(first, composer)
         for t in other:
             current |= parse_token(t, composer)
         return current
+    elif token[0] == '"':
+        return composer(token[1:-1], False)
+    elif token[0] == "'":
+        return composer(token[1:-1], True)
     else:
         return composer(token, False)
 
