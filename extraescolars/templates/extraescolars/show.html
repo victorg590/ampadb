@@ -16,9 +16,9 @@
 {% endif %}
 
 {% if admin %}
-<p>Per a afegir alumnes directament, s'ha de fer a
-  la "<a href="{% url 'admin:extraescolars_extraescolar_change' activitat.pk %}">
-    Gestió tècnica</a>"</p>
+<p>Per a afegir alumnes directament, s'ha de fer a la "<a href=
+  "{% url 'admin:extraescolars_extraescolar_change' activitat.pk %}">Gestió
+  tècnica</a>"</p>
 {% if inscripcions.count %}
 <h2>Alumnes inscrits</h2>
 <div class="table-responsive"><table class="table table-stripped">

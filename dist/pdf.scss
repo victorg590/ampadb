@@ -1,0 +1,85 @@
+// Fonts:
+$sans: 'Noto+Sans:400,400i,700,700i';
+$serif: 'Noto+Serif:400,400i,700,700i';
+$mono: 'Roboto+Mono:400,400i,700,700i';
+@import url('https://fonts.googleapis.com/css?family=' +
+  '#{$sans}|#{$serif}|#{$mono}');
+
+$margin: 25mm;
+// O
+//$margin: (top: ?, bottom: ?, left: ?, right: ?);
+
+$margins: (top: $margin, bottom: $margin, left: $margin,
+           right: $margin) !default;
+
+@page {
+  size: portrait;
+  margin: 0mm; // No mostrar capçalera
+}
+
+@media print {
+  html {
+    margin: {
+      left: map-get($margins, left);
+      right: map-get($margins, right);
+      top: map-get($margins, top);
+      bottom: map-get($margins, bottom);
+    }
+  }
+}
+
+body {
+  font-family: 'Noto Sans', sans-serif;
+  @media not print {
+    margin: 8px;
+  }
+}
+
+tt, kbd, samp, code, pre, .monospace {
+  font-family: 'Roboto Mono', monospace;
+}
+
+.serif {
+  font-family: 'Noto Serif', serif;
+}
+
+b, strong {
+  font-weight: bold;
+}
+
+i, em {
+  font-style: italic;
+}
+
+table {
+  & > thead th {
+    text-align: center;
+    font-weight: bold;
+  }
+  & > tbody td {
+    text-align: left;
+  }
+}
+
+hr.pgbr {
+  border-color: red;
+  @media print{
+    border-style: none;
+    page-break-after: always;
+  }
+}
+
+.no-break {
+  page-break-inside: avoid;
+}
+
+@media print {
+  .no-print {
+    display: none;
+  }
+
+  a {
+    color: inherit;
+    text-decoration: inherit;
+  }
+}

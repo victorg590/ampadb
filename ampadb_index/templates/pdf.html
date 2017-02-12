@@ -1,0 +1,23 @@
+{# Aquest document crea un HTML pla, pensat per a ser imprès. #}
+{% load static_dbg %}
+
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  {% block styles %}
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.6.3/css/font-awesome.min.css" />
+  <link rel="stylesheet" href="{% static_dbg 'pdf.css' %}" />
+  {% endblock styles %}
+</head>
+<body>
+  {% block info %}
+  <p class="no-print" style="border-style: dotted">
+    Utilitza el diàleg del navegador per a imprimir o exportar a PDF (si el
+    navegador ho suporta).
+    Les línies vermelles seràn substituïdes per salts de pàgina.
+    (Aquest missatge no es mostrarà)</p>
+  {% endblock info %}
+  {% block content %}{% endblock %}
+  <script>window.onload=window.print;</script>
+</body>

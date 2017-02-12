@@ -1,0 +1,11 @@
+table.datatable {
+  width: 100%; }
+  table.datatable th, table.datatable td {
+    text-align: left; }
+table.activitats {
+  width: 100%;
+  border: 1px solid black; }
+  table.activitats th, table.activitats td {
+    border: 1px solid black; }
+
+/*# sourceMappingURL=fitxa_inscripcio.css.map */
