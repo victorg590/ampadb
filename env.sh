@@ -14,7 +14,7 @@ if [ ! -d "venv" ]; then
     echo "Es necessita Python 3 per a la instalació"
     return 1
   fi
-  virtualenv3 \
+  virtualenv \
     --system-site-packages \
     --prompt "(ampadb) " \
     --python "$PYTHON_EXECUTABLE" \
