@@ -9,6 +9,7 @@ from . import ampacsv
 from io import StringIO
 import csv
 
+from unittest import skip
 
 class CsvImportTestCase(TestCase):
     def setUp(self):
@@ -39,6 +40,7 @@ class CsvImportTestCase(TestCase):
         Profile.objects.update_or_create(alumne=alumne5,
                                          defaults={'user': usuari5})
 
+    @skip('Veure #41')
     def test_user_already_exists(self):
         alumne = Alumne.objects.get(pk=1)
         self.assertEqual('A', alumne.nom)
@@ -49,6 +51,7 @@ class CsvImportTestCase(TestCase):
         self.assertEqual('Z', alumne.nom)
         self.assertEqual('Y', alumne.cognoms)
 
+    @skip('Veure #41')
     def test_user_unregistered(self):
         alumne = Alumne.objects.get(pk=2)
         self.assertEqual('C', alumne.nom)
@@ -59,6 +62,7 @@ class CsvImportTestCase(TestCase):
         self.assertEqual('X', alumne.nom)
         self.assertEqual('W', alumne.cognoms)
 
+    @skip('Veure #41')
     def test_associate_with_user(self):
         fila = {'Nom': 'E', 'Cognoms': 'F', 'Classe': 'TEST1', 'Usuari': 'c'}
         alumne = Alumne.objects.get(pk=int(_importar_fila(fila)['alumne']))
@@ -68,6 +72,7 @@ class CsvImportTestCase(TestCase):
         profile = Profile.objects.get(user=User.objects.get(username='c'))
         self.assertEqual(alumne, profile.alumne)
 
+    @skip('Veure #41')
     def test_associate_with_unregistered_user(self):
         fila = {'Nom': 'G', 'Cognoms': 'H', 'Classe': 'TEST1', 'Usuari': 'd'}
         alumne = Alumne.objects.get(pk=int(_importar_fila(fila)['alumne']))
@@ -78,6 +83,7 @@ class CsvImportTestCase(TestCase):
             unregisteredUser=UnregisteredUser.objects.get(username='d'))
         self.assertEqual(alumne, profile.alumne)
 
+    @skip('Veure #41')
     def test_new_user(self):
         fila = {'Nom': 'I', 'Cognoms': 'J', 'Classe': 'TEST1'}
         alumne = Alumne.objects.get(pk=int(_importar_fila(fila)['alumne']))
@@ -88,6 +94,7 @@ class CsvImportTestCase(TestCase):
         profile = Profile.objects.get(unregisteredUser=user)
         self.assertEqual(alumne, profile.alumne)
 
+    @skip('Veure #41')
     def test_new_classe(self):
         fila = {'Nom': 'K', 'Cognoms': 'L', 'Classe': 'TEST2'}
         self.assertRaises(InvalidFormat, _importar_fila, fila)
@@ -98,6 +105,7 @@ class CsvImportTestCase(TestCase):
         self.assertEqual('TEST2', alumne.classe.id_interna)
         self.assertEqual('CURS1', alumne.classe.curs.id_interna)
 
+    @skip('Veure #41')
     def test_new_curs(self):
         fila = {'Nom': 'M', 'Cognoms': 'N', 'Classe': 'TEST3'}
         self.assertRaises(InvalidFormat, _importar_fila, fila)
@@ -108,6 +116,7 @@ class CsvImportTestCase(TestCase):
         self.assertEqual('TEST3', alumne.classe.id_interna)
         self.assertEqual('CURS2', alumne.classe.curs.id_interna)
 
+    @skip('Veure #41')
     def test_unchanged(self):
         fila = {'pk': '5'}
         alumne_orig = Alumne.objects.get(pk=5)
@@ -116,11 +125,13 @@ class CsvImportTestCase(TestCase):
         profile = Profile.objects.get(alumne=alumne)
         self.assertEqual('e', profile.user.username)
 
+    @skip('Veure #41')
     def test_delete_1(self):
         fila = {'pk': '1', 'Eliminar': '1'}
         self.assertEqual(_importar_fila(fila)['alumne'], None)
         self.assertRaises(Alumne.DoesNotExist, Alumne.objects.get, pk=1)
 
+    @skip('Veure #41')
     def test_delete_2(self):
         fila = {'pk': '1', 'Eliminar': '2'}
         profile = Profile.objects.get(user=User.objects.get(username='a')).pk
@@ -130,6 +141,7 @@ class CsvImportTestCase(TestCase):
                           pk=profile)
         self.assertRaises(User.DoesNotExist, User.objects.get, username='a')
 
+    @skip('Veure #41')
     def test_delete_2_unregistered(self):
         fila = {'pk': '2', 'Eliminar': '2'}
         profile = Profile.objects.get(
@@ -141,6 +153,7 @@ class CsvImportTestCase(TestCase):
         self.assertRaises(UnregisteredUser.DoesNotExist,
                           UnregisteredUser.objects.get, username='a')
 
+    @skip('Veure #41')
     def test_del_all(self):
         string = StringIO()
         ampacsv.get_template(string)
@@ -154,6 +167,7 @@ class CsvImportTestCase(TestCase):
         self.assertEqual(alumne.nom, 'A')
         self.assertEqual(alumne.cognoms, 'B')
 
+    @skip('Veure #41')
     def test_del(self):
         string = StringIO()
         ampacsv.get_template(string)
