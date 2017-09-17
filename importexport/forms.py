@@ -30,7 +30,7 @@ class ExportForm(Forms.Form):
         cleaned_data = super().clean()
         contrasenya = cleaned_data.get('contrasenya')
         if contrasenya and (contrasenya !=
-            cleaned_data.get('repeteix_la_contrasenya'))
+            cleaned_data.get('repeteix_la_contrasenya')):
             self.add_error('repeteix_la_contrasenya', ValidationError(
                 'La contrasenya no coincideix'
             ))
