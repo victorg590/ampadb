@@ -20,7 +20,8 @@ def export_view(request, classe_id=None):
     context = {
         'error_text': request.GET.get('error_text', ''),
         'classe': classe,
-        'form': ExportForm(initial={'classe': classe_id}),
+        'form': ExportForm(initial={'classe': classe_id},
+                           auto_id='%s'),
         'today': datetime.datetime.today().strftime('%Y-%m-%d')
     }
     return render(request, 'importexport/export.html', context)
@@ -90,7 +91,7 @@ def genexport(request):
 def import_view(request):
     context = {
         'error_text': request.GET.get('error_text', ''),
-        'form': ImportForm()
+        'form': ImportForm(auto_id="%s")
     }
     return render(request, 'importexport/import.html', context)
 

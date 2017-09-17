@@ -33,7 +33,8 @@ media
 .Python
 build/
 develop-eggs/
-dist/
+# Degut al sistema de construcció, s'ha d'incluir dist
+#dist/
 downloads/
 eggs/
 .eggs/

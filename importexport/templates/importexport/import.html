@@ -1,13 +1,14 @@
 {% extends "menu.html" %}
 {% load urllink %}
 {% load bootstrap3 %}
+{% load static_dbg %}
 
 {% block content %}
 <h1>Importar</h1>
 Es poden importar les dades als formats:
 {% include "./taula_formats.html" %}
 <p class="alert alert-danger">
-  <strong>ATENCIÓ:</strong> és perillós importar arxius de font desconegudes,
+  <strong>ATENCIÓ:</strong> és perillós importar arxius de fonts desconegudes,
   ja que poden modificar les dades (fins i tot usuaris). Si s'importa un arxiu
   de Pickle, a més a més, aquest pot executar codi arbitrari al servidor.</p>
 {% if error_text %}
@@ -25,3 +26,8 @@ Es poden importar les dades als formats:
   Segons la quantitat de dades a importar i el format escollit, la operació
   <strong>pot trigar una estona.</strong></p>
 {% endblock content %}
+
+{% block scripts %}
+{{ block.super }}
+<script src="{% static_dbg 'importexport/import.js' %}"></script>
+{% endblock scripts %}
