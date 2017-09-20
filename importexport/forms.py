@@ -59,7 +59,7 @@ class ImportForm(Forms.Form):
                    " aquest camp s'ignorarà.")
     )
     preexistents = forms.ChoiceField(
-        required=True,
+        required=False,  # 'Conservar' per defecte
         choices=PREEXISTENT_CHOICES, label='Entrades preexistents',
         widget=forms.RadioSelect, help_text=(
             "Què fer amb les entrades preexistents que no es mencionen a "

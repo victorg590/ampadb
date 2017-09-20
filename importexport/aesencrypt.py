@@ -31,29 +31,14 @@ def hash_password(password, salt):
         ARGON_VERSION
     )
 
-def encrypt(inp, out, password, chunk_num=8, padding=b'\x00'):
-    """Xifra una entrada amb contrasenya.
-
-    Torna l'IV/salt (es necessita per a desxifrar l'arxiu"""
+def gen_iv():
     prng = Random.new()
     iv = prng.read(IV_LENGTH)
     prng.close()
-    passhash = hash_password(password, iv)
-    cipher = AES.new(passhash, AES_MODE, iv)
-    chunk = b'\x00'  # Aquest bit es descartarà
-    while chunk != b'':
-        chunk = inp.read(chunk_num * 16)
-        if len(chunk) % 16 != 0:
-            # Es necesita un nombre de bytes múltiple de 16.
-            # Si és el final de l'arxiu, pot que no quedin suficients bytes.
-            # Si no es compleix, s'emplenarà amb padding fins a arribar-hi
-            chunk += padding * (16 - l % 16)
-        out.write(cipher.encrypt(chunk))
     return iv
 
-def decrypt(inp, out, password, iv, chunk_num=8, padding=b'\x00'):
-    """Desxifra una entrada.
-    """
+def encrypt(inp, out, password, iv, chunk_num=8, padding=b'\x00'):
+    """Xifra una entrada amb contrasenya."""
     passhash = hash_password(password, iv)
     cipher = AES.new(passhash, AES_MODE, iv)
     chunk = b'\x00'  # Aquest bit es descartarà
@@ -63,5 +48,19 @@ def decrypt(inp, out, password, iv, chunk_num=8, padding=b'\x00'):
             # Es necesita un nombre de bytes múltiple de 16.
             # Si és el final de l'arxiu, pot que no quedin suficients bytes.
             # Si no es compleix, s'emplenarà amb padding fins a arribar-hi
-            chunk += padding * (16 - l % 16)
+            chunk += padding * (16 - len(chunk) % 16)
+        out.write(cipher.encrypt(chunk))
+
+def decrypt(inp, out, password, iv, chunk_num=8, padding=b'\x00'):
+    """Desxifra una entrada."""
+    passhash = hash_password(password, iv)
+    cipher = AES.new(passhash, AES_MODE, iv)
+    chunk = b'\x00'  # Aquest bit es descartarà
+    while chunk != b'':
+        chunk = inp.read(chunk_num * 16)
+        if len(chunk) % 16 != 0:
+            # Es necesita un nombre de bytes múltiple de 16.
+            # Si és el final de l'arxiu, pot que no quedin suficients bytes.
+            # Si no es compleix, s'emplenarà amb padding fins a arribar-hi
+            chunk += padding * (16 - len(chunk) % 16)
         out.write(cipher.decrypt(chunk))

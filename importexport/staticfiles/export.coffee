@@ -1,6 +1,7 @@
 confirmIsRequired = false
 $password = $('#contrasenya')
 $confirm = $('#repeteix_la_contrasenya')
+$submit = $('#export-form button[type="submit"]')
 
 
 changeRequired = ($to, nowRequired) ->
@@ -57,13 +58,22 @@ $(document).ready ->
     if not $password.val()
       $confirm.parent().removeClass 'has-error has-success'
       $confirm.attr 'disabled', true
+      $submit.attr 'disabled', null
     else if checkPassword()
       $confirm.attr 'disabled', null
       $confirm.parent().removeClass 'has-error'
       $confirm.parent().addClass 'has-success'
+      $submit.attr 'disabled', null
     else
       $confirm.attr 'disabled', null
       $confirm.parent().removeClass 'has-success'
       $confirm.parent().addClass 'has-error'
+      $submit.attr 'disabled', true
     return
+  
+  $('#export-form').submit ->
+    if $password.val() and not checkPassword()
+      return false
+    else
+      return true
   return

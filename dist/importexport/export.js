@@ -1,11 +1,13 @@
 (function() {
-  var $confirm, $password, changeRequired, checkPassword, confirmIsRequired, showPassword;
+  var $confirm, $password, $submit, changeRequired, checkPassword, confirmIsRequired, showPassword;
 
   confirmIsRequired = false;
 
   $password = $('#contrasenya');
 
   $confirm = $('#repeteix_la_contrasenya');
+
+  $submit = $('#export-form button[type="submit"]');
 
   changeRequired = function($to, nowRequired) {
     var $parent;
@@ -64,14 +66,24 @@
       if (!$password.val()) {
         $confirm.parent().removeClass('has-error has-success');
         $confirm.attr('disabled', true);
+        $submit.attr('disabled', null);
       } else if (checkPassword()) {
         $confirm.attr('disabled', null);
         $confirm.parent().removeClass('has-error');
         $confirm.parent().addClass('has-success');
+        $submit.attr('disabled', null);
       } else {
         $confirm.attr('disabled', null);
         $confirm.parent().removeClass('has-success');
         $confirm.parent().addClass('has-error');
+        $submit.attr('disabled', true);
+      }
+    });
+    $('#export-form').submit(function() {
+      if ($password.val() && !checkPassword()) {
+        return false;
+      } else {
+        return true;
       }
     });
   });

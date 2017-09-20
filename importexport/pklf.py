@@ -207,7 +207,7 @@ class PickledUser(PickledObject):
             user = User.objects.get(username=self.username)
         except User.DoesNotExist:
             user = User(username=self.username)
-        user = User.update_or_create(
+        user = User.objects.update_or_create(
             username=self.username,
             defaults={k: getattr(self, k) for k in self.data})[0]
         if self.alumne:

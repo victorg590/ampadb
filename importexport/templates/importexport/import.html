@@ -12,9 +12,11 @@ Es poden importar les dades als formats:
   ja que poden modificar les dades (fins i tot usuaris). Si s'importa un arxiu
   de Pickle, a més a més, aquest pot executar codi arbitrari al servidor.</p>
 {% if error_text %}
-<ul class="errorlist">
-  <li>{{ error_text }}</li>
-</ul>
+<div class="alert-danger">
+  <ul class="errorlist">
+    <li>{{ error_text }}</li>
+  </ul>
+</div>
 {% endif %}
 <form enctype="multipart/form-data" method="post"
   action="{% url 'importexport:processimport' %}">

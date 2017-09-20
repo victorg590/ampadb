@@ -30,7 +30,7 @@ def export_view(request, classe_id=None):
 @login_required
 @user_passes_test(is_admin)
 def genexport(request):
-    form = ExportForm(request.GET)
+    form = ExportForm(request.POST)
     if not form.is_valid():
         return redirect('importexport:export')
     dformat = form.cleaned_data['format']  # Conflicte amb built-in format()
@@ -39,6 +39,7 @@ def genexport(request):
         classe = get_object_or_404(Classe, id_interna=classe_id)
     else:
         classe = None
+    password = form.cleaned_data['contrasenya']
     if dformat == IEFormats.CSV:
         if classe:
             filename = classe.id_interna + '.csv'
@@ -79,18 +80,25 @@ def genexport(request):
         else:
             filename = (datetime.datetime.today().strftime('%Y-%m-%d') +
                         '.pkl.gz')
+        if password:
+            filename += '.aes'
         response = HttpResponse(content_type="application/gzip")
         response['Content-Disposition'] = ('attachment; filename="%s"' %
                                            filename)
-        exf.export_pickle(response, classe)
+        if password:
+            exf.export_encrypted_pickle(response, password, classe)
+        else:
+            exf.export_pickle(response, classe)
         return response
 
 
 @login_required
 @user_passes_test(is_admin)
 def import_view(request):
+    error_text = request.GET.get('error_text', '(No errors)')
+    print(error_text)
     context = {
-        'error_text': request.GET.get('error_text', ''),
+        'error_text': error_text,
         'form': ImportForm(auto_id="%s")
     }
     return render(request, 'importexport/import.html', context)
@@ -103,6 +111,7 @@ def processimport(request):
         return redirect('importexport:import')
     form = ImportForm(request.POST, request.FILES)
     if not form.is_valid():
+        raise Exception(form)
         return redirect('importexport:import')
     fformat = form.cleaned_data['format']
     if fformat == IEFormats.AUTO:
@@ -114,6 +123,7 @@ def processimport(request):
     else:
         dformat = fformat
     preexistents = form.cleaned_data['preexistents']
+    password = form.cleaned_data['contrasenya']
     try:
         if dformat == IEFormats.AMPACSV:
             text = imf.bytestream_to_text(
@@ -126,7 +136,8 @@ def processimport(request):
                 encoding=(request.encoding or 'utf-8'))
             imf.import_excel(text, preexistents)
         elif dformat == IEFormats.PICKLE:
-            imf.import_pickle(request.FILES['ifile'], preexistents)
+            imf.import_pickle(request.FILES['ifile'], password,
+                              preexistents)
         elif dformat == IEFormats.JSON:
             text = imf.bytestream_to_text(
                 request.FILES['ifile'],
