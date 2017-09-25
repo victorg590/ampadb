@@ -1,9 +1,12 @@
-bleach>=1.4.3
-Django==1.10
-django-bootstrap3>=7.0.1
-django-htmlmin>=0.9.1
-dj-database-url>=0.4.1
-gunicorn>=19.6.0
-lxml>=3.7.2
-Markdown>=2.6.6
-whitenoise>=3.2.1
+-c constraints.txt
+argon2-cffi
+bleach
+Django
+django-bootstrap3
+django-htmlmin
+dj-database-url
+gunicorn
+lxml
+Markdown
+pycrypto
+whitenoise

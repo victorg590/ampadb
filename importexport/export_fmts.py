@@ -8,6 +8,8 @@ from usermanager.models import *
 from django.contrib.auth.models import User
 from .pklf import *
 from . import ampacsv
+from . import aesencrypt
+from io import BytesIO
 
 
 def export_csv(outfile, alumnes):
@@ -95,6 +97,14 @@ def export_pickle(outfile, classe=None):
     with gzip.GzipFile(fileobj=outfile, mode='ab') as gz:
         pickle.dump(optimize_pickle(info), gz, protocol=4)
 
+def export_encrypted_pickle(outfile, password, classe=None):
+    plain_pickle = BytesIO()
+    export_pickle(plain_pickle, classe)
+    plain_pickle.seek(0)
+    outfile.write(b'AMPAAES0')
+    iv = aesencrypt.gen_iv()
+    outfile.write(iv)
+    aesencrypt.encrypt(plain_pickle, outfile, password, iv)
 
 def export_json(outfile, classe=None):
     info = gen_pickled_info(classe)

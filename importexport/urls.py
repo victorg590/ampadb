@@ -4,13 +4,14 @@ from . import views
 from . import views_ies
 
 app_name = ImportexportConfig.name
-iespatterns = [
+iespatterns = ([
     url(r'upload$', views_ies.upload, name='upload'),
     url(r'classnames/(?P<upload_id>.+)', views_ies.classnames,
         name='classnames'),
     url(r'confirm/(?P<upload_id>.+)', views_ies.confirm, name='confirm'),
     url(r'cancel/(?P<upload_id>.+)', views_ies.cancel, name='cancel')
-]
+], 'ies')
+
 urlpatterns = [
     url(r'^export$', views.export_view, name='export'),
     url(r'^export/(?P<classe_id>.+)', views.export_view, name='export'),
@@ -20,5 +21,5 @@ urlpatterns = [
     url(r'^format$', views.format_view, name='format'),
     url(r'^format/template\.csv$', views.download_template,
         name='format-template'),
-    url(r'^ies/', include(iespatterns, namespace='ies'))
+    url(r'^ies/', include(iespatterns))
 ]

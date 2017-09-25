@@ -9,7 +9,6 @@ from . import ampacsv
 from io import StringIO
 import csv
 
-
 class CsvImportTestCase(TestCase):
     def setUp(self):
         curs = Curs.objects.create(nom='Curs 1', id_interna='CURS1')
@@ -17,13 +16,15 @@ class CsvImportTestCase(TestCase):
                                        curs=curs)
 
         alumne1 = Alumne.objects.create(
-            pk=1, nom='A', cognoms='B', classe=classe)
+            nom='A', cognoms='B', classe=classe)
+        self.pk1 = alumne1.pk
         usuari1 = User.objects.create(username='a')
         Profile.objects.update_or_create(alumne=alumne1,
                                          defaults={'user': usuari1})
 
         alumne2 = Alumne.objects.create(
-            pk=2, nom='C', cognoms='D', classe=classe)
+            nom='C', cognoms='D', classe=classe)
+        self.pk2 = alumne2.pk
         usuari2 = UnregisteredUser.objects.create(username='b', codi='000000')
         Profile.objects.update_or_create(
             alumne=alumne2,
@@ -34,26 +35,27 @@ class CsvImportTestCase(TestCase):
         UnregisteredUser.objects.create(username='d', codi='000000')
 
         alumne5 = Alumne.objects.create(
-            pk=5, nom='O', cognoms='P', classe=classe)
+            nom='O', cognoms='P', classe=classe)
+        self.pk5 = alumne5.pk
         usuari5 = User.objects.create(username='e')
         Profile.objects.update_or_create(alumne=alumne5,
                                          defaults={'user': usuari5})
 
     def test_user_already_exists(self):
-        alumne = Alumne.objects.get(pk=1)
+        alumne = Alumne.objects.get(pk=self.pk1)
         self.assertEqual('A', alumne.nom)
         self.assertEqual('B', alumne.cognoms)
-        fila = {'pk': 1, 'Nom': 'Z', 'Cognoms': 'Y'}
+        fila = {'pk': self.pk1, 'Nom': 'Z', 'Cognoms': 'Y'}
         _importar_fila(fila)
         alumne.refresh_from_db()
         self.assertEqual('Z', alumne.nom)
         self.assertEqual('Y', alumne.cognoms)
 
     def test_user_unregistered(self):
-        alumne = Alumne.objects.get(pk=2)
+        alumne = Alumne.objects.get(pk=self.pk2)
         self.assertEqual('C', alumne.nom)
         self.assertEqual('D', alumne.cognoms)
-        fila = {'pk': '2', 'Nom': 'X', 'Cognoms': 'W'}
+        fila = {'pk': str(self.pk2), 'Nom': 'X', 'Cognoms': 'W'}
         _importar_fila(fila)
         alumne.refresh_from_db()
         self.assertEqual('X', alumne.nom)
@@ -109,33 +111,33 @@ class CsvImportTestCase(TestCase):
         self.assertEqual('CURS2', alumne.classe.curs.id_interna)
 
     def test_unchanged(self):
-        fila = {'pk': '5'}
-        alumne_orig = Alumne.objects.get(pk=5)
+        fila = {'pk': str(self.pk5)}
+        alumne_orig = Alumne.objects.get(pk=self.pk5)
         alumne = Alumne.objects.get(pk=int(_importar_fila(fila)['alumne']))
         self.assertEqual(alumne_orig, alumne)
         profile = Profile.objects.get(alumne=alumne)
         self.assertEqual('e', profile.user.username)
 
     def test_delete_1(self):
-        fila = {'pk': '1', 'Eliminar': '1'}
+        fila = {'pk': str(self.pk1), 'Eliminar': '1'}
         self.assertEqual(_importar_fila(fila)['alumne'], None)
-        self.assertRaises(Alumne.DoesNotExist, Alumne.objects.get, pk=1)
+        self.assertRaises(Alumne.DoesNotExist, Alumne.objects.get, pk=self.pk1)
 
     def test_delete_2(self):
-        fila = {'pk': '1', 'Eliminar': '2'}
+        fila = {'pk': str(self.pk1), 'Eliminar': '2'}
         profile = Profile.objects.get(user=User.objects.get(username='a')).pk
         self.assertEqual(_importar_fila(fila)['alumne'], None)
-        self.assertRaises(Alumne.DoesNotExist, Alumne.objects.get, pk=1)
+        self.assertRaises(Alumne.DoesNotExist, Alumne.objects.get, pk=self.pk1)
         self.assertRaises(Profile.DoesNotExist, Profile.objects.get,
                           pk=profile)
         self.assertRaises(User.DoesNotExist, User.objects.get, username='a')
 
     def test_delete_2_unregistered(self):
-        fila = {'pk': '2', 'Eliminar': '2'}
+        fila = {'pk': str(self.pk2), 'Eliminar': '2'}
         profile = Profile.objects.get(
             unregisteredUser=UnregisteredUser.objects.get(username='b')).pk
         self.assertEqual(_importar_fila(fila)['alumne'], None)
-        self.assertRaises(Alumne.DoesNotExist, Alumne.objects.get, pk=2)
+        self.assertRaises(Alumne.DoesNotExist, Alumne.objects.get, pk=self.pk2)
         self.assertRaises(Profile.DoesNotExist, Profile.objects.get,
                           pk=profile)
         self.assertRaises(UnregisteredUser.DoesNotExist,
@@ -158,7 +160,7 @@ class CsvImportTestCase(TestCase):
         string = StringIO()
         ampacsv.get_template(string)
         writer = csv.DictWriter(string, ampacsv.FIELDNAMES)
-        writer.writerow({'pk': '1', 'Nom': 'A', 'Cognoms': 'B'})
+        writer.writerow({'pk': str(self.pk1), 'Nom': 'A', 'Cognoms': 'B'})
         string.seek(0)
         import_ampacsv(string, 'DEL')
         self.assertEqual(Alumne.objects.count(), 1)

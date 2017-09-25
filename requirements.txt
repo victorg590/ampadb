@@ -1,19 +1,10 @@
-bleach>=1.4.3
-Django==1.10
-django-bootstrap3>=7.0.1
-django-htmlmin>=0.9.1
-dj-database-url>=0.4.1
-gunicorn>=19.6.0
-lxml>=3.7.2
-Markdown>=2.6.6
-whitenoise>=3.2.1
+# Dependències normals
+-r stdrequirements.txt
 # Només Heroku
 cffi
-psycopg2>=2.6.2
+psycopg2
 
 # Dependències opcionals
-## Algorisme Argon2, més segur que PBKDF2
-argon2-cffi>=16.2.0
 ## Compresió Brotli, més eficient que GZip, suportada pels navegadors més utilitzats
 ## (Només funciona amb HTTPS)
 brotlipy

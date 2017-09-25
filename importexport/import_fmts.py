@@ -15,6 +15,8 @@ from django.db import transaction
 from ampadb.support import gen_username, gen_codi, username_exists
 from . import ampacsv
 from .pklf import CURRENT_VERSION, PickledInfo
+from . import aesencrypt
+from io import BytesIO
 
 
 class InvalidFormat(Exception):
@@ -57,6 +59,8 @@ def detect_format(filename):
     elif path.suffixes[-1] == '.json':
         return IEFormats.JSON
     elif path.suffixes[-2:] == ['.pkl', '.gz']:
+        return IEFormats.PICKLE
+    elif path.suffixes[-3:] == ['.pkl', '.gz', '.aes']:
         return IEFormats.PICKLE
     else:
         raise ValueError
@@ -461,20 +465,45 @@ def import_json(infile, preexistents=''):
                             str(e) + ')') from e
 
 
-def import_pickle(infile, preexistents=''):
+def decrypt_pickle(infile, password):
+    if infile.read(len(b'AMPAAES0')) != b'AMPAAES0':
+        raise InvalidFormat('No està xifrat o no és un arxiu de'
+                            'còpia de seguretat')
+    iv = infile.read(aesencrypt.IV_LENGTH)
+    plain_pickle = BytesIO()
+    aesencrypt.decrypt(infile, plain_pickle,password, iv)
+    return plain_pickle
+
+def import_pickle(infile, password, preexistents=''):
+    if password:
+        plain_pickle = decrypt_pickle(infile, password)
+    else:
+        plain_pickle = infile
     try:
-        with gzip.GzipFile(fileobj=infile) as gz:
-            return import_pickle_uncompressed(gz, preexistents)
-    except OSError:
-        # Prova per si no està comprimit
-        return import_pickle_uncompressed(infile, preexistents)
+        try:
+            plain_pickle.seek(0)
+            with gzip.GzipFile(fileobj=plain_pickle) as gz:
+                return import_pickle_uncompressed(gz, password != '',
+                                                  preexistents)
+        except OSError:
+            # Prova per si no està comprimit
+            return import_pickle_uncompressed(infile, password != '',
+                                              preexistents)
+    except EOFError:
+        raise InvalidFormat(
+            'Contrasenya incorrecta o no és un arxiu Pickle' if password
+            else 'No és un arxiu Pickle'
+        )
 
 
-def import_pickle_uncompressed(infile, preexistents=''):
+def import_pickle_uncompressed(infile, encrypted, preexistents=''):
     try:
         info = pickle.load(infile)
     except pickle.UnpicklingError:
-        raise InvalidFormat('No és un arxiu Pickle')
+        raise InvalidFormat(
+            'Contrasenya incorrecta o no és un arxiu Pickle' if encrypted
+            else 'No és un arxiu Pickle'
+        )
     try:
         info.check_version(CURRENT_VERSION)
         info.unpickle(preexistents)

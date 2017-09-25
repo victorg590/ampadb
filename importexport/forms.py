@@ -22,6 +22,18 @@ class ExportForm(Forms.Form):
     format = forms.ChoiceField(required=True, choices=FORMAT_CHOICES,
                                widget=forms.RadioSelect)
     classe = forms.CharField(required=False, widget=forms.HiddenInput)
+    contrasenya = forms.CharField(required=False, widget=forms.PasswordInput)
+    repeteix_la_contrasenya = forms.CharField(required=False,
+        widget=forms.PasswordInput)
+
+    def clean(self):
+        cleaned_data = super().clean()
+        contrasenya = cleaned_data.get('contrasenya')
+        if contrasenya and (contrasenya !=
+            cleaned_data.get('repeteix_la_contrasenya')):
+            self.add_error('repeteix_la_contrasenya', ValidationError(
+                'La contrasenya no coincideix'
+            ))
 
 
 class ImportForm(Forms.Form):
@@ -39,8 +51,15 @@ class ImportForm(Forms.Form):
     ]
     format = forms.ChoiceField(required=False, choices=FORMAT_CHOICES,
                                widget=forms.RadioSelect)
+    contrasenya = forms.CharField(
+        required=False,
+        widget=forms.PasswordInput,
+        help_text=("Si és un arxiu Pickle xifrat, s'intentarà desxifrar amb"
+                   " aquesta contrasenya. Si el format no és Pickle,"
+                   " aquest camp s'ignorarà.")
+    )
     preexistents = forms.ChoiceField(
-        required=True,
+        required=False,  # 'Conservar' per defecte
         choices=PREEXISTENT_CHOICES, label='Entrades preexistents',
         widget=forms.RadioSelect, help_text=(
             "Què fer amb les entrades preexistents que no es mencionen a "
@@ -55,7 +74,7 @@ class ImportForm(Forms.Form):
     ifile = forms.FileField(required=True, label="Arxiu d'importació")
 
 from . import ies_format  # Aquí per evitar imports circulars # nopep8
-from .import_fmts import InvalidFormat  # nopep8
+from . import_fmts import InvalidFormat  # nopep8
 
 
 class Ies:

@@ -103,7 +103,11 @@ DATABASES = {
     }
 }
 
-DATABASES['default'].update(dj_database_url.config(conn_max_age=500))
+if _settings.get('database_url'):
+    DATABASES['default'].update(dj_database_url.parse(
+        _settings.get('database_url'), conn_max_age=500))
+else:
+    DATABASES['default'].update(dj_database_url.config(conn_max_age=500))
 
 
 # Auth

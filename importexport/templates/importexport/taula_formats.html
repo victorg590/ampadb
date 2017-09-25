@@ -59,4 +59,20 @@
     <td>Aquest format està pensat per a còpies de seguretat.
       Dóna un arxiu binari comprés (no llegible per humans)
       més petit que el JSON equivalent.</td>
+  </tr>
+  <tr>
+    <td>Pickle amb xifrat</td>
+    <td>{{ True|pytr }}</td>
+    {% if classe %}
+    <td><code>{{ classe.id_interna}}.pkl.gz.aes</code></td>
+    {% else %}
+    <td><code>{% now 'Y-m-d' %}.pkl.gz.aes</code></td>
+    {% endif %}
+    <td>Aquest format és idèntic al format Pickle, però l'arxiu
+      està xifrat amb una contrasenya. És important que no la oblideu:
+      no hi ha cap manera de restaurar l'arxiu sense la contrasenya.
+      (Per a utilitzar aquest format, seleccioneu "Pickle" i escriviu
+      una contrasenya)
+    </td>
+  </tr>
 </table></div>

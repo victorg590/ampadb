@@ -1,6 +1,21 @@
 {% extends "menu.html" %}
 {% load urllink %}
 {% load bootstrap3 %}
+{% load static_dbg %}
+
+{% block styles %}
+{{ block.super }}
+<style>
+  #contrasenya, label[for="contrasenya"] {
+    display: none;
+  }
+  
+  #repeteix_la_contrasenya,
+  label[for="repeteix_la_contrasenya"] {
+    display: none;
+  }
+</style>
+{% endblock styles %}
 
 {% block content %}
 <h1>Exportar</h1>
@@ -8,11 +23,15 @@
 {% include "./taula_formats.html" %}
 <p><strong>Exportant {{ classe|default_if_none:"TOT"}}</strong></p>
 {% if error_text %}
-<ul class="errorlist">
-  <li>{{ error_text }}</li>
-</ul>
+<div class="alert-danger">
+  <ul class="errorlist">
+    <li>{{ error_text }}</li>
+  </ul>
+</div>
 {% endif %}
-<form method="get" action="{% url 'importexport:genexport' %}">
+<form method="post" action="{% url 'importexport:genexport' %}"
+  id="export-form">
+  {% csrf_token %}
   {% bootstrap_form form %}
   {% buttons submit='Exportar' %}{% endbuttons %}
 </form>
@@ -20,3 +39,8 @@
   Segons la quantitat de dades a exportar i el format escollit, la operació
   <strong>pot trigar una estona.</strong></p>
 {% endblock content %}
+
+{% block scripts %}
+{{ block.super }}
+<script src="{% static_dbg 'importexport/export.js' %}"></script>
+{% endblock scripts %}
