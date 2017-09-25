@@ -1,7 +1,0 @@
-{
-"version": 3,
-"mappings": "AACE,eAAY;EACV,KAAK,EAAE,IAAI;EACX,sCAAO;IACL,UAAU,EAAE,IAAI;AAIpB,gBAAa;EACX,KAAK,EAAE,IAAI;EAEX,MAAM,EADG,eAAe;EAExB,wCAAO;IACL,MAAM,EAHC,eAAe",
-"sources": ["fitxa_inscripcio.scss"],
-"names": [],
-"file": "fitxa_inscripcio.css"
-}
