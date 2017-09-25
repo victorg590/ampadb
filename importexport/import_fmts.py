@@ -466,7 +466,6 @@ def import_json(infile, preexistents=''):
 
 
 def decrypt_pickle(infile, password):
-    print('Decrypting')
     if infile.read(len(b'AMPAAES0')) != b'AMPAAES0':
         raise InvalidFormat('No està xifrat o no és un arxiu de'
                             'còpia de seguretat')
@@ -484,7 +483,6 @@ def import_pickle(infile, password, preexistents=''):
         try:
             plain_pickle.seek(0)
             with gzip.GzipFile(fileobj=plain_pickle) as gz:
-                print('Decompressing')
                 return import_pickle_uncompressed(gz, password != '',
                                                   preexistents)
         except OSError:
@@ -499,7 +497,6 @@ def import_pickle(infile, password, preexistents=''):
 
 
 def import_pickle_uncompressed(infile, encrypted, preexistents=''):
-    print('Importing')
     try:
         info = pickle.load(infile)
     except pickle.UnpicklingError:

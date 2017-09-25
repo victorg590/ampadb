@@ -95,7 +95,7 @@ def genexport(request):
 @login_required
 @user_passes_test(is_admin)
 def import_view(request):
-    error_text = request.GET.get('error_text', '(No errors)')
+    error_text = request.GET.get('error_text')
     print(error_text)
     context = {
         'error_text': error_text,

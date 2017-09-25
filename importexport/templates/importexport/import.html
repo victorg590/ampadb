@@ -5,19 +5,22 @@
 
 {% block content %}
 <h1>Importar</h1>
+{% if error_text %}
+<div class="alert-danger">
+  <h3>Errors:</h3>
+  <ul class="errorlist">
+    <li>{{ error_text }}</li>
+  </ul>
+</div>
+{% endif %}
+
 Es poden importar les dades als formats:
 {% include "./taula_formats.html" %}
 <p class="alert alert-danger">
   <strong>ATENCIÓ:</strong> és perillós importar arxius de fonts desconegudes,
   ja que poden modificar les dades (fins i tot usuaris). Si s'importa un arxiu
   de Pickle, a més a més, aquest pot executar codi arbitrari al servidor.</p>
-{% if error_text %}
-<div class="alert-danger">
-  <ul class="errorlist">
-    <li>{{ error_text }}</li>
-  </ul>
-</div>
-{% endif %}
+
 <form enctype="multipart/form-data" method="post"
   action="{% url 'importexport:processimport' %}">
   {% csrf_token %}

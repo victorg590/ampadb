@@ -212,7 +212,9 @@ class PickledUser(PickledObject):
             defaults={k: getattr(self, k) for k in self.data})[0]
         if self.alumne:
             Profile.objects.update_or_create(alumne=Alumne.objects.get(
-                pk=alumne), defaults={'user': user, 'unregisteredUser': None})
+                pk=self.alumne), defaults={
+                    'user': user, 'unregisteredUser': None
+                })
         return user.pk
 
     def to_json(self):
