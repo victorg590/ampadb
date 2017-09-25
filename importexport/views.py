@@ -111,7 +111,6 @@ def processimport(request):
         return redirect('importexport:import')
     form = ImportForm(request.POST, request.FILES)
     if not form.is_valid():
-        raise Exception(form)
         return redirect('importexport:import')
     fformat = form.cleaned_data['format']
     if fformat == IEFormats.AUTO:

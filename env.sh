@@ -15,7 +15,6 @@ if [ ! -d "venv" ]; then
     return 1
   fi
   virtualenv \
-    --system-site-packages \
     --prompt "(ampadb) " \
     --python "$PYTHON_EXECUTABLE" \
     "venv"

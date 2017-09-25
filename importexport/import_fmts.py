@@ -460,9 +460,9 @@ def import_json(infile, preexistents=''):
         info.unpickle(preexistents)
     except InvalidFormat:
         raise
-    except Exception as e:
+    except Exception as ex:
         raise InvalidFormat("No és un arxiu JSON d'aquesta aplicació (" +
-                            str(e) + ')') from e
+                            str(ex) + ')') from e
 
 
 def decrypt_pickle(infile, password):
