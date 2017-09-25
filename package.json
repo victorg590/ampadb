@@ -24,7 +24,7 @@
     "grunt-sass-lint": "^0.2.3"
   },
   "scripts": {
-    "build": "grunt",
+    "postinstall": "grunt",
     "test": "grunt test"
   }
 }
