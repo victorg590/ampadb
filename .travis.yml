@@ -14,4 +14,6 @@ matrix:
       cache: yarn
       before_install: yarn global add grunt-cli
       install: yarn
-      script: yarn test
+      script:
+        - yarn run build
+        - yarn test
