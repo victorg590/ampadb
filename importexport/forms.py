@@ -24,13 +24,13 @@ class ExportForm(Forms.Form):
     classe = forms.CharField(required=False, widget=forms.HiddenInput)
     contrasenya = forms.CharField(required=False, widget=forms.PasswordInput)
     repeteix_la_contrasenya = forms.CharField(required=False,
-        widget=forms.PasswordInput)
+                                              widget=forms.PasswordInput)
 
     def clean(self):
         cleaned_data = super().clean()
         contrasenya = cleaned_data.get('contrasenya')
         if contrasenya and (contrasenya !=
-            cleaned_data.get('repeteix_la_contrasenya')):
+                            cleaned_data.get('repeteix_la_contrasenya')):
             self.add_error('repeteix_la_contrasenya', ValidationError(
                 'La contrasenya no coincideix'
             ))
@@ -69,9 +69,10 @@ class ImportForm(Forms.Form):
             "té el correu de l'alumne però l'arxiu no té aquest camp, es "
             "conserva el que ja tenia); \"Eliminar tot\" només deixa les "
             "dades que hi ha a l'arxiu."
-            )
         )
+    )
     ifile = forms.FileField(required=True, label="Arxiu d'importació")
+
 
 from . import ies_format  # Aquí per evitar imports circulars # nopep8
 from . import_fmts import InvalidFormat  # nopep8

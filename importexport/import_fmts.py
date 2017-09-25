@@ -27,12 +27,12 @@ class InvalidFormat(Exception):
     @classmethod
     def falta_a_fila(cls, columna, fila):
         return cls('Falta columna {} a la fila {}'.format(columna,
-                   str(fila)))
+                                                          str(fila)))
 
     @classmethod
     def invalid(cls, columna, fila, rao):
         return cls('{} invàlid a la fila {}: {}'.format(columna, str(fila),
-                   rao))
+                                                        rao))
 
 
 def bytestream_to_text(bytestream, encoding='utf-8'):
@@ -42,6 +42,7 @@ def bytestream_to_text(bytestream, encoding='utf-8'):
         textstream.write(decoded_chunk)
     textstream.seek(0)
     return textstream
+
 
 from .forms import IEFormats  # Aquí per a evitar dependències circulars # nopep8
 
@@ -120,7 +121,7 @@ def _importar_fila(fila):
         else:
             raise InvalidFormat.falta_columna('Nom')
     if not (nom or usuari_existia):
-            raise InvalidFormat.falta_a_fila('Nom', fila)
+        raise InvalidFormat.falta_a_fila('Nom', fila)
     if nom:
         alumne.nom = nom
 
@@ -471,8 +472,9 @@ def decrypt_pickle(infile, password):
                             'còpia de seguretat')
     iv = infile.read(aesencrypt.IV_LENGTH)
     plain_pickle = BytesIO()
-    aesencrypt.decrypt(infile, plain_pickle,password, iv)
+    aesencrypt.decrypt(infile, plain_pickle, password, iv)
     return plain_pickle
+
 
 def import_pickle(infile, password, preexistents=''):
     if password:

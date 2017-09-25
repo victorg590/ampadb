@@ -5,6 +5,7 @@ from Crypto import Random
 from random import randint, choice
 import string
 
+
 class EncryptTestCase(TestCase):
     @staticmethod
     def _get_content():

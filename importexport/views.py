@@ -117,8 +117,8 @@ def processimport(request):
         try:
             dformat = imf.detect_format(request.FILES['ifile'].name)
         except ValueError:
-            return redirect_with_get('importexport:import', [('error_text',
-                                     'No es pot detectar el format')])
+            return redirect_with_get('importexport:import', [
+                ('error_text', 'No es pot detectar el format')])
     else:
         dformat = fformat
     preexistents = form.cleaned_data['preexistents']

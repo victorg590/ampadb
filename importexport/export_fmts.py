@@ -97,6 +97,7 @@ def export_pickle(outfile, classe=None):
     with gzip.GzipFile(fileobj=outfile, mode='ab') as gz:
         pickle.dump(optimize_pickle(info), gz, protocol=4)
 
+
 def export_encrypted_pickle(outfile, password, classe=None):
     plain_pickle = BytesIO()
     export_pickle(plain_pickle, classe)
@@ -105,6 +106,7 @@ def export_encrypted_pickle(outfile, password, classe=None):
     iv = aesencrypt.gen_iv()
     outfile.write(iv)
     aesencrypt.encrypt(plain_pickle, outfile, password, iv)
+
 
 def export_json(outfile, classe=None):
     info = gen_pickled_info(classe)

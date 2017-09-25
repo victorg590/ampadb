@@ -5,8 +5,8 @@ from Crypto import Random
 from Crypto.Cipher import AES
 from argon2 import low_level as argon
 
-## ATENCIÓ: Si es canvien aquest paràmetres, les còpies de seguretat
-## anteriors no es podràn desxifar!
+# ATENCIÓ: Si es canvien aquest paràmetres, les còpies de seguretat
+# anteriors no es podràn desxifar!
 
 # Paràmetres del xifrat
 IV_LENGTH = 16
@@ -18,6 +18,7 @@ MEMORY_COST = 512
 PARALLELISM = 2
 ARGON_TYPE = argon.Type.I
 ARGON_VERSION = 19
+
 
 def hash_password(password, salt):
     return argon.hash_secret_raw(
@@ -31,11 +32,13 @@ def hash_password(password, salt):
         ARGON_VERSION
     )
 
+
 def gen_iv():
     prng = Random.new()
     iv = prng.read(IV_LENGTH)
     prng.close()
     return iv
+
 
 def encrypt(inp, out, password, iv, chunk_num=8, padding=b'\x00'):
     """Xifra una entrada amb contrasenya."""
@@ -50,6 +53,7 @@ def encrypt(inp, out, password, iv, chunk_num=8, padding=b'\x00'):
             # Si no es compleix, s'emplenarà amb padding fins a arribar-hi
             chunk += padding * (16 - len(chunk) % 16)
         out.write(cipher.encrypt(chunk))
+
 
 def decrypt(inp, out, password, iv, chunk_num=8, padding=b'\x00'):
     """Desxifra una entrada."""

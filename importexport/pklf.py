@@ -63,8 +63,9 @@ class PickledAlumne(PickledObject):
     data = ('nom', 'cognoms', 'nom_tutor_1', 'cognoms_tutor_1', 'nom_tutor_2',
             'cognoms_tutor_2', 'correu_alumne', 'compartir_correu_alumne',
             'correu_tutor_1', 'compartir_correu_tutor_1', 'correu_tutor_2',
-            'compartir_correu_tutor_2', 'telefon_alumne', 'compartir_telefon_alumne',
-            'telefon_tutor_1', 'compartir_telefon_tutor_1', 'telefon_tutor_2',
+            'compartir_correu_tutor_2', 'telefon_alumne',
+            'compartir_telefon_alumne', 'telefon_tutor_1',
+            'compartir_telefon_tutor_1', 'telefon_tutor_2',
             'compartir_telefon_tutor_2')
 
     def __init__(self, *, pk, **kwargs):
@@ -334,8 +335,8 @@ class PickledExtraescolar(PickledObject):
         return ret
 
     def to_json(self):
-        dest = {k: getattr(self, k) for k in self.data if k not in ['preu',
-                                                                    'inscripcio_des_de', 'inscripcio_fins_a']}
+        dest = {k: getattr(self, k) for k in self.data if k not in [
+            'preu', 'inscripcio_des_de', 'inscripcio_fins_a']}
         dest['cursos'] = self.cursos
         dest['inscripcions'] = [i.to_json() for i in self.inscripcions]
         dest['preu'] = float(self.preu)
@@ -353,8 +354,8 @@ class PickledExtraescolar(PickledObject):
 
     @classmethod
     def from_json(cls, orig):
-        corig = {k: v for k, v in orig.items() if k not in ['inscripcions',
-                                                            'preu', 'inscripcio_des_de', 'inscripcio_fins_a']}
+        corig = {k: v for k, v in orig.items() if k not in [
+            'inscripcions', 'preu', 'inscripcio_des_de', 'inscripcio_fins_a']}
         if orig['inscripcio_des_de'] is not None:
             corig['inscripcio_des_de'] = datetime.datetime.strptime(
                 orig['inscripcio_des_de'], DATE_FMT)

@@ -170,8 +170,8 @@ class Changes:
         pdata = parse(validate(imp))
 
         for palumne in pdata:
-            classe = Classe.objects.get(id_interna=cls._get_classe(cmap,
-                                        palumne.classe))
+            classe = Classe.objects.get(id_interna=cls._get_classe(
+                cmap, palumne.classe))
             try:
                 alumne = Alumne.objects.get(nom=palumne.nom,
                                             cognoms=palumne.cognoms)

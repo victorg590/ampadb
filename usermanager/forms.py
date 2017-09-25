@@ -62,8 +62,8 @@ class UsersForms:
             if password and password != passwordConfirm:
                 self.add_error('password_confirm',
                                forms.ValidationError(
-                                    'La confirmació de contrasenya no és'
-                                    ' correcta'))
+                                   'La confirmació de contrasenya no és'
+                                   ' correcta'))
 
 
 class RegisterForm(Forms.Form):
@@ -126,8 +126,8 @@ class AdminChangePasswordForm(Forms.Form):
         if password and password != passwordConfirm:
             self.add_error('password_confirm',
                            forms.ValidationError(
-                                'La confirmació de contrasenya no és'
-                                ' correcta'))
+                               'La confirmació de contrasenya no és'
+                               ' correcta'))
 
 
 class ChangeCodeForm(Forms.Form):

@@ -9,6 +9,7 @@ import random
 import unicodedata
 import re
 
+
 def is_admin(user):
     return user.is_staff and user.is_superuser
 
@@ -48,7 +49,7 @@ def get_user(username):
     try:
         user = User.objects.get(username=username)
     except User.DoesNotExist:
-            user = UnregisteredUser.objects.get(username=username)
+        user = UnregisteredUser.objects.get(username=username)
     return user
 
 
@@ -117,6 +118,7 @@ def get_alumne(username):
     except Profile.DoesNotExist:
         return None
     return profile.alumne
+
 
 class Forms:
     class Form(forms.Form):

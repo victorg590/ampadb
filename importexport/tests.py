@@ -9,6 +9,7 @@ from . import ampacsv
 from io import StringIO
 import csv
 
+
 class CsvImportTestCase(TestCase):
     def setUp(self):
         curs = Curs.objects.create(nom='Curs 1', id_interna='CURS1')

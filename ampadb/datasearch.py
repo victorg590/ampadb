@@ -1,7 +1,9 @@
 import shlex
 from django.db.models.query_utils import Q
 
-_dummycomposer = lambda key, exact: Q()
+
+def _dummycomposer(key, exact): return Q()
+
 
 def parse_token(token, composer):
     if '|' in token:
@@ -17,6 +19,7 @@ def parse_token(token, composer):
     else:
         return composer(token, False)
 
+
 def make_queryset_from_list(qlist):
     if not qlist:
         return Q()
@@ -25,6 +28,7 @@ def make_queryset_from_list(qlist):
         current &= q
     return current
 
+
 def make_queryset_from_or_list(qlist):
     if not qlist:
         return Q()
@@ -32,6 +36,7 @@ def make_queryset_from_or_list(qlist):
     for q in qlist[1:]:
         current |= q
     return current
+
 
 def datasearch(params, composer=_dummycomposer):
     """Torna un objecte Q segons un string de cerca.
