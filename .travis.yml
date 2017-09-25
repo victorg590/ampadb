@@ -1,17 +1,17 @@
 # Fallarà al lint, però no hi ha una forma suportada d'utilitzar
-# dos idiomes
+# dos llenguatges (Python y Node.js)
 matrix:
   include:
     - language: python
       python: 3.5
       cache: pip
-      install:
-        - pip install 'setuptools>=18.5'
-        - pip install -r stdrequirements.txt
+      before_install: pip install 'setuptools>=18.5'
+      install: pip install -r stdrequirements.txt
       script: python manage.py test
 
     - language: node_js
       node_js: 8
       cache: yarn
+      before_install: yarn global add grunt-cli
       install: yarn
       script: yarn test
