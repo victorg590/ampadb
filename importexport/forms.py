@@ -25,7 +25,7 @@ class ExportForm(Forms.Form):
     contrasenya = forms.CharField(required=False, widget=forms.PasswordInput)
     repeteix_la_contrasenya = forms.CharField(required=False,
         widget=forms.PasswordInput)
-    
+
     def clean(self):
         cleaned_data = super().clean()
         contrasenya = cleaned_data.get('contrasenya')

@@ -7,7 +7,7 @@ $submit = $('#export-form button[type="submit"]')
 changeRequired = ($to, nowRequired) ->
   $parent = $to.parent()
   if confirmIsRequired == nowRequired
-      return
+    return
   if nowRequired
     $parent.addClass "required"
     $to.attr "required", true
@@ -31,7 +31,7 @@ checkPassword = ->
 
 $(document).ready ->
   # Assigna una classe als camps de contrasenya per a que sigui més fàcil
-  # mostrar-los i ocultar-los 
+  # mostrar-los i ocultar-los
   $password.parent().children().addClass 'password-block'
   $confirm.parent().
     children().addClass 'password-block'
@@ -53,7 +53,7 @@ $(document).ready ->
       changeRequired($confirm, true)
     $confirm.keyup()
     return
-  
+
   $confirm.keyup ->
     if not $password.val()
       $confirm.parent().removeClass 'has-error has-success'
@@ -70,7 +70,7 @@ $(document).ready ->
       $confirm.parent().addClass 'has-error'
       $submit.attr 'disabled', true
     return
-  
+
   $('#export-form').submit ->
     if $password.val() and not checkPassword()
       return false
