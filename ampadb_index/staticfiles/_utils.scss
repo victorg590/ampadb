@@ -1,0 +1,4 @@
+/// Afegir fonts des de Google Fonts. $fonts són les fonts, separades per |
+@mixin google-fonts($family) {
+    @import url("https://fonts.googleapis.com/css?family=#{$family}");
+}
