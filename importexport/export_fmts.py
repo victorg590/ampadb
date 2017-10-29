@@ -35,7 +35,7 @@ def export_csv(outfile, alumnes):
 
 
 def export_ampacsv(outfile, alumnes):
-    writer = csv.DictWriter(outfile, ampacsv.fieldnames,
+    writer = csv.DictWriter(outfile, ampacsv.FIELDNAMES,
                             dialect=ampacsv.AmpaDialect())
     writer.writeheader()
     for a in alumnes:

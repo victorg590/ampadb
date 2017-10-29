@@ -30,6 +30,8 @@ FIELDNAMES = [
 class AmpaDialect(csv.Dialect):
     delimiter = ','
     quotechar = '"'
+    escapechar = '\\'
+    doublequote = False
     quoting = csv.QUOTE_MINIMAL
     lineterminator = '\r\n'  # Per compatibilitat amb Windows
     skipinitialspace = True

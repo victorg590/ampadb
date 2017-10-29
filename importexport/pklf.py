@@ -455,7 +455,7 @@ class PickledMissatge(PickledObject):
 
 
 class PickledConversacio(PickledObject):
-    data = ('assumpte', 'tancat')
+    data = ('assumpte', 'tancada')
 
     def __init__(self, *, pk, de, a, missatges=None, **kwargs):
         self.pk = pk

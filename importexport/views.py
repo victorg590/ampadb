@@ -2,6 +2,8 @@ from django.http import HttpResponse
 from django.shortcuts import render, redirect, get_object_or_404
 from ampadb.support import is_admin, redirect_with_get
 from django.contrib.auth.decorators import login_required, user_passes_test
+from django.views.decorators.debug import (sensitive_variables,
+                                           sensitive_post_parameters)
 from contactboard.models import Classe, Alumne
 from .forms import ExportForm, ImportForm, IEFormats
 from . import export_fmts as exf
@@ -29,6 +31,8 @@ def export_view(request, classe_id=None):
 
 @login_required
 @user_passes_test(is_admin)
+@sensitive_post_parameters('contrasenya', 'repeteix_la_contrasenya')
+@sensitive_variables('password')
 def genexport(request):
     form = ExportForm(request.POST)
     if not form.is_valid():
