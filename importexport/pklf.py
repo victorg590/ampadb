@@ -389,7 +389,7 @@ class PickledGrupDeMissatgeria(PickledObject):
                    **kwargs)
 
     def unpickle(self):
-        obj = Extraescolar.objects.update_or_create(
+        obj = GrupDeMissatgeria.objects.update_or_create(
             pk=self.pk,
             defaults={k: getattr(self, k) for k in self.data})[0]
         usuaris = [User.objects.get(username=u) for u in self.usuaris]

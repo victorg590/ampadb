@@ -1,6 +1,7 @@
 from ampadb.support import Forms
 from django import forms
 from django.core.exceptions import ValidationError
+from string import ascii_uppercase
 from .models import Alumne, Classe, Curs, validate_non_reserved_id
 
 
@@ -20,7 +21,7 @@ class ClasseForms:
     class NewForm(Forms.Form):
         nom = forms.ChoiceField(
             required=True,
-            choices=[(c, c) for c in ['A', 'B', 'C', 'D', 'E']])
+            choices=[(c, c) for c in ascii_uppercase])
         id_interna = forms.SlugField(
             max_length=20, required=True,
             validators=[validate_non_reserved_id, validate_classe_id_unique],
