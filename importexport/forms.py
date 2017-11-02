@@ -1,15 +1,9 @@
 from ampadb.support import Forms
 from django import forms
 from django.core.exceptions import ValidationError
-
-
-class IEFormats:
-    AUTO = ''
-    CSV = 'csv'
-    JSON = 'json'
-    PICKLE = 'pickle'
-    AMPACSV = 'csv.ampacsv'
-    EXCELCSV = 'csv.excel'
+from . import ies_format
+from .ampacsv import InvalidFormat
+from .import_fmts import IEFormats
 
 
 class ExportForm(Forms.Form):
@@ -72,10 +66,6 @@ class ImportForm(Forms.Form):
         )
     )
     ifile = forms.FileField(required=True, label="Arxiu d'importació")
-
-
-from . import ies_format  # Aquí per evitar imports circulars # nopep8
-from . import_fmts import InvalidFormat  # nopep8
 
 
 class Ies:

@@ -132,12 +132,12 @@ def processimport(request):
             text = imf.bytestream_to_text(
                 request.FILES['ifile'],
                 encoding=(request.encoding or 'utf-8'))
-            imf.import_ampacsv(text, preexistents)
+            ampacsv.import_ampacsv(text, preexistents)
         elif dformat == IEFormats.EXCELCSV:
             text = imf.bytestream_to_text(
                 request.FILES['ifile'],
                 encoding=(request.encoding or 'utf-8'))
-            imf.import_excel(text, preexistents)
+            ampacsv.import_excel(text, preexistents)
         elif dformat == IEFormats.PICKLE:
             imf.import_pickle(request.FILES['ifile'], password,
                               preexistents)

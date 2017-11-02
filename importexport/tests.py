@@ -3,7 +3,7 @@ from contactboard.models import *
 from usermanager.models import *
 from django.contrib.auth.models import User
 from datetime import date
-from .import_fmts import import_ampacsv, _importar_fila, InvalidFormat
+from .ampacsv import import_ampacsv, _importar_fila, InvalidFormat
 from .pklf import PickledInfo, PickledAlumne
 from . import ampacsv
 from io import StringIO
