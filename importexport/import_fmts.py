@@ -3,13 +3,14 @@ import pickle
 import gzip
 import pathlib
 import tempfile
+from io import BytesIO
+from enum import Enum
 from .pklf import CURRENT_VERSION, PickledInfo
 from . import aesencrypt
 from .ampacsv import InvalidFormat
-from io import BytesIO
 
 
-class IEFormats:
+class IEFormats(Enum):
     AUTO = ''
     CSV = 'csv'
     JSON = 'json'
@@ -62,9 +63,10 @@ def decrypt_pickle(infile, password):
     if infile.read(len(b'AMPAAES0')) != b'AMPAAES0':
         raise InvalidFormat('No està xifrat o no és un arxiu de'
                             'còpia de seguretat')
-    iv = infile.read(aesencrypt.IV_LENGTH)
+    init_vector = infile.read(aesencrypt.IV_LENGTH)
     plain_pickle = BytesIO()
-    aesencrypt.decrypt(infile, plain_pickle, password, iv)
+    aesencrypt.decrypt(infile, plain_pickle,
+                       aesencrypt.CryptoParams(password, init_vector))
     return plain_pickle
 
 
@@ -76,33 +78,30 @@ def import_pickle(infile, password, preexistents=''):
     try:
         try:
             plain_pickle.seek(0)
-            with gzip.GzipFile(fileobj=plain_pickle) as gz:
-                return import_pickle_uncompressed(gz, password != '',
+            with gzip.GzipFile(fileobj=plain_pickle) as gzfile:
+                return import_pickle_uncompressed(gzfile, password != '',
                                                   preexistents)
         except OSError:
             # Prova per si no està comprimit
             return import_pickle_uncompressed(infile, password != '',
                                               preexistents)
     except EOFError:
-        raise InvalidFormat(
-            'Contrasenya incorrecta o no és un arxiu Pickle' if password
-            else 'No és un arxiu Pickle'
-        )
+        raise InvalidFormat('Contrasenya incorrecta o no és un arxiu Pickle'
+                            if password else 'No és un arxiu Pickle')
 
 
 def import_pickle_uncompressed(infile, encrypted, preexistents=''):
     try:
         info = pickle.load(infile)
     except pickle.UnpicklingError:
-        raise InvalidFormat(
-            'Contrasenya incorrecta o no és un arxiu Pickle' if encrypted
-            else 'No és un arxiu Pickle'
-        )
+        raise InvalidFormat('Contrasenya incorrecta o no és un arxiu Pickle'
+                            if encrypted else 'No és un arxiu Pickle')
     try:
         info.check_version(CURRENT_VERSION)
         info.unpickle(preexistents)
     except InvalidFormat:
         raise
-    except Exception as e:
-        raise InvalidFormat("No és un arxiu Pickle d'aquesta aplicació (" +
-                            str(e) + ')') from e
+    except Exception as ex:
+        raise InvalidFormat(
+            "No és un arxiu Pickle d'aquesta aplicació ({})".format(
+                ex)) from ex

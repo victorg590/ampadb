@@ -89,8 +89,8 @@ class AmpaDbSettings:
         if self.config:
             self.config.set('FALLBACK', key, value)
             if self.settings_file:
-                with open(self.settings_file) as sf:
-                    self.config.write(sf)
+                with open(self.settings_file) as cfgfile:
+                    self.config.write(cfgfile)
 
     def setjson(self, key, value):
         return self.set(key, json.dumps(value))

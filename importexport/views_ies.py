@@ -1,14 +1,14 @@
-from django.shortcuts import render, redirect, get_object_or_404
-from ampadb.support import is_admin
+import json
 from django.contrib.auth.decorators import login_required, user_passes_test
+from django.db import transaction
+from django.shortcuts import render, redirect, get_object_or_404
+from django.utils.html import mark_safe
+from ampadb.support import is_admin
+from contactboard.models import Classe
 from .forms import Ies as Forms
 from .models import IesImport
 from . import ies_format
 from .import_fmts import InvalidFormat
-from contactboard.models import Classe
-import json
-from django.utils.html import mark_safe
-from django.db import transaction
 
 
 @login_required
@@ -24,10 +24,7 @@ def upload(request):
         form = Forms.UploadForm()
     if IesImport.objects.exists():
         IesImport.clean_old()
-    context = {
-        'form': form,
-        'pending': IesImport.objects.all()
-    }
+    context = {'form': form, 'pending': IesImport.objects.all()}
     return render(request, 'importexport/ies/upload.html', context)
 
 
@@ -47,19 +44,19 @@ def classnames(request, upload_id):
                           'desenvolupadors')
             data = {}
             current_valid = False
-        except InvalidFormat as e:
-            errors.append(e)
+        except InvalidFormat as ex:
+            errors.append(ex)
             current_valid = False
         else:
-            imp.class_dict = json.dumps(data, sort_keys=True,
-                                        separators=(',', ':'))
+            imp.class_dict = json.dumps(
+                data, sort_keys=True, separators=(',', ':'))
             imp.delete_other = json.loads(request.POST.get('delete', 'true'))
             imp.save()
     else:
         data = json.loads(imp.class_dict)
     all_classes = Classe.objects.all()
-    imp_classes = ies_format.unique_classes(ies_format.parse(
-        ies_format.validate(imp.ifile)))
+    imp_classes = ies_format.unique_classes(
+        ies_format.parse(ies_format.validate(imp.ifile)))
     if current_valid:
         try:
             ies_format.val_json(imp.ifile, json.loads(imp.class_dict))
@@ -83,17 +80,15 @@ def confirm(request, upload_id):
         ies_format.val_json(imp.ifile, json.loads(imp.class_dict))
     except InvalidFormat:
         return redirect('importexport:ies:classnames', imp.pk)
-    changes = ies_format.Changes.calculate(
-        imp.ifile, json.loads(imp.class_dict), imp.delete_other)
+    changes = ies_format.Changes.calculate(imp.ifile,
+                                           json.loads(imp.class_dict),
+                                           imp.delete_other)
     if request.method == 'POST':
         with transaction.atomic():
             changes.apply()
             imp.delete()
         return redirect('importexport:ies:upload')
-    context = {
-        'imp': imp,
-        'chg': changes
-    }
+    context = {'imp': imp, 'chg': changes}
     return render(request, 'importexport/ies/confirm.html', context)
 
 
@@ -102,7 +97,5 @@ def cancel(request, upload_id):
     if request.method == 'POST':
         imp.delete()
         return redirect('importexport:ies:upload')
-    context = {
-        'imp': imp
-    }
+    context = {'imp': imp}
     return render(request, 'importexport/ies/cancel.html', context)

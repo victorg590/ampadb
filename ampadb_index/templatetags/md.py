@@ -6,7 +6,7 @@ register = template.Library()
 
 
 @register.filter
-def md(value, arg=''):
+def md(value, arg=''):  # pylint: disable=invalid-name
     if not arg or arg == 'div':
         kwargs = {'wrap': 'div', 'html_class': 'markdown'}
     elif arg == 'blockquote':
@@ -26,7 +26,7 @@ class MarkdownNode(template.Node):
 
 
 @register.tag(name="markdown")
-def do_markdown(parser, token):
+def do_markdown(parser, _):
     nodelist = parser.parse('endmarkdown')
     parser.delete_first_token()
     return MarkdownNode(nodelist)

@@ -1,3 +1,5 @@
+# TODO: Corregir alertes de linting
+
 from contactboard.models import *
 from usermanager.models import *
 from extraescolars.models import *

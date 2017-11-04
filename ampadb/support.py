@@ -1,13 +1,13 @@
-from django import forms
-from django.http import HttpResponseRedirect
-from django.urls import reverse
 from urllib.parse import quote
-from usermanager.models import User, UnregisteredUser
-from usermanager.models import Profile
 import logging
 import random
 import unicodedata
 import re
+from django import forms
+from django.http import HttpResponseRedirect
+from django.urls import reverse
+from usermanager.models import User, UnregisteredUser
+from usermanager.models import Profile
 
 
 def is_admin(user):
@@ -30,19 +30,19 @@ def redirect_with_get(url, get_params, *args, **kwargs):
     """
     first = True
     get_string = ''
-    for t in get_params:
+    for param in get_params:
         if first:
-            get_string += '?{}={}'.format(t[0], quote(t[1]))
+            get_string += '?{}={}'.format(param[0], quote(param[1]))
             first = False
         else:
-            get_string += '&{}={}'.format(t[0], quote(t[1]))
+            get_string += '&{}={}'.format(param[0], quote(param[1]))
     resolved_url = reverse(url, args=args, kwargs=kwargs)
     return HttpResponseRedirect(resolved_url + get_string)
 
 
 def username_exists(username):
-    return (User.objects.filter(username=username) or
-            UnregisteredUser.objects.filter(username=username))
+    return (User.objects.filter(username=username)
+            or UnregisteredUser.objects.filter(username=username))
 
 
 def get_user(username):
@@ -64,43 +64,42 @@ def gen_codi():
 
 def desaccentuar(text):
     return ''.join([
-        c for c in
-        unicodedata.normalize('NFKD', text)  # Descomposar: 'à' -> 'a`'
+        c
+        for c in unicodedata.normalize('NFKD',
+                                       text)  # Descomposar: 'à' -> 'a`'
         if not unicodedata.combining(c)  # Eliminar caràcters de combinació
-                                         # (ex. '`')
+        # (ex. '`')
     ])
 
 
 def gen_username(alumne):
     try:
-        un = alumne.nom.replace(' ', '')[0]
+        username = alumne.nom.replace(' ', '')[0]
     except IndexError:
-        un = ''
-    un += '.'
-    un += alumne.cognoms
-    un = un.replace(' ', '')
-    un = un.lower()
-    un = desaccentuar(un)
+        username = ''
+    username += '.'
+    username += alumne.cognoms
+    username = username.replace(' ', '')
+    username = username.lower()
+    username = desaccentuar(username)
     un_filter = filter(
         lambda s: re.search(r'[\w.@+-]', s, flags=re.ASCII) is not None,
-        un
+        username
     )  # Mira si encaixa en els caràcters ASCII. Sinó, elimina el caracter
-    un = ''.join(c for c in un_filter)[:30]
+    username = ''.join(c for c in un_filter)[:30]
     next_try = 1
-    while True:
-        if not username_exists(un):
-            break
+    while username_exists(username):
         next_try_str = str(next_try)
-        un = un[:(30 - len(next_try_str))] + next_try_str
+        username = username[:(30 - len(next_try_str))] + next_try_str
         next_try += 1
         if next_try > 20:
-            logging.warning("No s'ha pogut trobar un nom d'usuari per a {}. "
-                            "Crean't-ne un aleatori.".format(alumne))
+            logging.warning("No s'ha pogut trobar un nom d'usuari per a %s. "
+                            "Crean't-ne un aleatori.", alumne)
             return gen_codi()
-    return un
+    return username
 
 
-def signal_clean(sender, **kwargs):
+def signal_clean(_, **kwargs):
     instance = kwargs['instance']
     return instance.full_clean()
 
@@ -111,16 +110,16 @@ def get_alumne(username):
         profile = Profile.objects.get(user=user)
     except User.DoesNotExist:
         try:
-            uu = UnregisteredUser.objects.get(username=username)
-            profile = Profile.objects.get(unregisteredUser=uu)
+            uuser = UnregisteredUser.objects.get(username=username)
+            profile = Profile.objects.get(unregisteredUser=uuser)
         except UnregisteredUser.DoesNotExist:
             return None
-    except Profile.DoesNotExist:
+    except Profile.DoesNotExist:  # pylint: disable=duplicate-except
         return None
     return profile.alumne
 
 
-class Forms:
+class Forms:  # pylint: disable=too-few-public-methods
     class Form(forms.Form):
         required_css_class = 'required'
 

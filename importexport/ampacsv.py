@@ -3,40 +3,24 @@ import pathlib
 import tempfile
 from django.core.exceptions import ValidationError
 from django.db import transaction
-from contactboard.models import *
-from usermanager.models import *
-from extraescolars.models import *
-from missatges.models import *
+from django.contrib.auth.models import User
+from contactboard.models import Alumne, Classe, Curs
+from usermanager.models import Profile, UnregisteredUser
+from extraescolars.models import Extraescolar, Inscripcio
+from missatges.models import GrupDeMissatgeria, EstatMissatge, Missatge
 from ampadb.support import gen_username, gen_codi, username_exists
 
 FIELDNAMES = [
-    'pk',
-    'Nom',
-    'Cognoms',
-    'Nom tutor 1',
-    'Cognoms tutor 1',
-    'Nom tutor 2',
-    'Cognoms tutor 2',
-    'Correu alumne',
-    'Compartir correu alumne',
-    'Correu tutor 1',
-    'Compartir correu tutor 1',
-    'Correu tutor 2',
-    'Compartir correu tutor 2',
-    'Telèfon alumne',
-    'Compartir telèfon alumne',
-    'Telèfon tutor 1',
-    'Compartir telèfon tutor 1',
-    'Telèfon tutor 2',
-    'Compartir telèfon tutor 2',
-    'Classe',
-    'Curs',
-    'Usuari',
-    'Eliminar'
+    'pk', 'Nom', 'Cognoms', 'Nom tutor 1', 'Cognoms tutor 1', 'Nom tutor 2',
+    'Cognoms tutor 2', 'Correu alumne', 'Compartir correu alumne',
+    'Correu tutor 1', 'Compartir correu tutor 1', 'Correu tutor 2',
+    'Compartir correu tutor 2', 'Telèfon alumne', 'Compartir telèfon alumne',
+    'Telèfon tutor 1', 'Compartir telèfon tutor 1', 'Telèfon tutor 2',
+    'Compartir telèfon tutor 2', 'Classe', 'Curs', 'Usuari', 'Eliminar'
 ]
 
 
-class AmpaDialect(csv.Dialect):
+class AmpaDialect(csv.Dialect):  # pylint: disable=too-few-public-methods
     delimiter = ','
     quotechar = '"'
     escapechar = '\\'
@@ -58,15 +42,15 @@ class InvalidFormat(Exception):
 
     @classmethod
     def falta_a_fila(cls, columna, fila):
-        return cls('Falta columna {} a la fila {}'.format(columna,
-                                                          str(fila)))
+        return cls('Falta columna {} a la fila {}'.format(columna, str(fila)))
 
     @classmethod
     def invalid(cls, columna, fila, rao):
-        return cls('{} invàlid a la fila {}: {}'.format(columna, str(fila),
-                                                        rao))
+        return cls('{} invàlid a la fila {}: {}'.format(
+            columna, str(fila), rao))
 
 
+# TODO: Aquesta funció hauria de ser separada en diverses funcions més petites
 def _importar_fila(fila):
     ret = {'alumne': None, 'classe': None, 'curs': None, 'user': None}
     try:
@@ -320,8 +304,10 @@ def _importar_fila(fila):
             if not curs_id:
                 raise InvalidFormat('"Classe" no existeix, però tampoc es'
                                     ' defineix "Curs" (fila: {})'.format(fila))
-            curs = Curs.objects.get_or_create(id_interna=curs_id,
-                                              defaults={'nom': curs_id})[0]
+            curs = Curs.objects.get_or_create(
+                id_interna=curs_id, defaults={
+                    'nom': curs_id
+                })[0]
             classe = Classe(nom=classe_id, id_interna=classe_id, curs=curs)
             classe.save()
             ret['classe'] = classe.pk
@@ -352,8 +338,7 @@ def _importar_fila(fila):
                 registered = True
             except User.DoesNotExist:
                 try:
-                    user = UnregisteredUser.objects.get(
-                        username=username)
+                    user = UnregisteredUser.objects.get(username=username)
                     registered = False
                 except UnregisteredUser.DoesNotExist:
                     username = gen_username(alumne)
@@ -363,8 +348,7 @@ def _importar_fila(fila):
                     if registered:
                         profile = Profile.objects.get(user=user)
                     else:
-                        profile = Profile.objects.get(
-                            unregisteredUser=user)
+                        profile = Profile.objects.get(unregisteredUser=user)
                     if profile.alumne != alumne:
                         username = gen_username(alumne)
                         user = None
@@ -372,28 +356,37 @@ def _importar_fila(fila):
                     if registered:
                         alumne.save()
                         Profile.objects.update_or_create(
-                            alumne=alumne,
-                            defaults={'user': user}
-                        )
+                            alumne=alumne, defaults={
+                                'user': user
+                            })
                     else:
                         alumne.save()
                         Profile.objects.update_or_create(
-                            alumne=alumne,
-                            defaults={'unregisteredUser': user})
+                            alumne=alumne, defaults={
+                                'unregisteredUser': user
+                            })
             if user is None:
-                user = UnregisteredUser.objects.create(username=username,
-                                                       codi=gen_codi())
+                user = UnregisteredUser.objects.create(
+                    username=username, codi=gen_codi())
                 ret['user'] = user.pk
                 alumne.save()
-                Profile.objects.update_or_create(alumne=alumne, defaults={
-                    'unregisteredUser': user, 'user': None})
+                Profile.objects.update_or_create(
+                    alumne=alumne,
+                    defaults={
+                        'unregisteredUser': user,
+                        'user': None
+                    })
         else:
-            user = UnregisteredUser.objects.create(username=username,
-                                                   codi=gen_codi())
+            user = UnregisteredUser.objects.create(
+                username=username, codi=gen_codi())
             ret['user'] = user.pk
             alumne.save()
-            Profile.objects.update_or_create(alumne=alumne, defaults={
-                'unregisteredUser': user, 'user': None})
+            Profile.objects.update_or_create(
+                alumne=alumne,
+                defaults={
+                    'unregisteredUser': user,
+                    'user': None
+                })
     alumne.save()
     ret['alumne'] = alumne.pk
     return ret
@@ -411,11 +404,12 @@ def _csv_del_all():
 def _csv_del_not_added(afegits):
     alumnes = {d['alumne'] for d in afegits if d['alumne'] is not None}
     classes = {d['classe'] for d in afegits if d['classe'] is not None}
-    classes |= {Alumne.objects.only('classe').get(pk=a).classe.pk
-                for a in alumnes}
+    classes |= {
+        Alumne.objects.only('classe').get(pk=a).classe.pk
+        for a in alumnes
+    }
     cursos = {d['curs'] for d in afegits if d['curs'] is not None}
-    cursos |= {Classe.objects.only('curs').get(pk=c).curs.pk
-               for c in classes}
+    cursos |= {Classe.objects.only('curs').get(pk=c).curs.pk for c in classes}
     usuaris = {d['user'] for d in afegits if d['user'] is not None}
     for a in alumnes:
         try:
