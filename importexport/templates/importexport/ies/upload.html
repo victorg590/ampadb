@@ -1,39 +1,60 @@
-{% extends "menu.html" %}
-{% load bootstrap3 %}
-
-{% block content %}
+{% extends "menu.html" %} {% load bootstrap3 %} {% block content %}
 <h1>Importar format del centre</h1>
-A diferència dels altres formats, aquest reconeix els alumnes pel nom i cognoms,
-no per la clau primària (PK). Per tant, asumeix que la combinació de nom +
-cognoms és única.
-El format ha de ser un CSV (exportat des d'Excel o LibreOffice) amb els següents
-camps:
-<code>NOM,COGNOM 1,COGNOM 2,CLASSE</code>
-Per exemple:
-<code>Joan,Pérez,Gómez,1 A ESO</code>
-Si calgués, un dels cognoms es pot deixar en blanc. Així, aquesta entrada és
-equivalent:
-<code>Joan,Pérez Gómez,,1 A ESO</code>
-A l'importar l'arxiu, la primera fila <strong>ha de ser</strong> la capçalera
-anterior. En cas contrari, la importació fallarà.
+A diferència dels altres formats, aquest reconeix els alumnes pel nom i cognoms, no per la clau primària (PK). Per tant,
+asumeix que la combinació de nom + cognoms és única. El format ha de ser un CSV (exportat des de LibreOffice, per exemple)
+amb els següents camps:
+<code>NOM,COGNOM 1,COGNOM 2,CLASSE</code> Per exemple:
+<code>Joan,Pérez,Gómez,1 A ESO</code> Si calgués, un dels cognoms es pot deixar en blanc. Així, aquesta entrada és equivalent:
+<code>Joan,Pérez Gómez,,1 A ESO</code> A l'importar l'arxiu, la primera fila
+<strong>ha de ser</strong> la capçalera anterior. En cas contrari, la importació fallarà.
+
+<div>
+  <h3>Opcions de creació del CSV</h3>
+
+  <p>Al crear el CSV, l'editor et demanarà opcions d'exportació. Utilitza aquestes:</p>
+
+  <dl>
+    <dt>Codificació* /
+      <i>Character Set</i>
+    </dt>
+    <dd>Unicode (UTF-8)</dd>
+    <dt>Delimitador de camp*</dt>
+    <dd>,
+      <em>(Coma)</em>
+    </dd>
+    <dt>Delimitador de text</dt>
+    <dd>"
+      <em>(Cometes dobles)</em>
+    </dd>
+    <dt>Caràcter d'escapament</dt>
+    <dd>\
+      <em>(Barra inclinada inversa)</em>
+    </dd>
+    <dt>Delimitar text</dt>
+    <dd>Només si hi és necessari</dd>
+  </dl>
+
+  <p>Si el teu editor (com Microsoft Office Excel) no suporta les opcions marcades amb *, prova amb
+    <a href="https://ca.libreoffice.org/baixada/">LibreOffice Calc</a>
+  </p>
+</div>
 
 {% if pending %}
 <h2>Importacions en curs</h2>
-<p>Aquestes importacions han sigut creades, pero encara falten dades o no s'han
-  aplicat.</p>
-<p>Tingues en compte que les importacions amb més d'una setmana d'inactivitat
-  seran esborrades.</p>
+<p>Aquestes importacions han sigut creades, pero encara falten dades o no s'han aplicat.
+</p>
+<p>Tingues en compte que les importacions amb més d'una setmana d'inactivitat seran esborrades.</p>
 <ul>
   {% for i in pending %}
-  <li><a href="{% url 'importexport:ies:classnames' i.pk %}">{{ i }}</a></li>
+  <li>
+    <a href="{% url 'importexport:ies:classnames' i.pk %}">{{ i }}</a>
+  </li>
   {% endfor %}
 </ul>
 {% endif %}
 
 <h2>Nova importació</h2>
 <form method="post" enctype="multipart/form-data">
-  {% csrf_token %}
-  {% bootstrap_form form %}
-  {% buttons submit="Enviar" %}{% endbuttons %}
+  {% csrf_token %} {% bootstrap_form form %} {% buttons submit="Enviar" %}{% endbuttons %}
 </form>
 {% endblock content %}
