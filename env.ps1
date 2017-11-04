@@ -24,8 +24,8 @@ If ($Venv -eq $False) {
       Exit 1
     }
     Invoke-Expression ".\venv\Scripts\activate.ps1"
-    pip install 'setuptools>=18.5'
-    pip install -r stdrequirements.txt
+    pip install -U 'setuptools>=18.5'
+    pip3 install -r 'requirements.txt' -r 'devrequirements.txt'
 } Else {
   Invoke-Expression ".\venv\Scripts\activate.ps1"
 }

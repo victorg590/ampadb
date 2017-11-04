@@ -25,8 +25,8 @@ IF NOT EXIST "venv" (
     EXIT /B 1
   )
   venv\Scripts\activate.bat
-  pip install "setuptools>=18.5"
-  pip install -r "stdrequirements.txt"
+  pip install -U "setuptools>=18.5"
+  pip3 install -r "requirements.txt" -r "devrequirements.txt"
 ) ELSE (
   venv\Scripts\activate
 )

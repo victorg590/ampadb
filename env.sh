@@ -9,9 +9,9 @@ if [ -f "private.ini" ]; then
 fi
 if [ ! -d "venv" ]; then
   echo "No existeix l'entorn virtual. Ara es crearà."
-  PYTHON_EXECUTABLE=$(python3 -c "import sys; print(sys.executable)")
+  PYTHON_EXECUTABLE=$(python3.6 -c "import sys; print(sys.executable)")
   if [ ! "$PYTHON_EXECUTABLE" ]; then
-    echo "Es necessita Python 3 per a la instalació"
+    echo "Es necessita Python 3.6 per a la instalació"
     return 1
   fi
   virtualenv \
@@ -23,8 +23,8 @@ if [ ! -d "venv" ]; then
     return 1
   fi
   . venv/bin/activate
-  pip3 install 'setuptools>=18.5'
-  pip3 install -r stdrequirements.txt
+  pip3 install -U 'setuptools>=18.5'
+  pip3 install -r requirements.txt -r devrequirements.txt
 else
   . venv/bin/activate
 fi
