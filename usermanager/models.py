@@ -1,26 +1,34 @@
-from django.db import models
-from django.contrib.auth.models import User
-from contactboard.models import Alumne
 from django.core import validators
 from django.core.exceptions import ValidationError
+from django.contrib.auth.models import User
+from django.db import models
+from contactboard.models import Alumne
 
 
 class Profile(models.Model):
     class Meta:
         verbose_name = 'perfil'
-    user = models.OneToOneField(User, verbose_name='usuari', blank=True,
-                                null=True, on_delete=models.SET_NULL)
+
+    user = models.OneToOneField(
+        User,
+        verbose_name='usuari',
+        blank=True,
+        null=True,
+        on_delete=models.SET_NULL)
     unregisteredUser = models.OneToOneField(
-        'UnregisteredUser', verbose_name='usuari (no registrat)',
-        blank=True, null=True, on_delete=models.SET_NULL)
-    alumne = models.OneToOneField(Alumne, primary_key=True,
-                                  on_delete=models.CASCADE)
+        'UnregisteredUser',
+        verbose_name='usuari (no registrat)',
+        blank=True,
+        null=True,
+        on_delete=models.SET_NULL)
+    alumne = models.OneToOneField(
+        Alumne, primary_key=True, on_delete=models.CASCADE)
 
     @classmethod
     def cleanup(cls):
         """Elimina tots els registres sense `user` ni `unregisteredUser`"""
-        return cls.objects.filter(user__isnull=True,
-                                  unregisteredUser__isnull=True).delete()
+        return cls.objects.filter(
+            user__isnull=True, unregisteredUser__isnull=True).delete()
 
     def clean(self):
         super().clean()
@@ -48,8 +56,11 @@ class UnregisteredUser(models.Model):
     class Meta:
         verbose_name = 'usuari no registrat'
         verbose_name_plural = 'usuaris no registrats'
+
     username = models.CharField(
-        "nom d'usuari", max_length=30, primary_key=True,
+        "nom d'usuari",
+        max_length=30,
+        primary_key=True,
         validators=[
             validators.RegexValidator(r'^[\w.@+-]{1,30}$'),
             validate_username_unique
@@ -57,7 +68,8 @@ class UnregisteredUser(models.Model):
     # El codi és d'un sol ús, pel que, a diferència de la contrasenya,
     # no és necessari protegir-lo amb un hash
     codi = models.CharField(
-        max_length=6, blank=False,
+        max_length=6,
+        blank=False,
         validators=[validators.RegexValidator(r'^[0-9]{6}$')],
         help_text=(
             "Un codi numèric de 6 dígits per confirmar que l'usuari "

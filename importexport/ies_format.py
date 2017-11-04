@@ -1,11 +1,11 @@
 import csv
 import json
 from collections import namedtuple
-from .import_fmts import InvalidFormat, bytestream_to_text
+from django.db import transaction
+from ampadb.support import gen_username, gen_codi
 from contactboard.models import Classe, Alumne
 from usermanager.models import Profile, UnregisteredUser
-from ampadb.support import gen_username, gen_codi
-from django.db import transaction
+from .import_fmts import InvalidFormat, bytestream_to_text
 
 ImportedAlumne = namedtuple('ImportedAlumne', ['nom', 'cognoms', 'classe'])
 
@@ -13,15 +13,15 @@ ImportedAlumne = namedtuple('ImportedAlumne', ['nom', 'cognoms', 'classe'])
 def validate_row(row):
     try:
         nom = row['NOM'].strip()
-    except KeyError as e:
-        raise InvalidFormat.falta_columna('NOM') from e
+    except KeyError as ex:
+        raise InvalidFormat.falta_columna('NOM') from ex
     if not nom:
         raise InvalidFormat.falta_a_fila('NOM', row)
 
     try:
         cognom1 = row['COGNOM 1'].strip()
-    except KeyError as e:
-        raise InvalidFormat.falta_columna('COGNOM 1') from e
+    except KeyError as ex:
+        raise InvalidFormat.falta_columna('COGNOM 1') from ex
     if not cognom1:
         raise InvalidFormat.falta_a_fila('COGNOM 1', row)
 
@@ -29,8 +29,8 @@ def validate_row(row):
 
     try:
         classe = row['CLASSE'].strip()
-    except KeyError as e:
-        raise InvalidFormat.falta_columna('CLASSE') from e
+    except KeyError as ex:
+        raise InvalidFormat.falta_columna('CLASSE') from ex
     if not classe:
         raise InvalidFormat.falta_a_fila('CLASSE', row)
 
@@ -38,8 +38,8 @@ def validate_row(row):
 def validate(inp):
     try:
         reader = csv.DictReader(bytestream_to_text(inp))
-    except UnicodeDecodeError as e:
-        raise InvalidFormat('No és un arxiu de text (UTF-8)') from e
+    except UnicodeDecodeError as ex:
+        raise InvalidFormat('No és un arxiu de text (UTF-8)') from ex
     res = []
     for row in reader:
         validate_row(row)
@@ -80,25 +80,26 @@ def parse(validated_inp):
 
 def unique_classes(parsed_inp):
     current = set()
-    for a in parsed_inp:
-        current |= {a.classe}
+    for alumne in parsed_inp:
+        current |= {alumne.classe}
     return current
 
 
 def val_json(inp, dicc):
     current = set()
     expected = unique_classes(parse(validate(inp)))
-    for k in dicc:
-        if not Classe.objects.filter(id_interna=k).exists():
-            raise InvalidFormat('No existeix la classe "{}"'.format(k))
-        if dicc[k] is None:
+    for classe in dicc:
+        if not Classe.objects.filter(id_interna=classe).exists():
+            raise InvalidFormat('No existeix la classe "{}"'.format(classe))
+        if dicc[classe] is None:
             continue
-        for c in dicc[k]:
-            if c in current:
-                raise InvalidFormat('Classe repetida: "{}"'.format(c))
-            if c not in expected:
-                raise InvalidFormat('Classe no esperada: "{}"'.format(c))
-            current |= {c}
+        for imp_classe in dicc[classe]:
+            if imp_classe in current:
+                raise InvalidFormat('Classe repetida: "{}"'.format(imp_classe))
+            if imp_classe not in expected:
+                raise InvalidFormat(
+                    'Classe no esperada: "{}"'.format(imp_classe))
+            current |= {imp_classe}
     if current < expected:
         raise InvalidFormat('Falten classes: {}'.format(expected - current))
     assert current == expected
@@ -108,11 +109,11 @@ def rev_json(in_dicc):
     if in_dicc is None:
         return json.dumps(None)
     out_dicc = {}
-    for k in in_dicc:
-        if in_dicc[k] is None:
+    for classe in in_dicc:
+        if in_dicc[classe] is None:
             continue
-        for c in in_dicc[k]:
-            out_dicc[c] = k
+        for imp_classe in in_dicc[classe]:
+            out_dicc[imp_classe] = classe
     return json.dumps(out_dicc)
 
 
@@ -133,34 +134,37 @@ class Changes:
 
     def apply(self):
         with transaction.atomic():
-            for a in self.add:
+            for addalu in self.add:
                 alumne = Alumne.objects.update_or_create(
-                    nom=a.nom, cognoms=a.cognoms,
-                    defaults={'classe': a.classe}
-                )[0]
+                    nom=addalu.nom,
+                    cognoms=addalu.cognoms,
+                    defaults={
+                        'classe': addalu.classe
+                    })[0]
                 profile = Profile.objects.get_or_create(alumne=alumne)[0]
                 if not profile.unregisteredUser and not profile.user:
-                    uu = UnregisteredUser.objects.get_or_create(
+                    uuser = UnregisteredUser.objects.get_or_create(
                         username=gen_username(alumne),
-                        defaults={'codi': gen_codi()}
-                    )[0]
-                    profile.unregisteredUser = uu
+                        defaults={
+                            'codi': gen_codi()
+                        })[0]
+                    profile.unregisteredUser = uuser
                     profile.save()
-            for m in self.move:
-                m.alumne.classe = m.a_classe
-                m.alumne.save()
-            for d in self.delete:
-                d.alumne.delete()
-            for dc in self.delete_classe:
-                dc.classe.delete()
+            for movealu in self.move:
+                movealu.alumne.classe = movealu.a_classe
+                movealu.alumne.save()
+            for delalu in self.delete:
+                delalu.alumne.delete()
+            for delclasse in self.delete_classe:
+                delclasse.classe.delete()
 
     @staticmethod
     def _get_classe(cmap, icls):
-        for c in cmap:
-            if cmap[c] is None:
+        for classe in cmap:
+            if cmap[classe] is None:
                 continue
-            if icls in cmap[c]:
-                return c
+            if icls in cmap[classe]:
+                return classe
         raise KeyError("Entrada invàlida: {}. S'esperava la classe: {}".format(
             cmap, icls))
 
@@ -170,15 +174,17 @@ class Changes:
         pdata = parse(validate(imp))
 
         for palumne in pdata:
-            classe = Classe.objects.get(id_interna=cls._get_classe(cmap,
-                                        palumne.classe))
+            classe = Classe.objects.get(
+                id_interna=cls._get_classe(cmap, palumne.classe))
             try:
-                alumne = Alumne.objects.get(nom=palumne.nom,
-                                            cognoms=palumne.cognoms)
+                alumne = Alumne.objects.get(
+                    nom=palumne.nom, cognoms=palumne.cognoms)
             except Alumne.DoesNotExist:
-                ins.add.append(cls.AddAlumne(nom=palumne.nom,
-                                             cognoms=palumne.cognoms,
-                                             classe=classe))
+                ins.add.append(
+                    cls.AddAlumne(
+                        nom=palumne.nom,
+                        cognoms=palumne.cognoms,
+                        classe=classe))
                 continue
             if alumne.classe == classe:
                 ins.noop.append(cls.NoopAlumne(alumne))
@@ -189,14 +195,12 @@ class Changes:
             return ins
 
         for alumne in Alumne.objects.all():
-            if not (
-                alumne in (o.alumne for o in ins.move) or
-                alumne in (o.alumne for o in ins.noop)
-            ):
+            if not (alumne in (o.alumne for o in ins.move)
+                    or alumne in (o.alumne for o in ins.noop)):
                 ins.delete.append(cls.DeleteAlumne(alumne))
 
-        for c in Classe.objects.all():
-            if c.id_interna not in cmap or not cmap[c.id_interna]:
-                ins.delete_classe.append(cls.DeleteClasse(c))
+        for classe in Classe.objects.all():
+            if classe.id_interna not in cmap or not cmap[classe.id_interna]:
+                ins.delete_classe.append(cls.DeleteClasse(classe))
 
         return ins

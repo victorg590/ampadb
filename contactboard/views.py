@@ -1,11 +1,12 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.http import HttpResponse
-from ampadb.support import is_admin
 from django.contrib.auth.decorators import login_required, user_passes_test
+from ampadb.support import is_admin
 from usermanager.models import Profile
 
-from .models import Classe, Alumne
-from .forms import *
+from .models import Curs, Classe, Alumne
+from .forms import (CursForms, ClasseForms, AlumneForms, MailtoForm,
+                    MailtoClasseForm)
 
 
 # Conflicte amb la funció built-in list()
@@ -22,12 +23,9 @@ def list_view(request, id_classe):
 @login_required
 @user_passes_test(is_admin)
 def adminlist(request):
-    cursos = Curs.objects.all().order_by('ordre')
-    classes = Classe.objects.all().order_by('curs')
-    context = {
-        'cursos': cursos,
-        'classes': classes
-    }
+    cursos = Curs.objects.all().order_by('ordre', 'nom')
+    classes = Classe.objects.all().order_by('curs', 'nom')
+    context = {'cursos': cursos, 'classes': classes}
     return render(request, 'contactboard/adminlist.html', context)
 
 
@@ -47,10 +45,7 @@ def add_classe(request, id_curs):
             return redirect('contactboard:adminlist')
     else:
         form = ClasseForms.NewForm(initial={'curs': curs})
-    context = {
-        'form': form,
-        'submitText': 'Crear'
-    }
+    context = {'form': form, 'submitText': 'Crear'}
     return render(request, 'contactboard/add.html', context)
 
 
@@ -68,16 +63,13 @@ def edit_classe(request, id_classe):
                 classe.save()
             return redirect('contactboard:adminlist')
     else:
-        c = {
+        classe_initial = {
             'nom': classe.nom,
             'id_interna': classe.id_interna,
             'curs': classe.curs.id_interna
         }
-        form = ClasseForms.EditForm(c, initial=c)
-    context = {
-        'form': form,
-        'submitText': 'Editar'
-    }
+        form = ClasseForms.EditForm(classe, initial=classe_initial)
+    context = {'form': form, 'submitText': 'Editar'}
     return render(request, 'contactboard/add.html', context)
 
 
@@ -88,9 +80,7 @@ def delete_classe(request, id_classe):
     if request.method == 'POST':
         classe.delete()
         return redirect('contactboard:adminlist')
-    context = {
-        'classe': classe
-    }
+    context = {'classe': classe}
     return render(request, 'contactboard/delete-classe.html', context)
 
 
@@ -110,10 +100,7 @@ def add_curs(request):
             return redirect('contactboard:adminlist')
     else:
         form = CursForms.NewForm()
-    context = {
-        'form': form,
-        'submitText': 'Crear'
-    }
+    context = {'form': form, 'submitText': 'Crear'}
     return render(request, 'contactboard/add.html', context)
 
 
@@ -130,16 +117,13 @@ def edit_curs(request, id_curs):
                 curs.ordre = cdata['ordre']
             return redirect('contactboard:adminlist')
     else:
-        c = {
+        curs_initial = {
             'nom': curs.nom,
             'id_interna': curs.id_interna,
             'ordre': curs.ordre
         }
-        form = CursForms.EditForm(c, initial=c)
-    context = {
-        'form': form,
-        'submitText': 'Editar'
-    }
+        form = CursForms.EditForm(curs, initial=curs_initial)
+    context = {'form': form, 'submitText': 'Editar'}
     return render(request, 'contactboard/add.html', context)
 
 
@@ -150,10 +134,7 @@ def delete_curs(request, id_curs):
     if request.method == 'POST':
         curs.delete()
         return redirect('contactboard:adminlist')
-    context = {
-        'curs': curs,
-        'classes': Classe.objects.filter(curs=curs)
-    }
+    context = {'curs': curs, 'classes': Classe.objects.filter(curs=curs)}
     return render(request, 'contactboard/delete-curs.html', context)
 
 
@@ -170,20 +151,16 @@ def add_alumne(request, id_classe):
             return redirect('contactboard:list', id_classe)
     else:
         form = AlumneForms.NewForm()
-    context = {
-        'form': form,
-        'classe': classe,
-        'submitText': 'Afegir'
-    }
+    context = {'form': form, 'classe': classe, 'submitText': 'Afegir'}
     return render(request, 'contactboard/add.html', context)
 
 
 @login_required
 def edit_alumne(request, alumne_pk):
     if not is_admin(request.user):
-        p = Profile.objects.get(user=request.user)
-        if p.alumne.pk != int(alumne_pk):
-            return redirect('contactboard:edit-alumne', p.alumne.pk)
+        profile = Profile.objects.get(user=request.user)
+        if profile.alumne.pk != int(alumne_pk):
+            return redirect('contactboard:edit-alumne', profile.alumne.pk)
 
     alumne = get_object_or_404(Alumne, pk=alumne_pk)
     if request.method == 'POST':
@@ -199,8 +176,10 @@ def edit_alumne(request, alumne_pk):
         if is_admin(request.user):
             form = AlumneForms.AdminEditForm(instance=alumne)
         else:
-            form = AlumneForms.EditForm(instance=alumne,
-                                        initial={'classe': alumne.classe})
+            form = AlumneForms.EditForm(
+                instance=alumne, initial={
+                    'classe': alumne.classe
+                })
     context = {
         'form': form,
         'submitText': 'Actualitzar',
@@ -225,9 +204,7 @@ def delete_alumne(request, alumne_pk):
             pass
         alumne.delete()
         return redirect('contactboard:list', alumne.classe.id_interna)
-    context = {
-        'alumne': alumne
-    }
+    context = {'alumne': alumne}
     return render(request, 'contactboard/delete-alumne.html', context)
 
 
@@ -237,17 +214,17 @@ def _build_mailto(fdata, classe=None):
     mailto_str = 'mailto:'
     if fdata['enviar_com'] == MailtoForm.AS_BCC:
         mailto_str += '?bcc='
-    for c in fdata['classes']:
-        classe = Classe.objects.get(id_interna=c)
-        for a in Alumne.objects.filter(classe=classe):
-            if (MailtoForm.TO_ALUMNES in fdata['enviar_a'] and
-                    a.correu_alumne):
-                mailto_str += a.correu_alumne + ','
+    for classe_id in fdata['classes']:
+        classe = Classe.objects.get(id_interna=classe_id)
+        for alumne in Alumne.objects.filter(classe=classe):
+            if (MailtoForm.TO_ALUMNES in fdata['enviar_a']
+                    and alumne.correu_alumne):
+                mailto_str += alumne.correu_alumne + ','
             if MailtoForm.TO_TUTORS in fdata['enviar_a']:
-                if a.correu_tutor_1:
-                    mailto_str += a.correu_tutor_1 + ','
-                if a.correu_tutor_2:
-                    mailto_str += a.correu_tutor_2 + ','
+                if alumne.correu_tutor_1:
+                    mailto_str += alumne.correu_tutor_1 + ','
+                if alumne.correu_tutor_2:
+                    mailto_str += alumne.correu_tutor_2 + ','
     while mailto_str[-1] == ',':
         mailto_str = mailto_str[:-1]
     return mailto_str
@@ -266,9 +243,7 @@ def mailto(request):
             return response
     else:
         form = MailtoForm()
-    context = {
-        'form': form
-    }
+    context = {'form': form}
     return render(request, 'contactboard/mailto.html', context)
 
 
@@ -286,8 +261,5 @@ def mailtoclasse(request, id_classe):
             return response
     else:
         form = MailtoClasseForm()
-    context = {
-        'form': form,
-        'classe': classe
-    }
+    context = {'form': form, 'classe': classe}
     return render(request, 'contactboard/mailto.html', context)

@@ -45,8 +45,8 @@ module.exports = (grunt) ->
     sass:
       compile:
         options:
-          sourcemap: 'auto'
-          loadPath: dest_dir
+          sourceMap: true
+          includePaths: [dest_dir]
         files: [{
           expand: true
           src: "#{dest_dir}/**/*.{sass,scss}"
@@ -104,7 +104,7 @@ module.exports = (grunt) ->
           }]
 
   grunt.loadNpmTasks 'grunt-contrib-copy'
-  grunt.loadNpmTasks 'grunt-contrib-sass'
+  grunt.loadNpmTasks 'grunt-sass'
   grunt.loadNpmTasks 'grunt-contrib-cssmin'
   grunt.loadNpmTasks 'grunt-contrib-coffee'
   grunt.loadNpmTasks 'grunt-contrib-uglify'

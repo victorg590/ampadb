@@ -1,0 +1,16 @@
+{
+    "editor.rulers": [
+        80
+    ],
+    "python.promptToInstallJupyter": false,
+    "python.pythonPath": "${workspaceRoot}/venv/bin/python",
+    "python.linting.enabled": true,
+    "python.linting.pylintEnabled": true,
+    "python.linting.pylintArgs": [
+        "--rcfile=${workspaceRoot}/.pylintrc"
+    ],
+    "python.formatting.provider": "yapf",
+    "editor.formatOnSave": true,
+    "html.format.enable": false,
+    "html.validate.scripts": false
+}

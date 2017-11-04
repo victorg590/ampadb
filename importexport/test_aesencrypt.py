@@ -1,9 +1,10 @@
 from unittest import TestCase
-from . import aesencrypt
 from io import BytesIO
-from Crypto import Random
 from random import randint, choice
 import string
+from Crypto import Random
+from . import aesencrypt
+
 
 class EncryptTestCase(TestCase):
     @staticmethod
@@ -18,16 +19,18 @@ class EncryptTestCase(TestCase):
         characters = randint(1, 100)
         return ''.join(choice(string.printable) for _ in range(characters))
 
-    def test_encrypt_decrypt_same_content(self):
+    def test_same_content(self):
         content = self._get_content()
         password = self._gen_password()
         inp = BytesIO(content)
         enc = BytesIO()
-        iv = aesencrypt.gen_iv()
-        aesencrypt.encrypt(inp, enc, password, iv)
+        init_vector = aesencrypt.gen_init_vector()
+        aesencrypt.encrypt(inp, enc,
+                           aesencrypt.CryptoParams(password, init_vector))
         enc.seek(0)
         out = BytesIO()
-        aesencrypt.decrypt(enc, out, password, iv)
+        aesencrypt.decrypt(enc, out,
+                           aesencrypt.CryptoParams(password, init_vector))
         self.assertEqual(out.getvalue(), content)
 
     def test_decrypt_failed_password(self):
@@ -36,11 +39,13 @@ class EncryptTestCase(TestCase):
         password2 = self._gen_password()
         inp = BytesIO(content)
         enc = BytesIO()
-        iv = aesencrypt.gen_iv()
-        aesencrypt.encrypt(inp, enc, password1, iv)
+        init_vector = aesencrypt.gen_init_vector()
+        aesencrypt.encrypt(inp, enc,
+                           aesencrypt.CryptoParams(password1, init_vector))
         enc.seek(0)
         out = BytesIO()
-        aesencrypt.decrypt(enc, out, password2, iv)
+        aesencrypt.decrypt(enc, out,
+                           aesencrypt.CryptoParams(password2, init_vector))
         self.assertNotEqual(out.getvalue(), content)
 
     def test_invalid_iv(self):
@@ -48,10 +53,10 @@ class EncryptTestCase(TestCase):
         password = self._gen_password()
         inp = BytesIO(content)
         enc = BytesIO()
-        iv1 = aesencrypt.gen_iv()
-        aesencrypt.encrypt(inp, enc, password, iv1)
+        iv1 = aesencrypt.gen_init_vector()
+        aesencrypt.encrypt(inp, enc, aesencrypt.CryptoParams(password, iv1))
         enc.seek(0)
         out = BytesIO()
-        iv2 = aesencrypt.gen_iv()
-        aesencrypt.decrypt(enc, out, password, iv2)
+        iv2 = aesencrypt.gen_init_vector()
+        aesencrypt.decrypt(enc, out, aesencrypt.CryptoParams(password, iv2))
         self.assertNotEqual(out.getvalue(), content)

@@ -1,14 +1,12 @@
 from django.shortcuts import render, redirect, get_object_or_404
-from django.http import HttpResponse
-from django.template import loader
 from django.contrib.auth.decorators import login_required, user_passes_test
+from django.views.decorators.debug import (sensitive_variables,
+                                           sensitive_post_parameters)
+from ampadb.support import get_alumne, is_admin, redirect_with_get
 from .models import Extraescolar, Inscripcio
 from .forms import InscripcioForm, ExtraescolarForms, SearchInscripcioForm
 from .forms import InscripcioAdminForm
-from ampadb.support import get_alumne, is_admin, redirect_with_get
 from .support import status_inscripcio
-from django.views.decorators.debug import (sensitive_variables,
-                                           sensitive_post_parameters)
 
 
 def check_data(request):
@@ -29,8 +27,9 @@ def check_data(request):
     if not alumne.cognoms_tutor_2:
         falten.append("Cognoms del tutor 2")
     if falten:
-        return render(request, 'extraescolars/no_data.html',
-                      {'falten': falten})
+        return render(request, 'extraescolars/no_data.html', {
+            'falten': falten
+        })
     return None
 
 
@@ -38,23 +37,21 @@ def check_data(request):
 @login_required
 def list_view(request):
     if is_admin(request.user):
-        context = {
-            'activitats': Extraescolar.objects.all()
-        }
+        context = {'activitats': Extraescolar.objects.all()}
         return render(request, 'extraescolars/admin-list.html', context)
     activitats = []
     alumne = get_alumne(request.user.username)
-    inscripcions = []
-    for e in Extraescolar.objects.all():
-        d = {'obj': e}
-        d['inscripcio_oberta'] = status_inscripcio(
-            e, get_alumne(request.user.username))[0]
-        activitats.append(d)
-        if Inscripcio.objects.filter(alumne=alumne, activitat=e):
-            inscripcions.append(e)
+    linscripcions = []
+    for extraescolar in Extraescolar.objects.all():
+        extraescolar_dict = {'obj': extraescolar}
+        extraescolar_dict['inscripcio_oberta'] = status_inscripcio(
+            extraescolar, get_alumne(request.user.username))[0]
+        activitats.append(extraescolar_dict)
+        if Inscripcio.objects.filter(alumne=alumne, activitat=extraescolar):
+            linscripcions.append(extraescolar)
     context = {
         'activitats': activitats,
-        'inscripcions': inscripcions,
+        'inscripcions': linscripcions,
         'alumne': alumne
     }
     return render(request, 'extraescolars/list.html', context)
@@ -69,12 +66,12 @@ def show(request, act_id):
             'inscripcions': Inscripcio.objects.filter(activitat=activitat)
         }
         return render(request, 'extraescolars/show.html', context)
-    inscripcio = status_inscripcio(activitat,
-                                   get_alumne(request.user.username))
+    sinscripcio = status_inscripcio(activitat,
+                                    get_alumne(request.user.username))
     context = {
         'activitat': activitat,
-        'oberta': inscripcio[0],
-        'requires': inscripcio[1]
+        'oberta': sinscripcio[0],
+        'requires': sinscripcio[1]
     }
     alumne = get_alumne(request.user.username)
     try:
@@ -91,17 +88,16 @@ def inscripcio(request, act_id):
     datacheck = check_data(request)
     if datacheck:
         return datacheck
-    if (request.method != 'POST' or
-        not status_inscripcio(activitat, get_alumne(
-            request.user.username))[0]):
+    if (request.method != 'POST' or not status_inscripcio(
+            activitat, get_alumne(request.user.username))[0]):
         return redirect('extraescolars:show', act_id)
     alumne = get_alumne(request.user.username)
-    inscripcio = Inscripcio()
-    inscripcio.activitat = activitat
-    inscripcio.alumne = alumne
-    inscripcio.confirmat = False
-    inscripcio.pagat = False
-    inscripcio.save()
+    inscripcio_obj = Inscripcio()
+    inscripcio_obj.activitat = activitat
+    inscripcio_obj.alumne = alumne
+    inscripcio_obj.confirmat = False
+    inscripcio_obj.pagat = False
+    inscripcio_obj.save()
     return redirect('extraescolars:show', act_id)
 
 
@@ -115,9 +111,10 @@ def cancel(request, act_id):
     if request.method != 'POST' or not status_inscripcio(activitat, alumne)[0]:
         return redirect('extraescolars:show', act_id)
     try:
-        inscripcio = Inscripcio.objects.get(activitat=activitat, alumne=alumne)
-        if not inscripcio.confirmat:
-            inscripcio.delete()
+        inscripcio_obj = Inscripcio.objects.get(
+            activitat=activitat, alumne=alumne)
+        if not inscripcio_obj.confirmat:
+            inscripcio_obj.delete()
     except Inscripcio.DoesNotExist:
         pass
     return redirect('extraescolars:show', act_id)
@@ -128,8 +125,8 @@ def cancel(request, act_id):
 @login_required
 def genfull(request):
     alumne = get_alumne(request.user.username)
-    inscripcions = Inscripcio.objects.filter(alumne=alumne)
-    if inscripcions.count() == 0:
+    inscripcio_obj = Inscripcio.objects.filter(alumne=alumne)
+    if inscripcio_obj.count() == 0:
         return redirect('extraescolars:list')
     if request.method == 'POST':
         form = InscripcioForm(request.POST)
@@ -137,15 +134,13 @@ def genfull(request):
             context = {
                 'alumne': alumne,
                 'dades': form.cleaned_data,
-                'inscripcions': inscripcions
+                'inscripcions': inscripcio_obj
             }
             return render(request, 'extraescolars/fitxa_inscripcio.html',
                           context)
     else:
         form = InscripcioForm()
-    context = {
-        'form': form
-    }
+    context = {'form': form}
     return render(request, 'extraescolars/genfull.html', context)
 
 
@@ -159,10 +154,7 @@ def add(request):
             return redirect('extraescolars:list')
     else:
         form = ExtraescolarForms.AddForm()
-    context = {
-        'form': form,
-        'submitText': 'Crear'
-    }
+    context = {'form': form, 'submitText': 'Crear'}
     return render(request, 'extraescolars/add.html', context)
 
 
@@ -177,10 +169,7 @@ def edit(request, act_id):
             return redirect('extraescolars:list')
     else:
         form = ExtraescolarForms.EditForm(instance=activitat)
-    context = {
-        'form': form,
-        'submitText': 'Editar'
-    }
+    context = {'form': form, 'submitText': 'Editar'}
     return render(request, 'extraescolars/add.html', context)
 
 
@@ -191,27 +180,24 @@ def delete(request, act_id):
     if request.method == 'POST':
         activitat.delete()
         return redirect('extraescolars:list')
-    else:
-        context = {
-            'extraescolar': activitat
-        }
-        return render(request, 'extraescolars/delete.html', context)
+    context = {'extraescolar': activitat}
+    return render(request, 'extraescolars/delete.html', context)
 
 
 @login_required
 @user_passes_test(is_admin)
 def inscripcions(request):
     if request.method == 'POST':
-        q = request.POST.get('q')
+        q = request.POST.get('q')  # pylint: disable=invalid-name
     else:
-        q = request.GET.get('q')
+        q = request.GET.get('q')  # pylint: disable=invalid-name
     msg = request.GET.get('msg', '')
     context = {}
     if q:
         search_form = SearchInscripcioForm(request.GET)
         if search_form.is_valid():
-            pk = search_form.cleaned_data['q']
-            context['ins'] = Inscripcio.objects.get(pk=pk)
+            inscripcio_pk = search_form.cleaned_data['q']
+            context['ins'] = Inscripcio.objects.get(pk=inscripcio_pk)
             if request.method == 'POST':
                 form = InscripcioAdminForm(
                     request.POST, instance=context['ins'])
@@ -222,18 +208,15 @@ def inscripcions(request):
             context['form'] = form
     else:
         search_form = SearchInscripcioForm()
-    context.update({
-        'msg': msg,
-        'search_form': search_form
-    })
+    context.update({'msg': msg, 'search_form': search_form})
     return render(request, 'extraescolars/inscripcions.html', context)
 
 
 @login_required
 @user_passes_test(is_admin)
 def cancel_ins(request, ins_pk):
-    inscripcio = get_object_or_404(Inscripcio, pk=ins_pk)
+    inscripcio_obj = get_object_or_404(Inscripcio, pk=ins_pk)
     if request.method != 'POST':
         return redirect_with_get('extraescolar:inscripcions', {'q': ins_pk})
-    inscripcio.delete()
+    inscripcio_obj.delete()
     return redirect_with_get('extraescolar:inscripcions', {'msg': 'deleted'})

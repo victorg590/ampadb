@@ -17,7 +17,6 @@ IF NOT EXIST "venv" (
     EXIT /B 1
   )
   virtualenv ^
-    --system-site-packages ^
     --prompt "(ampadb) " ^
     --python %PYTHON_EXECUTABLE% ^
     venv

@@ -1,7 +1,8 @@
+# pylint: disable=unused-argument
 from django.db.models.signals import pre_save
 from django.dispatch import receiver
-from .models import Extraescolar, Inscripcio
 from ampadb.support import signal_clean
+from .models import Extraescolar, Inscripcio
 
 
 @receiver(pre_save, sender=Extraescolar)

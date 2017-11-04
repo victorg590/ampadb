@@ -1,13 +1,14 @@
+# pylint: disable=invalid-name
+import csv
+from io import StringIO
 from django.test import TestCase
-from contactboard.models import *
-from usermanager.models import *
 from django.contrib.auth.models import User
-from datetime import date
-from .import_fmts import import_ampacsv, _importar_fila, InvalidFormat
+from contactboard.models import Curs, Classe, Alumne
+from usermanager.models import Profile, UnregisteredUser
+from .ampacsv import import_ampacsv, _importar_fila, InvalidFormat
 from .pklf import PickledInfo, PickledAlumne
 from . import ampacsv
-from io import StringIO
-import csv
+
 
 class CsvImportTestCase(TestCase):
     def setUp(self):

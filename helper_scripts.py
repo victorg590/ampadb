@@ -8,28 +8,28 @@ S'han d'executar amb
 from contactboard.models import Curs, Classe
 from django.db import transaction
 
-cursos = [
-    ('1ESO', '1er ESO', 1),
-    ('2ESO', '2on ESO', 2),
-    ('3ESO', '3er ESO', 3),
-    ('4ESO', '4rt ESO', 4),
-    ('1BTX', '1er Batxillerat', 5),
-    ('2BTX', '2on Batxillerat', 6)
-]
+CURSOS = [('1ESO', '1er ESO', 1), ('2ESO', '2on ESO', 2),
+          ('3ESO', '3er ESO', 3), ('4ESO', '4rt ESO', 4),
+          ('1BTX', '1er Batxillerat', 5), ('2BTX', '2on Batxillerat', 6)]
 
 
 def gencurs():
     """Crea els cursos 1er ESO A - 2on Batx E"""
     creats = []
     with transaction.atomic():
-        for c in cursos:
-            curs = Curs.objects.get_or_create(
-                id_interna=c[0],
-                defaults={'nom': c[1], 'ordre': c[2]}
-            )[0]
+        for curs in CURSOS:
+            curs_obj = Curs.objects.get_or_create(
+                id_interna=curs[0],
+                defaults={
+                    'nom': curs[1],
+                    'ordre': curs[2]
+                })[0]
             for classe in ('A', 'B', 'C', 'D', 'E'):
-                creats.append(Classe.objects.update_or_create(
-                    id_interna=(curs.id_interna + classe),
-                    defaults={'nom': classe, 'curs': curs})
-                )
+                creats.append(
+                    Classe.objects.update_or_create(
+                        id_interna=(curs_obj.id_interna + classe),
+                        defaults={
+                            'nom': classe,
+                            'curs': curs
+                        }))
     return creats

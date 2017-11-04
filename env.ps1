@@ -16,7 +16,6 @@ If ($Venv -eq $False) {
     Exit 1
   }
   virtualenv `
-    --system-site-packages `
     --prompt "(ampadb) " `
     --python "$PythonExecutable" `
     "venv"

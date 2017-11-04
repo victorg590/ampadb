@@ -1,37 +1,40 @@
 import shlex
 from django.db.models.query_utils import Q
 
-_dummycomposer = lambda key, exact: Q()
+_dummycomposer = lambda key, exact: Q()  # pylint: disable=invalid-name
+
 
 def parse_token(token, composer):
     if '|' in token:
         first, *other = token.split('|')
         current = parse_token(first, composer)
-        for t in other:
-            current |= parse_token(t, composer)
+        for tok in other:
+            current |= parse_token(tok, composer)
         return current
-    elif token[0] == '"':
+    if token[0] == '"':
         return composer(token[1:-1], False)
-    elif token[0] == "'":
+    if token[0] == "'":
         return composer(token[1:-1], True)
-    else:
-        return composer(token, False)
+    return composer(token, False)
+
 
 def make_queryset_from_list(qlist):
     if not qlist:
         return Q()
     current = qlist[0]
-    for q in qlist[1:]:
-        current &= q
+    for qobj in qlist[1:]:
+        current &= qobj
     return current
+
 
 def make_queryset_from_or_list(qlist):
     if not qlist:
         return Q()
     current = qlist[0]
-    for q in qlist[1:]:
-        current |= q
+    for qobj in qlist[1:]:
+        current |= qobj
     return current
+
 
 def datasearch(params, composer=_dummycomposer):
     """Torna un objecte Q segons un string de cerca.

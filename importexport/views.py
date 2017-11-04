@@ -1,14 +1,15 @@
+import datetime
+import json
+from django.contrib.auth.decorators import login_required, user_passes_test
 from django.http import HttpResponse
 from django.shortcuts import render, redirect, get_object_or_404
-from ampadb.support import is_admin, redirect_with_get
-from django.contrib.auth.decorators import login_required, user_passes_test
 from django.views.decorators.debug import (sensitive_variables,
                                            sensitive_post_parameters)
+from ampadb.support import is_admin, redirect_with_get
 from contactboard.models import Classe, Alumne
 from .forms import ExportForm, ImportForm, IEFormats
 from . import export_fmts as exf
 from . import import_fmts as imf
-import datetime
 from . import ampacsv
 
 
@@ -22,13 +23,13 @@ def export_view(request, classe_id=None):
     context = {
         'error_text': request.GET.get('error_text', ''),
         'classe': classe,
-        'form': ExportForm(initial={'classe': classe_id},
-                           auto_id='%s'),
+        'form': ExportForm(initial={'classe': classe_id}, auto_id='%s'),
         'today': datetime.datetime.today().strftime('%Y-%m-%d')
     }
     return render(request, 'importexport/export.html', context)
 
 
+# pylint: disable=too-many-branches,too-many-statements
 @login_required
 @user_passes_test(is_admin)
 @sensitive_post_parameters('contrasenya', 'repeteix_la_contrasenya')
@@ -52,8 +53,8 @@ def genexport(request):
             filename = 'alumnes.csv'
             alumnes = Alumne.objects.all()
         response = HttpResponse(content_type="text/csv")
-        response['Content-Disposition'] = ('attachment; filename="%s"' %
-                                           filename)
+        response['Content-Disposition'] = (
+            'attachment; filename="{}"'.format(filename))
         exf.export_csv(response, alumnes)
         return response
     elif dformat == IEFormats.AMPACSV:
@@ -64,8 +65,8 @@ def genexport(request):
             filename = 'alumnes.csv'
             alumnes = Alumne.objects.all()
         response = HttpResponse(content_type="text/csv")
-        response['Content-Disposition'] = ('attachment; filename="%s"' %
-                                           filename)
+        response['Content-Disposition'] = (
+            'attachment; filename="{}"'.format(filename))
         exf.export_ampacsv(response, alumnes)
         return response
     elif dformat == IEFormats.JSON:
@@ -74,26 +75,29 @@ def genexport(request):
         else:
             filename = datetime.datetime.today().strftime('%Y-%m-%d') + '.json'
         response = HttpResponse(content_type="application/json")
-        response['Content-Disposition'] = ('attachment; filename="%s"' %
-                                           filename)
+        response['Content-Disposition'] = (
+            'attachment; filename="{}"'.format(filename))
         exf.export_json(response, classe)
         return response
     elif dformat == IEFormats.PICKLE:
         if classe:
             filename = classe.id_interna + '.pkl.gz'
         else:
-            filename = (datetime.datetime.today().strftime('%Y-%m-%d') +
-                        '.pkl.gz')
+            filename = (
+                datetime.datetime.today().strftime('%Y-%m-%d') + '.pkl.gz')
         if password:
             filename += '.aes'
         response = HttpResponse(content_type="application/gzip")
-        response['Content-Disposition'] = ('attachment; filename="%s"' %
-                                           filename)
+        response['Content-Disposition'] = (
+            'attachment; filename="{}"'.format(filename))
         if password:
             exf.export_encrypted_pickle(response, password, classe)
         else:
             exf.export_pickle(response, classe)
         return response
+
+
+# pylint: enable=too-many-branches,too-many-statements
 
 
 @login_required
@@ -103,7 +107,10 @@ def import_view(request):
     print(error_text)
     context = {
         'error_text': error_text,
-        'form': ImportForm(auto_id="%s")
+        'form': ImportForm(auto_id="%s"),
+        'extensions':
+        json.dumps({str(k): v
+                    for k, v in imf.EXTENSIONS.items()})
     }
     return render(request, 'importexport/import.html', context)
 
@@ -115,15 +122,15 @@ def processimport(request):
         return redirect('importexport:import')
     form = ImportForm(request.POST, request.FILES)
     if not form.is_valid():
-        raise Exception(form)
         return redirect('importexport:import')
     fformat = form.cleaned_data['format']
     if fformat == IEFormats.AUTO:
         try:
             dformat = imf.detect_format(request.FILES['ifile'].name)
         except ValueError:
-            return redirect_with_get('importexport:import', [('error_text',
-                                     'No es pot detectar el format')])
+            return redirect_with_get(
+                'importexport:import',
+                [('error_text', 'No es pot detectar el format')])
     else:
         dformat = fformat
     preexistents = form.cleaned_data['preexistents']
@@ -131,26 +138,22 @@ def processimport(request):
     try:
         if dformat == IEFormats.AMPACSV:
             text = imf.bytestream_to_text(
-                request.FILES['ifile'],
-                encoding=(request.encoding or 'utf-8'))
-            imf.import_ampacsv(text, preexistents)
+                request.FILES['ifile'], encoding=(request.encoding or 'utf-8'))
+            ampacsv.import_ampacsv(text, preexistents)
         elif dformat == IEFormats.EXCELCSV:
             text = imf.bytestream_to_text(
-                request.FILES['ifile'],
-                encoding=(request.encoding or 'utf-8'))
-            imf.import_excel(text, preexistents)
+                request.FILES['ifile'], encoding=(request.encoding or 'utf-8'))
+            ampacsv.import_excel(text, preexistents)
         elif dformat == IEFormats.PICKLE:
-            imf.import_pickle(request.FILES['ifile'], password,
-                              preexistents)
+            imf.import_pickle(request.FILES['ifile'], password, preexistents)
         elif dformat == IEFormats.JSON:
             text = imf.bytestream_to_text(
-                request.FILES['ifile'],
-                encoding=(request.encoding or 'utf-8'))
+                request.FILES['ifile'], encoding=(request.encoding or 'utf-8'))
             imf.import_json(text, preexistents)
         return redirect('contactboard:adminlist')
-    except imf.InvalidFormat as ex:
-        return redirect_with_get('importexport:import', [('error_text',
-                                                          str(ex))])
+    except ampacsv.InvalidFormat as ex:
+        return redirect_with_get('importexport:import',
+                                 [('error_text', str(ex))])
 
 
 # Tot i que no està enllaçat, l'accés a aquesta pàgina no és un risc

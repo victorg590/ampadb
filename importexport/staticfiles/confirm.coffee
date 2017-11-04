@@ -4,7 +4,7 @@ genOnClick = (op) -> ->  # Torna una funció
     list.slideDown 'slow'
     $(this).text textMenys
   else
-    list.slideUp 'slow'
+    list.slideUp()
     $(this).text textMes
   return
 
