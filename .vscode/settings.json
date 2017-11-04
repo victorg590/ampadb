@@ -10,5 +10,7 @@
         "--rcfile=${workspaceRoot}/.pylintrc"
     ],
     "python.formatting.provider": "yapf",
-    "editor.formatOnSave": true
+    "editor.formatOnSave": true,
+    "html.format.enable": false,
+    "html.validate.scripts": false
 }

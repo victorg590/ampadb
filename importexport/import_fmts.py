@@ -18,6 +18,19 @@ class IEFormats(Enum):
     AMPACSV = 'csv.ampacsv'
     EXCELCSV = 'csv.excel'
 
+    def __str__(self):
+        return self.value
+
+
+EXTENSIONS = {
+    IEFormats.AUTO: '',
+    IEFormats.CSV: '.csv',
+    IEFormats.JSON: '.json',
+    IEFormats.PICKLE: '.pkl,.pkl.gz,',
+    IEFormats.AMPACSV: '.csv',
+    IEFormats.EXCELCSV: '.csv'
+}
+
 
 def detect_format(filename):
     """Detecta un format a partir la extensió.

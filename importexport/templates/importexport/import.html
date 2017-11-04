@@ -34,5 +34,8 @@ Es poden importar les dades als formats:
 
 {% block scripts %}
 {{ block.super }}
+<script>
+  var extensions = {{ extensions|safe }};
+</script>
 <script src="{% static_dbg 'importexport/import.js' %}"></script>
 {% endblock scripts %}

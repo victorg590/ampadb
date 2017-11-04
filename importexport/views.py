@@ -1,4 +1,5 @@
 import datetime
+import json
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.http import HttpResponse
 from django.shortcuts import render, redirect, get_object_or_404
@@ -53,7 +54,7 @@ def genexport(request):
             alumnes = Alumne.objects.all()
         response = HttpResponse(content_type="text/csv")
         response['Content-Disposition'] = (
-            'attachment; filename="%s"' % filename)
+            'attachment; filename="{}"'.format(filename))
         exf.export_csv(response, alumnes)
         return response
     elif dformat == IEFormats.AMPACSV:
@@ -65,7 +66,7 @@ def genexport(request):
             alumnes = Alumne.objects.all()
         response = HttpResponse(content_type="text/csv")
         response['Content-Disposition'] = (
-            'attachment; filename="%s"' % filename)
+            'attachment; filename="{}"'.format(filename))
         exf.export_ampacsv(response, alumnes)
         return response
     elif dformat == IEFormats.JSON:
@@ -75,7 +76,7 @@ def genexport(request):
             filename = datetime.datetime.today().strftime('%Y-%m-%d') + '.json'
         response = HttpResponse(content_type="application/json")
         response['Content-Disposition'] = (
-            'attachment; filename="%s"' % filename)
+            'attachment; filename="{}"'.format(filename))
         exf.export_json(response, classe)
         return response
     elif dformat == IEFormats.PICKLE:
@@ -88,7 +89,7 @@ def genexport(request):
             filename += '.aes'
         response = HttpResponse(content_type="application/gzip")
         response['Content-Disposition'] = (
-            'attachment; filename="%s"' % filename)
+            'attachment; filename="{}"'.format(filename))
         if password:
             exf.export_encrypted_pickle(response, password, classe)
         else:
@@ -104,7 +105,13 @@ def genexport(request):
 def import_view(request):
     error_text = request.GET.get('error_text')
     print(error_text)
-    context = {'error_text': error_text, 'form': ImportForm(auto_id="%s")}
+    context = {
+        'error_text': error_text,
+        'form': ImportForm(auto_id="%s"),
+        'extensions':
+        json.dumps({str(k): v
+                    for k, v in imf.EXTENSIONS.items()})
+    }
     return render(request, 'importexport/import.html', context)
 
 
