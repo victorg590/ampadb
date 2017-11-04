@@ -137,7 +137,7 @@ def processimport(request):
             text = imf.bytestream_to_text(
                 request.FILES['ifile'], encoding=(request.encoding or 'utf-8'))
             ampacsv.import_excel(text, preexistents)
-            elif dformat == IEFormats.PICKLE:
+        elif dformat == IEFormats.PICKLE:
             imf.import_pickle(request.FILES['ifile'], password, preexistents)
         elif dformat == IEFormats.JSON:
             text = imf.bytestream_to_text(
