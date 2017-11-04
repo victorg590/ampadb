@@ -42,8 +42,12 @@ def detect_format(filename):
 def bytestream_to_text(bytestream, encoding='utf-8'):
     textstream = tempfile.TemporaryFile(mode='w+t')
     for chunk in bytestream.chunks():
-        decoded_chunk = chunk.decode(encoding)
-        textstream.write(decoded_chunk)
+        try:
+            decoded_chunk = chunk.decode(encoding)
+            textstream.write(decoded_chunk)
+        except UnicodeDecodeError:
+            raise InvalidFormat('Codificació incorrecte. Aquesta hauria de'
+                                ' ser Unicode (UTF-8)')
     textstream.seek(0)
     return textstream
 
