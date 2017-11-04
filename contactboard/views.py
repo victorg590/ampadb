@@ -23,8 +23,8 @@ def list_view(request, id_classe):
 @login_required
 @user_passes_test(is_admin)
 def adminlist(request):
-    cursos = Curs.objects.all().order_by('ordre')
-    classes = Classe.objects.all().order_by('curs')
+    cursos = Curs.objects.all().order_by('ordre', 'nom')
+    classes = Classe.objects.all().order_by('curs', 'nom')
     context = {'cursos': cursos, 'classes': classes}
     return render(request, 'contactboard/adminlist.html', context)
 
