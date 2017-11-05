@@ -60,7 +60,12 @@ class ImportForm(Forms.Form):
 
 class Ies:  # pylint: disable=too-few-public-methods
     class UploadForm(Forms.Form):
-        ifile = forms.FileField(required=True, label="Arxiu d'importació")
+        ifile = forms.FileField(
+            required=True,
+            label="Arxiu d'importació",
+            widget=forms.FileInput(attrs={
+                'accept': '.csv'
+            }))
 
         def clean(self):
             self.clean_file()
