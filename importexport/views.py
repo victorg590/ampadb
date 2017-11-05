@@ -1,5 +1,6 @@
 import datetime
 import json
+import logging
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.http import HttpResponse
 from django.shortcuts import render, redirect, get_object_or_404
@@ -38,7 +39,12 @@ def genexport(request):
     form = ExportForm(request.POST)
     if not form.is_valid():
         return redirect('importexport:export')
-    dformat = form.cleaned_data['format']  # Conflicte amb built-in format()
+    try:
+        dformat = IEFormats(form.cleaned_data['format'])
+        # ^ Conflicte amb built-in format()
+    except ValueError as ex:
+        logging.warning("S'ha intentat exportar al format invàlid %s", ex)
+        return redirect('importexport:export')
     if form.cleaned_data['classe']:
         classe_id = form.cleaned_data['classe']
         classe = get_object_or_404(Classe, id_interna=classe_id)
