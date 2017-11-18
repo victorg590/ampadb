@@ -53,7 +53,7 @@ table {
 
 hr.pgbr {
   border-color: red;
-  @media print{
+  @media print {
     border-style: none;
     page-break-after: always;
   }

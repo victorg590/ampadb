@@ -261,7 +261,9 @@ def gen_letter(request):
 
         Codi: `$codi`
 
-        Lloc web: `$url`'''
+        Lloc web: `$url`
+        
+        Classe: $classe'''
     initial = '\n'.join(s.strip() for s in initial.split('\n'))
     if request.method == 'POST':
         form = LetterForm(request.POST, initial={'plantilla': initial})

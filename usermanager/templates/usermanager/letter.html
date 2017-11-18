@@ -1,13 +1,19 @@
 {% extends "pdf.html" %}
 {% load mail_tpl %}
+{% load static_dbg %}
 
-{% block content %}
+{% block styles %}
+{{ block.super }}
+<link rel="stylesheet" href="{% static_dbg 'usermanager/letter.css' %}" />
+{% endblock styles %}
+
+{% block content %}}
 {% for u in uu %}
-<div class="no-break serif">
+<div class="letter serif">
   {% mail_template tpl u surl %}
 </div>
 {% if not forloop.last %}
-<hr class="pgbr" />
+<hr class="sep-bar"/>
 {% endif %}
 {% endfor %}
 {% endblock content %}
