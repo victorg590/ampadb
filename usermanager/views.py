@@ -205,20 +205,19 @@ class _MockAlumne:  # pylint: disable=too-few-public-methods
 @login_required
 @user_passes_test(is_admin)
 def export_uu(_):
-    uusers = UnregisteredUser.objects.all()
+    uusers = UnregisteredUser.objects.all().order_by('profile__alumne__classe',
+                                                     'profile__alumne')
     response = HttpResponse(content_type="text/csv")
     response['Content-Disposition'] = 'attachment; filename="users.csv"'
-    writer = csv.DictWriter(response, ['Nom', 'Usuari', 'Codi'])
+    writer = csv.DictWriter(response, ['Nom', 'Usuari', 'Codi', 'Classe'])
     writer.writeheader()
     for uuser in uusers:
-        try:
-            alumne = Profile.objects.get(unregisteredUser=uuser).alumne
-        except Profile.DoesNotExist:
-            alumne = _MockAlumne()
+        alumne = Profile.objects.get(unregisteredUser=uuser).alumne
         writer.writerow({
             'Nom': str(alumne),
             'Usuari': uuser.username,
-            'Codi': uuser.codi
+            'Codi': uuser.codi,
+            'Classe': str(alumne.classe)
         })
     return response
 
@@ -227,7 +226,8 @@ def export_uu(_):
 @user_passes_test(is_admin)
 def print_uu(request):
     classes = {}
-    for uuser in UnregisteredUser.objects.all():
+    for uuser in UnregisteredUser.objects.all().order_by(
+            'profile__alumne__classe', 'profile__alumne'):
         classe = Profile.objects.get(unregisteredUser=uuser).alumne.classe
         try:
             classes[classe].append(uuser)
@@ -240,9 +240,13 @@ def print_uu(request):
 
 def _letter(request, template):
     context = {
-        'tpl': mark_safe(parse_md(template, wrap='raw')),
-        'uu': UnregisteredUser.objects.all(),
-        'surl': request.build_absolute_uri('/')
+        'tpl':
+        mark_safe(parse_md(template, wrap='raw')),
+        'uu':
+        UnregisteredUser.objects.all().order_by('profile__alumne__classe',
+                                                'profile__alumne'),
+        'surl':
+        request.build_absolute_uri('/')
     }
     return render(request, 'usermanager/letter.html', context)
 
