@@ -348,14 +348,14 @@ class API:
     @staticmethod
     @_Access.raw_login_required
     @_Access.raw_user_passes_test(is_admin)
-    def registered_users():
+    def registered_users(_):
         data = {'registeredUsers': API.gen_json_reg(User.objects.all())}
         return JsonResponse(data)
 
     @staticmethod
     @_Access.raw_login_required
     @_Access.raw_user_passes_test(is_admin)
-    def unregistered_users():
+    def unregistered_users(_):
         data = {
             'unregisteredUsers':
             API.gen_json_unreg(UnregisteredUser.objects.all())
