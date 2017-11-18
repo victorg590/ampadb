@@ -12,17 +12,11 @@ $margins: (top: $margin, bottom: $margin, left: $margin,
 
 @page {
   size: portrait;
-  margin: 0mm; // No mostrar capçalera
-}
-
-@media print {
-  html {
-    margin: {
-      left: map-get($margins, left);
-      right: map-get($margins, right);
-      top: map-get($margins, top);
-      bottom: map-get($margins, bottom);
-    }
+  margin: {
+    left: map-get($margins, left);
+    right: map-get($margins, right);
+    top: map-get($margins, top);
+    bottom: map-get($margins, bottom);
   }
 }
 
