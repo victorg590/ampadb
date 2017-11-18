@@ -14,7 +14,7 @@ def mail_template(tpl, uuser, server_url):
     variables = {
         'nom': clean(alumne.nom),
         'cognoms': clean(alumne.cognoms),
-        'classe': clean(alumne.classe.nom),
+        'classe': clean(alumne.classe),
         'usuari': uuser.username,
         'codi': uuser.codi,
         'url': server_url

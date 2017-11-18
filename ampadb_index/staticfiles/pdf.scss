@@ -5,24 +5,16 @@ $mono: 'Roboto+Mono:400,400i,700,700i';
 @import "_utils.scss";
 @include google-fonts("#{$sans}|#{$serif}|#{$mono}");
 
-$margin: 25mm;
-
-$margins: (top: $margin, bottom: $margin, left: $margin,
-           right: $margin) !default;
+$margins: (top: 2cm, bottom: 2cm, left: 1in,
+           right: 1in) !default;
 
 @page {
   size: portrait;
-  margin: 0mm; // No mostrar capçalera
-}
-
-@media print {
-  html {
-    margin: {
-      left: map-get($margins, left);
-      right: map-get($margins, right);
-      top: map-get($margins, top);
-      bottom: map-get($margins, bottom);
-    }
+  margin: {
+    left: map-get($margins, left);
+    right: map-get($margins, right);
+    top: map-get($margins, top);
+    bottom: map-get($margins, bottom);
   }
 }
 
@@ -61,7 +53,7 @@ table {
 
 hr.pgbr {
   border-color: red;
-  @media print{
+  @media print {
     border-style: none;
     page-break-after: always;
   }

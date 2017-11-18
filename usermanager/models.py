@@ -8,6 +8,7 @@ from contactboard.models import Alumne
 class Profile(models.Model):
     class Meta:
         verbose_name = 'perfil'
+        ordering = ['alumne']
 
     user = models.OneToOneField(
         User,
@@ -56,6 +57,7 @@ class UnregisteredUser(models.Model):
     class Meta:
         verbose_name = 'usuari no registrat'
         verbose_name_plural = 'usuaris no registrats'
+        ordering = ['username']
 
     username = models.CharField(
         "nom d'usuari",

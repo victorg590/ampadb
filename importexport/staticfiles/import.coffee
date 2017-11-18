@@ -10,4 +10,4 @@ $(document).ready ->
     else
       $('.password-block').slideUp 'slow'
 
-    $("#ifile").attr 'accepts', extensions[selected]
+    $("#ifile").attr 'accept', extensions[selected]
