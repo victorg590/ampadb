@@ -68,7 +68,7 @@ def edit_classe(request, id_classe):
             'id_interna': classe.id_interna,
             'curs': classe.curs.id_interna
         }
-        form = ClasseForms.EditForm(classe, initial=classe_initial)
+        form = ClasseForms.EditForm(initial=classe_initial)
     context = {'form': form, 'submitText': 'Editar'}
     return render(request, 'contactboard/add.html', context)
 
