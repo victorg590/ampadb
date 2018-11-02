@@ -76,7 +76,13 @@ def classnames(request, upload_id):
 
 def confirm(request, upload_id):
     imp = get_object_or_404(IesImport, pk=upload_id)
-    changes = ies_format.Changes.calculate(imp)
+    try:
+        ies_format.val_json(imp.ifile, json.loads(imp.class_dict))
+    except InvalidFormat:
+        return redirect('importexport:ies:classnames', imp.pk)
+    changes = ies_format.Changes.calculate(imp.ifile,
+                                           json.loads(imp.class_dict),
+                                           imp.delete_other)
     if request.method == 'POST':
         with transaction.atomic():
             changes.apply()

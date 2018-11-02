@@ -44,6 +44,7 @@ existent. Si us plau, omple el quadre següent:</p>
   <div class="form-group classe-def">
     <label class="control-label" for="classe_{{ forloop.counter }}">{{ i }}</label>
     <select class="form-control" id="classe_{{ forloop.counter }}" required>
+      <option value="">---</option>
       {% for c in classes %}
       <option value="{{ c.id_interna }}">{{ c }}</option>
       {% endfor %}
