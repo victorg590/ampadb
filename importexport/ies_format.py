@@ -1,13 +1,64 @@
 import csv
 import json
 from collections import namedtuple
+from io import TextIOWrapper
+import chardet
 from django.db import transaction
 from ampadb.support import gen_username, gen_codi
 from contactboard.models import Classe, Alumne
 from usermanager.models import Profile, UnregisteredUser
 from .import_fmts import InvalidFormat, bytestream_to_text
+from .models import ImportData, ClassMap
 
 ImportedAlumne = namedtuple('ImportedAlumne', ['nom', 'cognoms', 'classe'])
+
+
+def parse_ies_csv(input_csv_bin, importacio):
+    try:
+        input_csv = TextIOWrapper(input_csv_bin, encoding='utf8')
+    except UnicodeDecodeError:
+        encoding_guess = chardet.detect(input_csv_bin.read(1024))
+        if encoding_guess['confidence'] < 0.90:
+            raise
+        input_csv_bin.seek(0)
+        input_csv = TextIOWrapper(input_csv_bin,
+            encoding=encoding_guess['encoding'])
+    dialect = csv.Sniffer().sniff(input_csv.read(1024), delimiters=',;')
+    input_csv.seek(0)
+    reader = csv.DictReader(input_csv, dialect=dialect)
+    with transaction.atomic():
+        try:
+            for row in reader:
+                nom = row['NOM'].strip()
+                if not nom:
+                    raise InvalidFormat.falta_a_fila('NOM', row)
+                
+                cognom1 = row['COGNOM 1'].strip()
+                if not cognom1:
+                    raise InvalidFormat.falta_a_fila('COGNOM 1', row)
+                
+                cognom2 = row['COGNOM 2'].strip()
+                if cognom2:
+                    cognoms = '{} {}'.format(cognom1, cognom2)
+                else:
+                    cognoms = cognom1
+                
+                classe = row['CLASSE'].strip()
+                if not classe:
+                    raise InvalidFormat.falta_a_fila('CLASSE', row)
+                
+                ImportData.objects.create(
+                    importacio=importacio,
+                    nom=nom,
+                    cognoms=cognoms,
+                    codi_classe=classe
+                )
+        except KeyError as ex:
+            raise InvalidFormat.falta_columna(ex)
+        
+        classes = ImportData.objects.values_list('codi_classe', flat=True)
+        ClassMap.objects.bulk_create([ClassMap(importacio=importacio, 
+            codi_classe=c, classe_mapejada=None) for c in classes])
 
 
 def validate_row(row):

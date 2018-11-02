@@ -1,6 +1,7 @@
 -c constraints.txt
 argon2-cffi
 bleach
+chardet
 Django
 django-bootstrap3
 django-htmlmin

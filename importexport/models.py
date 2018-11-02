@@ -1,61 +1,57 @@
 from datetime import timedelta
-from io import StringIO
 from pathlib import PurePath
 from django.db import models
+from django.db.models import Q, Exists, OuterRef
 from django.utils import timezone
+from contactboard.models import Classe
+
+
+class ImportData(models.Model):
+    class Meta:
+        unique_together = ('importacio', 'nom', 'cognoms')
+
+    importacio = models.ForeignKey('IesImport', on_delete=models.CASCADE)
+    nom = models.CharField(max_length=255)
+    cognoms = models.CharField(max_length=255)
+    codi_classe = models.CharField(max_length=20)
 
 
 class IesImport(models.Model):
-    ifile = models.FileField(
-        "Arxiu d'importació",
-        upload_to='uploads/import',
-        blank=False,
-        null=False)
-    class_dict = models.TextField(
-        'Mapa de classes',
-        default='{}',
-        help_text=
-        ("Un text en format JSON que descriu com associar les classes "
-         "de l'arxiu a les classes de la base de dades. Una entrada amb 'null' "
-         "eliminarà la classe: "
-         '{"<pk classe>": [<nom a l\'arxiu>, ...] | '
-         'null, ...}\' Ex. \'{"1": ["1 ESO A"], "2": null}'))
-    delete_other = models.BooleanField(
+    eliminar_no_mencionats = models.BooleanField(
         'Eliminar no mencionats',
         default=True,
         help_text="Esborra els alumnes no mencionats de la base de dades")
-    last_mod = models.DateTimeField('Última modificació', auto_now=True)
+    ultima_mod = models.DateTimeField('Última modificació', auto_now=True)
 
     def __str__(self):
         ret = "Importació de {} (Última modificació: {:%d/%m/%Y %H:%M})"\
             .format(
                 PurePath(self.ifile.name).name,
-                self.last_mod
+                self.ultima_mod
             )
         return ret
 
     @property
-    def recent_act(self):
+    def act_recent(self):
         """Mostra si hi ha hagut activitat la última setmana"""
-        return (timezone.now() - self.last_mod) <= timedelta(days=7)
+        return (timezone.now() - self.ultima_mod) <= timedelta(days=7)
 
     @classmethod
     def clean_old(cls):
         """Elimina entrades antigues"""
-        instances = cls.objects.all()
-        for i in instances:
-            if not i.recent_act:
-                i.delete()
-                continue
-            file = StringIO()
-            try:
-                file = i.ifile.open()
-            except FileNotFoundError:
-                i.delete()
-                continue
-            finally:
-                if file is None:
-                    file = StringIO()
-                file.close()
+        ultima_setmana = timezone.now() - timedelta(days=7)
+        # No modificat en la última setmana O
+        # no existeixen ImportData associades
+        cond = Q(ultima_mod__lt=ultima_setmana) | ~Exists(
+            ImportData.objects.filter(importacio__pk=OuterRef('pk')))
+        cls.objects.filter(cond).delete()
 
-    # Senyal associada: .signals.iesimport_pre_delete
+
+class ClassMap(models.Model):
+    class Meta:
+        unique_together = ('importacio', 'codi_classe')
+
+    importacio = models.ForeignKey(IesImport, on_delete=models.CASCADE)
+    codi_classe = models.CharField(max_length=20)
+    classe_mapejada = models.ForeignKey(
+        Classe, on_delete=models.SET_NULL, null=True, default=None)

@@ -22,8 +22,7 @@ def upload(request):
             return redirect('importexport:ies:classnames', ins.pk)
     else:
         form = Forms.UploadForm()
-    if IesImport.objects.exists():
-        IesImport.clean_old()
+    IesImport.clean_old()
     context = {'form': form, 'pending': IesImport.objects.all()}
     return render(request, 'importexport/ies/upload.html', context)
 
@@ -41,7 +40,7 @@ def classnames(request, upload_id):
             ies_format.val_json(imp.ifile, data)
         except json.JSONDecodeError:
             errors.append('Entrada invàlida, si us plau contacta amb el '
-                          'desenvolupadors')
+                          'desenvolupador')
             data = {}
             current_valid = False
         except InvalidFormat as ex:
@@ -50,7 +49,8 @@ def classnames(request, upload_id):
         else:
             imp.class_dict = json.dumps(
                 data, sort_keys=True, separators=(',', ':'))
-            imp.delete_other = json.loads(request.POST.get('delete', 'true'))
+            imp.eliminar_no_mencionats = json.loads(
+                request.POST.get('delete', 'true'))
             imp.save()
     else:
         data = json.loads(imp.class_dict)
@@ -67,7 +67,7 @@ def classnames(request, upload_id):
         'classes': all_classes,
         'imp_classes': imp_classes,
         'pre_data': mark_safe(ies_format.rev_json(data)),
-        'pre_delete': mark_safe(json.dumps(imp.delete_other)),
+        'pre_delete': mark_safe(json.dumps(imp.eliminar_no_mencionats)),
         'current_valid': current_valid,
         'imp': imp
     }
@@ -76,13 +76,7 @@ def classnames(request, upload_id):
 
 def confirm(request, upload_id):
     imp = get_object_or_404(IesImport, pk=upload_id)
-    try:
-        ies_format.val_json(imp.ifile, json.loads(imp.class_dict))
-    except InvalidFormat:
-        return redirect('importexport:ies:classnames', imp.pk)
-    changes = ies_format.Changes.calculate(imp.ifile,
-                                           json.loads(imp.class_dict),
-                                           imp.delete_other)
+    changes = ies_format.Changes.calculate(imp)
     if request.method == 'POST':
         with transaction.atomic():
             changes.apply()
