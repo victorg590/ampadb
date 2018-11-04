@@ -1,7 +1,6 @@
 from datetime import timedelta
-from pathlib import PurePath
-from django.db import models
-from django.db.models import Q, Exists, OuterRef
+from django.db import models, transaction
+from django.db.models import Exists, OuterRef
 from django.utils import timezone
 from contactboard.models import Classe
 
@@ -10,23 +9,31 @@ class ImportData(models.Model):
     class Meta:
         unique_together = ('importacio', 'nom', 'cognoms')
 
-    importacio = models.ForeignKey('IesImport', on_delete=models.CASCADE)
+    importacio = models.ForeignKey(
+        'IesImport',
+        on_delete=models.CASCADE,
+        related_name='dades_relacionades')
     nom = models.CharField(max_length=255)
     cognoms = models.CharField(max_length=255)
     codi_classe = models.CharField(max_length=20)
 
+    def __str__(self):
+        return '[{}] {} {} => {}'.format(self.importacio, self.nom,
+                                         self.cognoms, self.codi_classe)
+
 
 class IesImport(models.Model):
+    nom_importacio = models.CharField(max_length=50)
     eliminar_no_mencionats = models.BooleanField(
-        'Eliminar no mencionats',
         default=True,
         help_text="Esborra els alumnes no mencionats de la base de dades")
     ultima_mod = models.DateTimeField('Última modificació', auto_now=True)
+    canvis_calculats = models.BooleanField(default=False)
 
     def __str__(self):
         ret = "Importació de {} (Última modificació: {:%d/%m/%Y %H:%M})"\
             .format(
-                PurePath(self.ifile.name).name,
+                self.nom_importacio,
                 self.ultima_mod
             )
         return ret
@@ -42,11 +49,15 @@ class IesImport(models.Model):
         ultima_setmana = timezone.now() - timedelta(days=7)
         # No modificat en la última setmana O
         # no existeixen ImportData associades
-        cond = Q(ultima_mod__lt=ultima_setmana) | ~Exists(
+        te_referencies = Exists(
             ImportData.objects.filter(importacio__pk=OuterRef('pk')))
-        cls.objects.filter(cond).delete()
+        with transaction.atomic():
+            cls.objects.filter(ultima_mod__lt=ultima_setmana).delete()
+            cls.objects.annotate(te_referencies=te_referencies).filter(
+                te_referencies=False).delete()
 
 
+# TODO: Transformar en Many-To-Many
 class ClassMap(models.Model):
     class Meta:
         unique_together = ('importacio', 'codi_classe')
@@ -55,3 +66,7 @@ class ClassMap(models.Model):
     codi_classe = models.CharField(max_length=20)
     classe_mapejada = models.ForeignKey(
         Classe, on_delete=models.SET_NULL, null=True, default=None)
+
+    def __str__(self):
+        return '[{}] {} => {}'.format(self.importacio, self.codi_classe,
+                                      self.classe_mapejada)

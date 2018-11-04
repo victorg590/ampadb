@@ -16,6 +16,7 @@ Including another URLconf
 """
 from django.conf.urls import url, include
 from django.contrib import admin
+from django.conf import settings
 
 urlpatterns = [
     url(r'^admin/doc/', include('django.contrib.admindocs.urls')),
@@ -27,3 +28,8 @@ urlpatterns = [
     url(r'^', include('usermanager.urls')),
     url(r'^', include('ampadb_index.urls'))
 ]
+
+if settings.DEBUG:
+    import debug_toolbar
+    urlpatterns = [url(r'^__debug__', include(debug_toolbar.urls))
+                   ] + urlpatterns

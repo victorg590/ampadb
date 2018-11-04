@@ -1,12 +1,13 @@
 import json
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.db import transaction
+from django.db.models import Count
 from django.shortcuts import render, redirect, get_object_or_404
 from django.utils.html import mark_safe
 from ampadb.support import is_admin
 from contactboard.models import Classe
 from .forms import Ies as Forms
-from .models import IesImport
+from .models import IesImport, ClassMap, AddAlumne, MoveAlumne, DeleteAlumne, DeleteClasse
 from . import ies_format
 from .import_fmts import InvalidFormat
 
@@ -17,9 +18,10 @@ def upload(request):
     if request.method == 'POST':
         form = Forms.UploadForm(request.POST, request.FILES)
         if form.is_valid():
-            ins = IesImport(ifile=request.FILES['ifile'])
-            ins.save()
-            return redirect('importexport:ies:classnames', ins.pk)
+            nom = form.cleaned_data['ifile'].name
+            imp = IesImport.objects.create(nom_importacio=nom)
+            ies_format.parse_ies_csv(form.cleaned_data['ifile'], imp)
+            return redirect('importexport:ies:classnames', imp.pk)
     else:
         form = Forms.UploadForm()
     IesImport.clean_old()
@@ -32,66 +34,109 @@ def upload(request):
 def classnames(request, upload_id):
     imp = get_object_or_404(IesImport, pk=upload_id)
     errors = []
-    current_valid = True
+    mapa_nou = None
+    error_msg = (
+        'Entrada invàlida. Si us plau, contacta amb el desenvolupador.'
+        "Codi d'error: %s")
     if request.method == 'POST':
-        data = {}
         try:
-            data = json.loads(request.POST.get('res', ''))
-            ies_format.val_json(imp.ifile, data)
+            mapa_nou = json.loads(request.POST.get('res', '{}'))
+            print(mapa_nou)
         except json.JSONDecodeError:
-            errors.append('Entrada invàlida, si us plau contacta amb el '
-                          'desenvolupador')
-            data = {}
-            current_valid = False
-        except InvalidFormat as ex:
-            errors.append(ex)
-            current_valid = False
-        else:
-            imp.class_dict = json.dumps(
-                data, sort_keys=True, separators=(',', ':'))
-            imp.eliminar_no_mencionats = json.loads(
-                request.POST.get('delete', 'true'))
-            imp.save()
-    else:
-        data = json.loads(imp.class_dict)
-    all_classes = Classe.objects.all()
-    imp_classes = ies_format.unique_classes(
-        ies_format.parse(ies_format.validate(imp.ifile)))
-    if current_valid:
-        try:
-            ies_format.val_json(imp.ifile, json.loads(imp.class_dict))
-        except InvalidFormat:
-            current_valid = False
+            errors.append(error_msg % 'JSON invàlid')
+        with transaction.atomic():
+            for classe_imp, classe_bd in mapa_nou.items():
+                try:
+                    map_obj = ClassMap.objects.get(
+                        importacio=imp, codi_classe=classe_imp)
+                except ClassMap.DoesNotExist:
+                    errors.append(
+                        error_msg %
+                        ("no existeix la classe d'importació " + classe_imp))
+                    continue
+                classe_obj = None
+                if classe_bd is not None:
+                    try:
+                        classe_obj = Classe.objects.get(pk=classe_bd)
+                    except Classe.DoesNotExist:
+                        errors.append(
+                            error_msg %
+                            ("no existeix la classe de BD " + str(classe_bd)))
+                        continue
+                map_obj.classe_mapejada = classe_obj
+                map_obj.save()
+            if errors:
+                transaction.rollback()
+            else:
+                ies_format.invalidar_canvis(imp)
+
+    mapa_anterior = {
+        classe_imp: classe_bd
+        for classe_imp, classe_bd in ClassMap.objects.filter(
+            importacio=imp).values_list('codi_classe', 'classe_mapejada__pk')
+    }
+    mapa_complet = not ClassMap.objects.filter(
+        importacio=imp, classe_mapejada=None).exists()
+    # Detecció de classes repetides:
+    classes_repetides = {}
+    for rep in ClassMap.objects.filter(
+            importacio=imp, classe_mapejada__isnull=False).values_list(
+                'classe_mapejada__pk', flat=True).annotate(
+                    map_count=Count('codi_classe')).filter(map_count__gt=1):
+        classe_mapejada = Classe.objects.get(pk=rep)
+        classes_repetides[str(classe_mapejada)] = ClassMap.objects.filter(
+            importacio=imp, classe_mapejada=classe_mapejada).values_list(
+                'codi_classe', flat=True)
+
+    imp_classes = [c for c in mapa_anterior]
+    imp_classes.sort()
     context = {
-        'errors': errors,
-        'classes': all_classes,
+        'mapa_anterior': mark_safe(json.dumps(mapa_anterior)),
+        'mapa_complet': mapa_complet,
+        'imp': imp,
         'imp_classes': imp_classes,
-        'pre_data': mark_safe(ies_format.rev_json(data)),
-        'pre_delete': mark_safe(json.dumps(imp.eliminar_no_mencionats)),
-        'current_valid': current_valid,
-        'imp': imp
+        'eliminar_anterior': mark_safe(json.dumps(imp.eliminar_no_mencionats)),
+        'classes': Classe.objects.all(),
+        'errors': errors,
+        'classes_repetides': classes_repetides
     }
     return render(request, 'importexport/ies/classnames.html', context)
 
 
+@login_required
+@user_passes_test(is_admin)
 def confirm(request, upload_id):
     imp = get_object_or_404(IesImport, pk=upload_id)
-    try:
-        ies_format.val_json(imp.ifile, json.loads(imp.class_dict))
-    except InvalidFormat:
-        return redirect('importexport:ies:classnames', imp.pk)
-    changes = ies_format.Changes.calculate(imp.ifile,
-                                           json.loads(imp.class_dict),
-                                           imp.delete_other)
     if request.method == 'POST':
         with transaction.atomic():
-            changes.apply()
-            imp.delete()
-        return redirect('importexport:ies:upload')
-    context = {'imp': imp, 'chg': changes}
+            ies_format.invalidar_canvis(imp)
+    with transaction.atomic():
+        ies_format.calcular_canvis(imp)
+    add_alumnes = AddAlumne.objects.filter(importacio=imp).select_related()
+    context = {'imp': imp, 'add_alumnes': add_alumnes}
     return render(request, 'importexport/ies/confirm.html', context)
 
 
+# def confirm(request, upload_id):
+#     imp = get_object_or_404(IesImport, pk=upload_id)
+#     try:
+#         ies_format.val_json(imp.ifile, json.loads(imp.class_dict))
+#     except InvalidFormat:
+#         return redirect('importexport:ies:classnames', imp.pk)
+#     changes = ies_format.Changes.calculate(imp.ifile,
+#                                            json.loads(imp.class_dict),
+#                                            imp.delete_other)
+#     if request.method == 'POST':
+#         with transaction.atomic():
+#             changes.apply()
+#             imp.delete()
+#         return redirect('importexport:ies:upload')
+#     context = {'imp': imp, 'chg': changes}
+#     return render(request, 'importexport/ies/confirm.html', context)
+
+
+@login_required
+@user_passes_test(is_admin)
 def cancel(request, upload_id):
     imp = get_object_or_404(IesImport, pk=upload_id)
     if request.method == 'POST':

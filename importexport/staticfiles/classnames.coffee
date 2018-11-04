@@ -1,11 +1,13 @@
 setParamNoRepeat = (paramName, newVal) ->
   $sel = $("#map_form input[name=\"#{paramName}\"]")
+  newValJson = JSON.stringify newVal
   if $sel.length
-    $sel.val JSON.stringify newVal
+    $sel.val newValJson
   else
     $('#map_form').append ->
       $('<input>').attr('type', 'hidden').attr('name', paramName)
-        .val JSON.stringify newVal
+        .val newValJson
+  return
 
 $(document).ready ->
   $('#submit_map').click ->
@@ -13,11 +15,7 @@ $(document).ready ->
     $('.classe-def').each ->
       imf = $(this).children('label').text()
       to = $(this).children('select').val()
-      to = null if to == ''
-      if classDict[to]?
-        classDict[to].push imf
-      else
-        classDict[to] = [imf]
+      classDict[imf] = if to == '' then null else to
       return
 
     setParamNoRepeat 'res', classDict
@@ -27,8 +25,8 @@ $(document).ready ->
 
   $('.classe-def').each ->
     imf = $(this).children('label').text()
-    $(this).children('select').val (preData[imf] ? '')
+    $(this).children('select').val (mapaAnterior[imf] ? '')
     return
 
-  $('#delete_missing').prop 'checked', preDelete
+  $('#delete_missing').prop 'checked', eliminarAnterior
   return
