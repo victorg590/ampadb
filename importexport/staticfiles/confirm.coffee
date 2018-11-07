@@ -9,8 +9,8 @@ genOnClick = (op) -> ->  # Torna una funció
   return
 
 $(document).ready ->
-  for op in ['add', 'move', 'delete', 'delclasse']
-    if opn[op] <= 1
+  for op in ['add', 'move', 'delete', 'delclasse'] when opn[op] >= 1
+    if opn[op] == 1
       $("#view_#{op}").remove()
     else
       $("#list_#{op}").hide()

@@ -11,7 +11,7 @@ class CanviImportacio(models.Model):
     importacio = models.ForeignKey(
         IesImport, on_delete=models.CASCADE, related_name='canvis_%(class)s')
     dada_relacionada = models.OneToOneField(
-        ImportData, on_delete=models.CASCADE)
+        ImportData, on_delete=models.CASCADE, related_name='canvi_%(class)s')
 
 
 class AddAlumne(CanviImportacio):
@@ -23,7 +23,7 @@ class AddAlumne(CanviImportacio):
 
 
 class MoveAlumne(CanviImportacio):
-    antiga_classe = models.ForeignKey(
+    antiga_classe = models.ForeignKey(  # TODO: Redundant (= alumne.classe)
         Classe,
         on_delete=models.SET_NULL,
         null=True,
@@ -42,7 +42,7 @@ class DeleteAlumne(CanviImportacio):
     dada_relacionada = None
     alumne = models.ForeignKey(
         Alumne, on_delete=models.CASCADE, related_name='eliminacions')
-    antiga_classe = models.ForeignKey(
+    antiga_classe = models.ForeignKey(  # TODO: Redundant (= alumne.classe)
         Classe,
         on_delete=models.SET_NULL,
         null=True,

@@ -5,9 +5,9 @@
 <h1>Resum dels canvis</h1>
 <p>Si cliques "Confirmar", es faran aquests canvis:</p>
 
-{% if chg.add %}
+{% if changes.add %}
 <h2>Afegir alumnes</h2>
-{% with addn=chg.add|length %}
+{% with addn=changes.add|length %}
 {% if addn == 1 %}
 <p>S'afegirà un alumne.</p>
 {% else %}
@@ -16,16 +16,16 @@
 {% endwith %}
 <button class="btn btn-link" id="view_add">{# Emplenat per l'script #}</button>
 <ul id="list_add">
-  {% for a in chg.add %}
-  <li>{{ a.nom }} {{ a.cognoms }} &rArr;
-    <a href="{{ a.classe.get_absolute_url }}">{{ a.classe }}</a></li>
+  {% for a in changes.add %}
+  <li>{{ a.dada_relacionada.nom }} {{ a.dada_relacionada.cognoms }} &rArr;
+    <a href="{{ a.nova_classe.get_absolute_url }}">{{ a.nova_classe }}</a></li>
   {% endfor %}
 </ul>
 {% endif %}
 
-{% if chg.move %}
+{% if changes.move %}
 <h2>Moure alumnes</h2>
-{% with moven=chg.move|length %}
+{% with moven=changes.move|length %}
 {% if moven == 1 %}
 <p>Un alumne es mourà de classe.</p>
 {% else %}
@@ -34,17 +34,17 @@
 {% endwith %}
 <button class="btn btn-link" id="view_move">{# Emplenat per l'script #}</button>
 <ul id="list_move">
-  {% for m in chg.move %}
+  {% for m in changes.move %}
   <li><a href="{{ m.alumne.get_absolute_url }}">{{ m.alumne }}</a> &rArr;
     <a href="{{ m.alumne.classe.get_absolute_url }}">{{ m.alumne.classe }}</a>
-    &rarr; <a href="{{ m.a_classe.get_absolute_url }}">{{ m.a_classe }}</a></li>
+    &rarr; <a href="{{ m.nova_classe.get_absolute_url }}">{{ m.nova_classe }}</a></li>
   {% endfor %}
 </ul>
 {% endif %}
 
-{% if chg.delete %}
+{% if changes.delete %}
 <h2>Eliminar alumnes</h2>
-{% with deln=chg.delete|length %}
+{% with deln=changes.delete|length %}
 {% if deln == 1 %}
 <p>S'eliminarà un alumne.</p>
 {% else %}
@@ -60,18 +60,18 @@
 </ul>
 {% endif %}
 
-{% if chg.delete_classe %}
+{% if changes.delete_classes %}
 <h2>Eliminar classes</h2>
-{% with dclassen=chg.delete_classe|length %}
+{% with dclassen=changes.delete_classes|length %}
 {% if dclassen == 1 %}
-<p>S'eliminarà una classe.</p>
+<p>S'eliminarà una classe ara buida.</p>
 {% else %}
 <p>S'eliminaràn {{ dclassen }} classes ara buides.</p>
 {% endif %}
 {% endwith %}
 <button class="btn btn-link" id="view_delclasse">{# Emplenat per l'script #}</button>
 <ul id="list_delclasse">
-  {% for dc in chg.delete_classe %}
+  {% for dc in chg.delete_classes %}
   <li><a href="{{ dc.get_abslute_url }}">{{ dc.classe }}</a></li>
   {% endfor %}
 </ul>

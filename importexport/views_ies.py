@@ -96,7 +96,7 @@ def classnames(request, upload_id):
         'imp': imp,
         'imp_classes': imp_classes,
         'eliminar_anterior': mark_safe(json.dumps(imp.eliminar_no_mencionats)),
-        'classes': Classe.objects.all(),
+        'classes': Classe.objects.all().select_related(),
         'errors': errors,
         'classes_repetides': classes_repetides
     }
@@ -107,13 +107,27 @@ def classnames(request, upload_id):
 @user_passes_test(is_admin)
 def confirm(request, upload_id):
     imp = get_object_or_404(IesImport, pk=upload_id)
-    if request.method == 'POST':
-        with transaction.atomic():
-            ies_format.invalidar_canvis(imp)
     with transaction.atomic():
         ies_format.calcular_canvis(imp)
-    add_alumnes = AddAlumne.objects.filter(importacio=imp).select_related()
-    context = {'imp': imp, 'add_alumnes': add_alumnes}
+    if request.method == 'POST':  # TODO: Només per depuració
+        with transaction.atomic():
+            ies_format.invalidar_canvis(imp)
+    changes = {
+        'add':
+        AddAlumne.objects.filter(importacio=imp).select_related(
+            'dada_relacionada', 'nova_classe', 'nova_classe__curs'),
+        'move':
+        MoveAlumne.objects.filter(importacio=imp).select_related(
+            'alumne', 'alumne__classe', 'alumne__classe__curs', 'nova_classe',
+            'nova_classe__curs'),
+        'delete':
+        DeleteAlumne.objects.filter(importacio=imp).select_related(
+            'alumne', 'alumne__classe', 'alumne__classe__curs'),
+        'delete_classes':
+        DeleteClasse.objects.filter(importacio=imp).select_related(
+            'classe', 'classe__curs')
+    }
+    context = {'imp': imp, 'changes': changes}
     return render(request, 'importexport/ies/confirm.html', context)
 
 

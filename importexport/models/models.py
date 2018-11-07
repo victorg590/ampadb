@@ -1,6 +1,6 @@
 from datetime import timedelta
 from django.db import models, transaction
-from django.db.models import Exists, OuterRef
+from django.db.models import Exists, OuterRef, Q
 from django.utils import timezone
 from contactboard.models import Classe
 
@@ -51,10 +51,11 @@ class IesImport(models.Model):
         # no existeixen ImportData associades
         te_referencies = Exists(
             ImportData.objects.filter(importacio__pk=OuterRef('pk')))
+        condicio_antiga = (Q(ultima_mod__lt=ultima_setmana)
+                           | Q(te_referencies=False))
         with transaction.atomic():
-            cls.objects.filter(ultima_mod__lt=ultima_setmana).delete()
             cls.objects.annotate(te_referencies=te_referencies).filter(
-                te_referencies=False).delete()
+                condicio_antiga).delete()
 
 
 # TODO: Transformar en Many-To-Many
