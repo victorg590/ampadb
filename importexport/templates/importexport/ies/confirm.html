@@ -53,7 +53,7 @@
 {% endwith %}
 <button class="btn btn-link" id="view_delete">{# Emplenat per l'script #}</button>
 <ul id="list_delete">
-  {% for d in chg.delete %}
+  {% for d in changes.delete %}
   <li><a href="{{ d.alumne.get_absolute_url }}">{{ d.alumne }}</a> &#8275;
     <a href="{{ d.alumne.classe.get_absolute_url }}">{{ d.alumne.classe }}</a></li>
   {% endfor %}
@@ -71,7 +71,7 @@
 {% endwith %}
 <button class="btn btn-link" id="view_delclasse">{# Emplenat per l'script #}</button>
 <ul id="list_delclasse">
-  {% for dc in chg.delete_classes %}
+  {% for dc in changes.delete_classes %}
   <li><a href="{{ dc.get_abslute_url }}">{{ dc.classe }}</a></li>
   {% endfor %}
 </ul>
@@ -91,10 +91,10 @@
 <script>
 // Nombre d'operacions
 var opn = {
-  "add": {{ chg.add|length }},
-  "move": {{chg.move|length }},
-  "delete": {{ chg.delete|length }},
-  "delclasse": {{ chg.delete_classe|length }}
+  "add": {{ changes.add|length }},
+  "move": {{changes.move|length }},
+  "delete": {{ changes.delete|length }},
+  "delclasse": {{ changes.delete_classes|length }}
 };
 
 var textMes = "Més";

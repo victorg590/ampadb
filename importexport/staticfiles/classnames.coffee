@@ -19,7 +19,7 @@ $(document).ready ->
       return
 
     setParamNoRepeat 'res', classDict
-    setParamNoRepeat 'delete', $('#delete_missing').prop 'checked'
+    setParamNoRepeat 'delete_missing', $('#delete_missing').prop 'checked'
     $('#map_form').submit()
     return
 

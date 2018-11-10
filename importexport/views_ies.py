@@ -7,9 +7,9 @@ from django.utils.html import mark_safe
 from ampadb.support import is_admin
 from contactboard.models import Classe
 from .forms import Ies as Forms
-from .models import IesImport, ClassMap, AddAlumne, MoveAlumne, DeleteAlumne, DeleteClasse
+from .models import (IesImport, ClassMap, AddAlumne, MoveAlumne, DeleteAlumne,
+                     DeleteClasse)
 from . import ies_format
-from .import_fmts import InvalidFormat
 
 
 @login_required
@@ -19,14 +19,31 @@ def upload(request):
         form = Forms.UploadForm(request.POST, request.FILES)
         if form.is_valid():
             nom = form.cleaned_data['ifile'].name
-            imp = IesImport.objects.create(nom_importacio=nom)
-            ies_format.parse_ies_csv(form.cleaned_data['ifile'], imp)
+            with transaction.atomic():
+                imp = IesImport.objects.create(nom_importacio=nom)
+                ies_format.parse_ies_csv(form.cleaned_data['ifile'], imp)
             return redirect('importexport:ies:classnames', imp.pk)
     else:
+        # Invalidem tots els canvis: si hem tornat a accedir a aquesta pàgina,
+        # és probable que s'hagi modificat la base de dades i els canvis ja
+        # no siguin correctes
+        ies_format.invalidar_canvis_tots()
         form = Forms.UploadForm()
     IesImport.clean_old()
     context = {'form': form, 'pending': IesImport.objects.all()}
     return render(request, 'importexport/ies/upload.html', context)
+
+
+# BUG: Aquest sistema pot presentar errors si es modifica la base de dades
+# entre que es calculen els canvis i s'apliquen. En concret:
+# - Si s'afegeixen classes (no s'autoeliminaran encara que estiguin buides)
+# - Si s'afegeixen alumnes (no seràn modificats; si la seva classe és eliminada,
+#   aquests també ho seràn)
+# Com que són events improbables (l'administrador hauria de fer les dues accions
+# alhora), he decidit que és millor ignorar-ho.
+# NOTE: Si s'intenta eliminar una classe a la que s'han de moure o afegir
+# alumnes, es llençarà un error de integritat, el que es traduïrà a
+# "500 Server Error". No és cap error del codi, és que la acció no és permesa.
 
 
 @login_required
@@ -41,34 +58,34 @@ def classnames(request, upload_id):
     if request.method == 'POST':
         try:
             mapa_nou = json.loads(request.POST.get('res', '{}'))
-            print(mapa_nou)
         except json.JSONDecodeError:
             errors.append(error_msg % 'JSON invàlid')
         with transaction.atomic():
-            for classe_imp, classe_bd in mapa_nou.items():
-                try:
-                    map_obj = ClassMap.objects.get(
-                        importacio=imp, codi_classe=classe_imp)
-                except ClassMap.DoesNotExist:
-                    errors.append(
-                        error_msg %
-                        ("no existeix la classe d'importació " + classe_imp))
-                    continue
-                classe_obj = None
-                if classe_bd is not None:
+            classes = {c.pk: c for c in Classe.objects.only('pk').order_by()}
+            for class_map in ClassMap.objects.filter(
+                    importacio=imp).select_related('classe_mapejada'):
+                nova_classe = mapa_nou.get(class_map.codi_classe, None)
+                if nova_classe is None:
+                    if class_map.classe_mapejada is not None:
+                        class_map.classe_mapejada = None
+                        class_map.save()
+                elif (class_map.classe_mapejada is None
+                      or class_map.classe_mapejada.pk != nova_classe):
                     try:
-                        classe_obj = Classe.objects.get(pk=classe_bd)
-                    except Classe.DoesNotExist:
-                        errors.append(
-                            error_msg %
-                            ("no existeix la classe de BD " + str(classe_bd)))
-                        continue
-                map_obj.classe_mapejada = classe_obj
-                map_obj.save()
+                        class_map.classe_mapejada = classes[nova_classe]
+                    except KeyError:
+                        errors.append(error_msg %
+                                      ("no existeix la classe " + nova_classe))
+                    class_map.save()
             if errors:
                 transaction.rollback()
             else:
-                ies_format.invalidar_canvis(imp)
+                imp.eliminar_classes_buides = json.loads(
+                    request.POST.get('delete_missing',
+                                     imp.eliminar_classes_buides))
+                if imp.canvis_calculats:
+                    ies_format.invalidar_canvis(imp)
+                imp.save()
 
     mapa_anterior = {
         classe_imp: classe_bd
@@ -91,15 +108,24 @@ def classnames(request, upload_id):
     imp_classes = [c for c in mapa_anterior]
     imp_classes.sort()
     context = {
-        'mapa_anterior': mark_safe(json.dumps(mapa_anterior)),
-        'mapa_complet': mapa_complet,
-        'imp': imp,
-        'imp_classes': imp_classes,
-        'eliminar_anterior': mark_safe(json.dumps(imp.eliminar_no_mencionats)),
-        'classes': Classe.objects.all().select_related(),
-        'errors': errors,
-        'classes_repetides': classes_repetides
+        'mapa_anterior':
+        mark_safe(json.dumps(mapa_anterior)),
+        'mapa_complet':
+        mapa_complet,
+        'imp':
+        imp,
+        'imp_classes':
+        imp_classes,
+        'eliminar_classes_buides':
+        mark_safe(json.dumps(imp.eliminar_classes_buides)),
+        'classes':
+        Classe.objects.all().select_related(),
+        'errors':
+        errors,
+        'classes_repetides':
+        classes_repetides
     }
+    print(context)
     return render(request, 'importexport/ies/classnames.html', context)
 
 
@@ -109,9 +135,12 @@ def confirm(request, upload_id):
     imp = get_object_or_404(IesImport, pk=upload_id)
     with transaction.atomic():
         ies_format.calcular_canvis(imp)
-    if request.method == 'POST':  # TODO: Només per depuració
+        imp.save()
+    if request.method == 'POST':
         with transaction.atomic():
-            ies_format.invalidar_canvis(imp)
+            ies_format.aplicar_canvis(imp)
+            imp.delete()
+        return redirect('importexport:ies:upload')
     changes = {
         'add':
         AddAlumne.objects.filter(importacio=imp).select_related(
@@ -129,24 +158,6 @@ def confirm(request, upload_id):
     }
     context = {'imp': imp, 'changes': changes}
     return render(request, 'importexport/ies/confirm.html', context)
-
-
-# def confirm(request, upload_id):
-#     imp = get_object_or_404(IesImport, pk=upload_id)
-#     try:
-#         ies_format.val_json(imp.ifile, json.loads(imp.class_dict))
-#     except InvalidFormat:
-#         return redirect('importexport:ies:classnames', imp.pk)
-#     changes = ies_format.Changes.calculate(imp.ifile,
-#                                            json.loads(imp.class_dict),
-#                                            imp.delete_other)
-#     if request.method == 'POST':
-#         with transaction.atomic():
-#             changes.apply()
-#             imp.delete()
-#         return redirect('importexport:ies:upload')
-#     context = {'imp': imp, 'chg': changes}
-#     return render(request, 'importexport/ies/confirm.html', context)
 
 
 @login_required

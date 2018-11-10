@@ -24,9 +24,8 @@ class ImportData(models.Model):
 
 class IesImport(models.Model):
     nom_importacio = models.CharField(max_length=50)
-    eliminar_no_mencionats = models.BooleanField(
-        default=True,
-        help_text="Esborra els alumnes no mencionats de la base de dades")
+    eliminar_classes_buides = models.BooleanField(
+        default=True, help_text="Esborra les classes que quedin buides")
     ultima_mod = models.DateTimeField('Última modificació', auto_now=True)
     canvis_calculats = models.BooleanField(default=False)
 

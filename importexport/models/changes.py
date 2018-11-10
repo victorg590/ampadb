@@ -1,5 +1,4 @@
 from django.db import models
-from django.db.models import Q, OuterRef
 from contactboard.models import Classe, Alumne
 from .models import IesImport, ImportData
 

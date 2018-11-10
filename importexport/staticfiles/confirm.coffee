@@ -1,3 +1,6 @@
+MAX_DISPLAY = 10
+# Nombre màxim d'entrades a mostrar abans de col·lapsar-les.
+
 genOnClick = (op) -> ->  # Torna una funció
   list = $("#list_#{op}")
   if list.is ':hidden'
@@ -9,13 +12,13 @@ genOnClick = (op) -> ->  # Torna una funció
   return
 
 $(document).ready ->
-  for op in ['add', 'move', 'delete', 'delclasse'] when opn[op] >= 1
-    if opn[op] == 1
-      $("#view_#{op}").remove()
+  for operation, number_of_ops of opn when number_of_ops >= 1
+    if number_of_ops <= MAX_DISPLAY
+      $("#view_#{operation}").remove()
     else
-      $("#list_#{op}").hide()
-      $("#view_#{op}")
+      $("#list_#{operation}").hide()
+      $("#view_#{operation}")
         .text textMes
         .show()
-        .click genOnClick op
+        .click genOnClick operation
   return

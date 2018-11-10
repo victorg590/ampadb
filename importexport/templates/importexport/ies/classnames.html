@@ -65,7 +65,7 @@ existent. Si us plau, omple el quadre següent:</p>
   <div class="form-group"><div class="checkbox">
     <label for="delete_missing">
       <input id="delete_missing" type="checkbox" />
-      Eliminar classes no mencionades
+      Eliminar classes buides
     </label>
   </div></div>
   <div class="form-group">
@@ -78,7 +78,7 @@ existent. Si us plau, omple el quadre següent:</p>
 {% block scripts %}
 <script>
 var mapaAnterior = {{ mapa_anterior|default:'{}' }};
-var eliminarAnterior = {{ pre_delete|default:'true' }};
+var eliminarAnterior = {{ eliminar_classes_buides|default:'true' }};
 </script>
 <script src="{% static_dbg 'importexport/classnames.js' %}"></script>
 {% endblock scripts %}
