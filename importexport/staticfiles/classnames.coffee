@@ -1,11 +1,13 @@
 setParamNoRepeat = (paramName, newVal) ->
-  sel = $("#map_form input[name=\"#{paramName}\"]")
-  if sel.length
-    sel.val JSON.stringify newVal
+  $sel = $("#map_form input[name=\"#{paramName}\"]")
+  newValJson = JSON.stringify newVal
+  if $sel.length
+    $sel.val newValJson
   else
     $('#map_form').append ->
       $('<input>').attr('type', 'hidden').attr('name', paramName)
-        .val JSON.stringify newVal
+        .val newValJson
+  return
 
 $(document).ready ->
   $('#submit_map').click ->
@@ -13,21 +15,18 @@ $(document).ready ->
     $('.classe-def').each ->
       imf = $(this).children('label').text()
       to = $(this).children('select').val()
-      if not (classDict[to]?.push imf)?
-        classDict[to] = [imf]
+      classDict[imf] = if to == '' then null else to
       return
 
-    sel = $('#map_form input[name="res"]')
     setParamNoRepeat 'res', classDict
-    setParamNoRepeat 'delete', $('#delete_missing').prop 'checked'
+    setParamNoRepeat 'delete_missing', $('#delete_missing').prop 'checked'
     $('#map_form').submit()
     return
 
-  if preData? and Object.keys(preData).length > 0
-    $('.classe-def').each ->
-      imf = $(this).children('label').text()
-      $(this).children('select').val preData[imf] if preData[imf]?
-      return
+  $('.classe-def').each ->
+    imf = $(this).children('label').text()
+    $(this).children('select').val (mapaAnterior[imf] ? '')
+    return
 
-  $('#delete_missing').prop 'checked', preDelete
+  $('#delete_missing').prop 'checked', eliminarAnterior
   return

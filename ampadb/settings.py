@@ -54,6 +54,7 @@ INSTALLED_APPS = [
     'whitenoise.runserver_nostatic',
     'django.contrib.staticfiles',
     'bootstrap3',
+    'debug_toolbar',
 ]
 
 MIDDLEWARE_CLASSES = [
@@ -69,7 +70,11 @@ MIDDLEWARE_CLASSES = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'htmlmin.middleware.HtmlMinifyMiddleware',
     'htmlmin.middleware.MarkRequestMiddleware',
+    'debug_toolbar.middleware.DebugToolbarMiddleware',
 ]
+
+if DEBUG:
+    INTERNAL_IPS = ['127.0.0.1']
 
 ROOT_URLCONF = 'ampadb.urls'
 
@@ -92,7 +97,6 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'ampadb.wsgi.application'
 
-
 # Database
 # https://docs.djangoproject.com/en/1.10/ref/settings/#databases
 
@@ -104,11 +108,10 @@ DATABASES = {
 }
 
 if _settings.get('database_url'):
-    DATABASES['default'].update(dj_database_url.parse(
-        _settings.get('database_url'), conn_max_age=500))
+    DATABASES['default'].update(
+        dj_database_url.parse(_settings.get('database_url'), conn_max_age=500))
 else:
     DATABASES['default'].update(dj_database_url.config(conn_max_age=500))
-
 
 # Auth
 LOGIN_REDIRECT_URL = 'index'
@@ -142,31 +145,35 @@ import importlib
 if importlib.util.find_spec('bcrypt') is not None:
     PASSWORD_HASHERS.insert(
         0, 'django.contrib.auth.hashers.BCryptSHA256PasswordHasher')
-    PASSWORD_HASHERS.insert(
-        1, 'django.contrib.auth.hashers.BCryptPasswordHasher')
+    PASSWORD_HASHERS.insert(1,
+                            'django.contrib.auth.hashers.BCryptPasswordHasher')
 
 if importlib.util.find_spec('argon2') is not None:
-    PASSWORD_HASHERS.insert(
-        0, 'django.contrib.auth.hashers.Argon2PasswordHasher')
+    PASSWORD_HASHERS.insert(0,
+                            'django.contrib.auth.hashers.Argon2PasswordHasher')
 
 AUTH_PASSWORD_VALIDATORS = [
     {
-        'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
+        'NAME':
+        'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
         'OPTIONS': {
             'user_attributes': ['username']
         }
     },
     {
-        'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
+        'NAME':
+        'django.contrib.auth.password_validation.MinimumLengthValidator',
         'OPTIONS': {
             'min_length': 6
         }
     },
     {
-        'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',
+        'NAME':
+        'django.contrib.auth.password_validation.CommonPasswordValidator',
     },
     {
-        'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
+        'NAME':
+        'django.contrib.auth.password_validation.NumericPasswordValidator',
     },
 ]
 
@@ -175,9 +182,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = 'ca'
 
-LANGUAGES = [
-    ('ca', 'Català')
-]
+LANGUAGES = [('ca', 'Català')]
 
 TIME_ZONE = 'Europe/Madrid'
 
@@ -186,7 +191,6 @@ USE_I18N = True
 USE_L10N = True
 
 USE_TZ = True
-
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.10/howto/static-files/

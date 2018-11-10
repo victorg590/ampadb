@@ -3,13 +3,24 @@
 
 {% block content %}
 <h1>Mapa de classes</h1>
-{% if not current_valid %}
+{% if not mapa_complet %}
+<div class="alert alert-info">
+  <p>Encara no s'ha fet el mapa de classes, i, per tant, no es pot importar.</p>
+</div>
+{% endif %}
+{% if classes_repetides %}
 <div class="alert alert-warning">
-  <p>Encara no s'ha fet el mapa de classes, i, per tant, no es pot importar</p>
+  <p>Les següents classes de la base de dades tenen dos o més classes de
+    importació associades. És probable que aixó sigui un error.</p>
+  <ul>
+    {% for classe_bd, classes_imp in classes_repetides.items %}
+    <li>{{ classes_imp|join:', ' }} &rArr; {{ classe_bd }}</li>
+    {% endfor %}
+  </ul>
 </div>
 {% endif %}
 <div>
-  {% if current_valid %}
+  {% if mapa_complet %}
   <a class="btn btn-primary" href="{% url 'importexport:ies:confirm' imp.pk %}">
     Importar</a>
   {% else %}
@@ -44,6 +55,7 @@ existent. Si us plau, omple el quadre següent:</p>
   <div class="form-group classe-def">
     <label class="control-label" for="classe_{{ forloop.counter }}">{{ i }}</label>
     <select class="form-control" id="classe_{{ forloop.counter }}" required>
+      <option value="">---</option>
       {% for c in classes %}
       <option value="{{ c.id_interna }}">{{ c }}</option>
       {% endfor %}
@@ -53,7 +65,7 @@ existent. Si us plau, omple el quadre següent:</p>
   <div class="form-group"><div class="checkbox">
     <label for="delete_missing">
       <input id="delete_missing" type="checkbox" />
-      Eliminar classes no mencionades
+      Eliminar classes buides
     </label>
   </div></div>
   <div class="form-group">
@@ -65,8 +77,8 @@ existent. Si us plau, omple el quadre següent:</p>
 
 {% block scripts %}
 <script>
-var preData = {{ pre_data|default:'null' }};
-var preDelete = {{ pre_delete|default:'true' }};
+var mapaAnterior = {{ mapa_anterior|default:'{}' }};
+var eliminarAnterior = {{ eliminar_classes_buides|default:'true' }};
 </script>
 <script src="{% static_dbg 'importexport/classnames.js' %}"></script>
 {% endblock scripts %}
