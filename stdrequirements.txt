@@ -4,6 +4,7 @@ bleach
 chardet
 Django
 django-bootstrap3
+django-debug-toolbar
 django-htmlmin
 dj-database-url
 gunicorn
