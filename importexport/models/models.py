@@ -1,4 +1,5 @@
 from datetime import timedelta
+import uuid
 from django.db import models, transaction
 from django.db.models import Exists, OuterRef, Q
 from django.utils import timezone
@@ -23,6 +24,8 @@ class ImportData(models.Model):
 
 
 class IesImport(models.Model):
+    id_importacio = models.UUIDField(
+        primary_key=True, default=uuid.uuid4, editable=False)
     nom_importacio = models.CharField(max_length=50)
     eliminar_classes_buides = models.BooleanField(
         default=True, help_text="Esborra les classes que quedin buides")
@@ -57,7 +60,6 @@ class IesImport(models.Model):
                 condicio_antiga).delete()
 
 
-# TODO: Transformar en Many-To-Many
 class ClassMap(models.Model):
     class Meta:
         unique_together = ('importacio', 'codi_classe')

@@ -22,18 +22,13 @@ class AddAlumne(CanviImportacio):
 
 
 class MoveAlumne(CanviImportacio):
-    antiga_classe = models.ForeignKey(  # TODO: Redundant (= alumne.classe)
-        Classe,
-        on_delete=models.SET_NULL,
-        null=True,
-        related_name='alumnes_moguts_de')
     nova_classe = models.ForeignKey(
         Classe, on_delete=models.PROTECT, related_name='alumnes_moguts_a')
     alumne = models.ForeignKey(
         Alumne, on_delete=models.CASCADE, related_name='canvis_classe')
 
     def __str__(self):
-        return '{} => {} -> {}'.format(self.alumne, self.antiga_classe,
+        return '{} => {} -> {}'.format(self.alumne, self.alumne.classe,
                                        self.nova_classe)
 
 
@@ -41,14 +36,9 @@ class DeleteAlumne(CanviImportacio):
     dada_relacionada = None
     alumne = models.ForeignKey(
         Alumne, on_delete=models.CASCADE, related_name='eliminacions')
-    antiga_classe = models.ForeignKey(  # TODO: Redundant (= alumne.classe)
-        Classe,
-        on_delete=models.SET_NULL,
-        null=True,
-        related_name='alumnes_antics')
 
     def __str__(self):
-        return '{} ~ {}'.format(self.alumne, self.antiga_classe)
+        return '{} ~ {}'.format(self.alumne, self.alumne.classe)
 
 
 class DeleteClasse(CanviImportacio):

@@ -9,20 +9,28 @@ from contactboard.models import Classe
 from .forms import Ies as Forms
 from .models import (IesImport, ClassMap, AddAlumne, MoveAlumne, DeleteAlumne,
                      DeleteClasse)
+from .import_fmts import InvalidFormat
 from . import ies_format
 
 
 @login_required
 @user_passes_test(is_admin)
 def upload(request):
+    error = False
     if request.method == 'POST':
         form = Forms.UploadForm(request.POST, request.FILES)
         if form.is_valid():
             nom = form.cleaned_data['ifile'].name
             with transaction.atomic():
                 imp = IesImport.objects.create(nom_importacio=nom)
-                ies_format.parse_ies_csv(form.cleaned_data['ifile'], imp)
-            return redirect('importexport:ies:classnames', imp.pk)
+                try:
+                    ies_format.parse_ies_csv(form.cleaned_data['ifile'], imp)
+                except InvalidFormat as invf:
+                    form.add_error('ifile', invf)
+                    error = True
+                    imp.delete()
+            if not error:
+                return redirect('importexport:ies:classnames', imp.pk)
     else:
         # Invalidem tots els canvis: si hem tornat a accedir a aquesta pàgina,
         # és probable que s'hagi modificat la base de dades i els canvis ja
