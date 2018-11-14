@@ -24,7 +24,7 @@ def alumne_post_save(sender, **kwargs):
         if len(instance.cognoms) <= 30:
             profile.user.last_name = instance.cognoms
         else:
-            profile.user.first_name = instance.cognoms[0:26] + '...'
+            profile.user.last_name = instance.cognoms[0:26] + '...'
         profile.user.save()
 
 

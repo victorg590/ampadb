@@ -66,13 +66,3 @@ class Ies:  # pylint: disable=too-few-public-methods
             widget=forms.FileInput(attrs={
                 'accept': '.csv'
             }))
-
-        def clean(self):
-            self.clean_file()
-
-        def clean_file(self):
-            ifile = self.cleaned_data['ifile']
-            try:
-                ies_format.validate(ifile)
-            except InvalidFormat as ex:
-                raise ValidationError(ex)

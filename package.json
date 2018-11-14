@@ -11,6 +11,10 @@
     "url": "https://github.com/ampafdv/ampadb/issues"
   },
   "homepage": "https://github.com/ampafdv/ampadb",
+  "engines": {
+    "node": "8.x",
+    "yarn": "1.x"
+  },
   "scripts": {
     "postinstall": "grunt",
     "test": "grunt test",
@@ -27,7 +31,8 @@
     "grunt-contrib-cssmin": "^2.2.1",
     "grunt-contrib-uglify": "^3.1.0",
     "grunt-contrib-watch": "^1.0.0",
-    "grunt-sass": "^2.0.0",
-    "grunt-sass-lint": "^0.2.3"
+    "grunt-sass": "^3.0.0",
+    "grunt-sass-lint": "^0.2.3",
+    "sass": "^1.14.3"
   }
 }

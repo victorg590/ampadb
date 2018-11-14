@@ -1,9 +1,5 @@
-# Destinació dels arxius
-dest_dir = 'dist'
-
-# Directori on estan els arxius estàtics. Ex. "usermanager/#{static_dir}/"
-# ATENCIÓ: 'static' causa problemes amb la detecció d'arxius de Django
-static_dir = 'staticfiles'
+{dest_dir, static_dir} = require './build_conf'
+sassimpl = require 'sass'
 
 rename = (dest, src) ->
   split_src = src.split '/'
@@ -14,7 +10,6 @@ rename = (dest, src) ->
   [dest, new_src].join '/'
 
 module.exports = (grunt) ->
-
   grunt.initConfig
     pkg: grunt.file.readJSON 'package.json'
     copy:
@@ -24,14 +19,14 @@ module.exports = (grunt) ->
           src: "*/#{static_dir}/**/*.{sass,scss}"
           dest: dest_dir
           rename: rename
-          }]
+        }]
       coffee:
         files: [{
             expand: true
             src: "*/#{static_dir}/**/*.coffee"
             dest: dest_dir
             rename: rename
-          }]
+        }]
       generic:
         files: [{
           expand: true
@@ -41,24 +36,25 @@ module.exports = (grunt) ->
           ]
           dest: dest_dir
           rename: rename
-          }]
+        }]
     sass:
       compile:
         options:
+          implementation: sassimpl
           sourceMap: true
           includePaths: [dest_dir]
         files: [{
           expand: true
           src: "#{dest_dir}/**/*.{sass,scss}"
           ext: '.css'
-          }]
+        }]
     cssmin:
       minimizeCss:
         files: [{
           expand: true
           src: ["#{dest_dir}/**/*.css", "!#{dest_dir}/**/*.min.css"]
           ext: '.min.css'
-          }]
+        }]
     coffee:
       compile:
         options:
@@ -67,21 +63,22 @@ module.exports = (grunt) ->
           expand: true
           src: "#{dest_dir}/**/*.coffee"
           ext: '.js'
-          }]
+        }]
     uglify:
       minimizeJs:
         files: [{
           expand: true
           src: ["#{dest_dir}/**/*.js", "!#{dest_dir}/**/*.min.js"]
           ext: '.min.js'
-          }]
+        }]
 
     watch:
       generic:
         files: [
-          "*/#{static_dir}/**/*",
-          "!*/#{static_dir}/**/*.{sass,scss,coffee}",
-          "!**/*~", "!**/*.bck*"
+          "*/#{static_dir}/**/*"
+          "!*/#{static_dir}/**/*.{sass,scss,coffee}"
+          "!**/*~"
+          "!**/*.bck*"
         ]
         tasks: ['copy:generic']
       sass:
@@ -101,7 +98,7 @@ module.exports = (grunt) ->
         files: [{
           expand: true
           src: ["#{dest_dir}/**/*", "#{dest_dir}/**", dest_dir]
-          }]
+        }]
 
   grunt.loadNpmTasks 'grunt-contrib-copy'
   grunt.loadNpmTasks 'grunt-sass'
