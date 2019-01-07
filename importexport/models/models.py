@@ -3,7 +3,7 @@ import uuid
 from django.db import models, transaction
 from django.db.models import Exists, OuterRef, Q
 from django.utils import timezone
-from contactboard.models import Classe
+from contactboard.models import Classe, Alumne
 
 
 class ImportData(models.Model):
@@ -17,6 +17,7 @@ class ImportData(models.Model):
     nom = models.CharField(max_length=255)
     cognoms = models.CharField(max_length=255)
     codi_classe = models.CharField(max_length=20)
+    alumne = models.OneToOneField(Alumne, on_delete=models.SET_NULL, null=True)
 
     def __str__(self):
         return '[{}] {} {} => {}'.format(self.importacio, self.nom,

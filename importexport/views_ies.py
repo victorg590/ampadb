@@ -133,7 +133,6 @@ def classnames(request, upload_id):
         'classes_repetides':
         classes_repetides
     }
-    print(context)
     return render(request, 'importexport/ies/classnames.html', context)
 
 
@@ -147,7 +146,6 @@ def confirm(request, upload_id):
     if request.method == 'POST':
         with transaction.atomic():
             ies_format.aplicar_canvis(imp)
-            imp.delete()
         return redirect('importexport:ies:upload')
     changes = {
         'add':

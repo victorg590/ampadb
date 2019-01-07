@@ -4,6 +4,7 @@ from collections import namedtuple
 from io import TextIOWrapper
 import chardet
 from django.db import transaction
+from django.db.models import OuterRef, Subquery
 from ampadb.support import gen_username, gen_codi
 from contactboard.models import Classe, Alumne
 from usermanager.models import Profile, UnregisteredUser
@@ -66,6 +67,12 @@ def _parse_ies_csv(input_csv, importacio):
         raise InvalidFormat.falta_columna(ex)
 
     ImportData.objects.bulk_create(new_data)
+    ImportData.objects.filter(
+        importacio=importacio,
+        alumne__isnull=True).update(alumne=Subquery(
+            Alumne.objects.filter(
+                nom=OuterRef('nom'), cognoms=OuterRef('cognoms')).order_by()
+            .values('pk')))
     ClassMap.objects.bulk_create([
         ClassMap(importacio=importacio, codi_classe=c, classe_mapejada=None)
         for c in classes
@@ -80,7 +87,8 @@ def parse_ies_csv(input_csv_bin, importacio):
         except UnicodeDecodeError:
             encoding_guess = chardet.detect(input_csv_bin.read(1024))
             if encoding_guess['confidence'] < 0.90:
-                raise InvalidFormat("No es reconeix el format de text (s'esperava UTF-8)")
+                raise InvalidFormat(
+                    "No es reconeix el format de text (s'esperava UTF-8)")
             input_csv_bin.seek(0)
             input_csv = TextIOWrapper(
                 input_csv_bin, encoding=encoding_guess['encoding'])
@@ -117,63 +125,43 @@ def calcular_canvis(imp):
             importacio=imp,
             classe_mapejada__isnull=False).select_related('classe_mapejada'):
         assoc_classes[mapa.codi_classe] = mapa.classe_mapejada
-    alumnes_existents = Alumne.objects.only(
-        'pk', 'nom', 'cognoms', 'classe').select_related('classe').order_by(
-            'nom', 'cognoms').iterator()
-    alumnes_nous = ImportData.objects.filter(importacio=imp).order_by(
-        'nom', 'cognoms').iterator()
-    classes_no_buides = set()
-    ae = next(alumnes_existents, None)
-    an = next(alumnes_nous, None)
-    while ae is not None and an is not None:
-        if (ae.nom, ae.cognoms) < (an.nom, an.cognoms):
-            # Alumne ae ha sigut eliminat
-            canvis_eliminats.append(
-                DeleteAlumne(
-                    importacio=imp, alumne=ae))
-            ae = next(alumnes_existents, None)
-        elif (ae.nom, ae.cognoms) > (an.nom, an.cognoms):
-            # Alumne an és nou
-            canvis_nous.append(
-                AddAlumne(
-                    importacio=imp,
-                    dada_relacionada=an,
-                    nova_classe=assoc_classes[an.codi_classe]))
-            classes_no_buides |= {assoc_classes[an.codi_classe].pk}
-            an = next(alumnes_nous, None)
-        else:
-            # Alumne ae = an existia. Comprovar si s'ha canviat de classe
-            nova_classe = assoc_classes[an.codi_classe]
-            if ae.classe != nova_classe:
-                canvis_moguts.append(
-                    MoveAlumne(
-                        importacio=imp,
-                        dada_relacionada=an,
-                        nova_classe=nova_classe,
-                        alumne=ae))
-            classes_no_buides |= {nova_classe.pk}
-            ae = next(alumnes_existents, None)
-            an = next(alumnes_nous, None)
-    while ae is not None:
-        # La resta d'alumnes han sigut eliminats
-        canvis_eliminats.append(
-            DeleteAlumne(importacio=imp, alumne=ae))
-        ae = next(alumnes_existents, None)
-    while an is not None:
-        # La resta d'alumnes són nous
+
+    classes_buides = set(assoc_classes.values())
+
+    import_alumnes = ImportData.objects.filter(
+        importacio=imp).defer('importacio')
+    # Nous alumnes
+    for ialumne in import_alumnes.filter(alumne=None):
         canvis_nous.append(
             AddAlumne(
                 importacio=imp,
-                dada_relacionada=an,
-                nova_classe=assoc_classes[an.codi_classe]))
-        classes_no_buides |= {assoc_classes[an.codi_classe].pk}
-        an = next(alumnes_nous, None)
+                dada_relacionada=ialumne,
+                nova_classe=assoc_classes[ialumne.codi_classe]))
+        classes_buides -= {assoc_classes[ialumne.codi_classe]}
+
+    # Alumnes moguts
+    for ialumne in import_alumnes.filter(
+            alumne__isnull=False).select_related('alumne', 'alumne__classe').only(
+                'alumne__classe', 'alumne', 'pk', 'codi_classe'):
+        if ialumne.alumne.classe.pk != assoc_classes[ialumne.codi_classe]:
+            canvis_moguts.append(
+                MoveAlumne(
+                    importacio=imp,
+                    dada_relacionada=ialumne,
+                    nova_classe=assoc_classes[ialumne.codi_classe],
+                    alumne=ialumne.alumne))
+        classes_buides -= {assoc_classes[ialumne.codi_classe]}
+
+    # Alumnes eliminats
+    for dalumne in Alumne.objects.exclude(pk__in=import_alumnes.exclude(
+            alumne=None).values('alumne')).only('pk').order_by():
+        canvis_eliminats.append(DeleteAlumne(importacio=imp, alumne=dalumne))
 
     AddAlumne.objects.bulk_create(canvis_nous)
     MoveAlumne.objects.bulk_create(canvis_moguts)
     DeleteAlumne.objects.bulk_create(canvis_eliminats)
-    classes_buides = Classe.objects.exclude(
-        pk__in=classes_no_buides).only('pk').order_by()
+    classes_buides = Classe.objects.filter(
+        pk__in=classes_buides).only('pk').order_by()
     if imp.eliminar_classes_buides:
         DeleteClasse.objects.bulk_create(
             [DeleteClasse(importacio=imp, classe=c) for c in classes_buides])
@@ -201,7 +189,7 @@ def aplicar_canvis(imp):
             classe=move_op.nova_classe)
     # Eliminar alumnes antics
     Alumne.objects.filter(
-        pk__in=DeleteAlumne.objects.filter(importacio=imp)).delete()
+        pk__in=DeleteAlumne.objects.filter(importacio=imp).values('alumne')).delete()
     Classe.objects.filter(
-        pk__in=DeleteClasse.objects.filter(importacio=imp)).delete()
-    invalidar_canvis(imp)
+        pk__in=DeleteClasse.objects.filter(importacio=imp).values('classe')).delete()
+    imp.delete()
